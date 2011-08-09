@@ -1,0 +1,478 @@
+/*
+ * Copyright 2011 Moxie Group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.moxieapps.gwt.highcharts.client;
+
+/**
+ * A configurable class that can be used to represent custom legend options for the
+ * chart, which can then be set on the chart (via the {@link Chart#setLegend(Legend)} method.)
+ * The legend is a box containing a symbol and name for each series item or point item in the chart.
+ * Example usage:
+ * <code><pre>
+ *   chart.setLegend(
+ *     new Legend()
+ *       .setBorderColor("#CC0000")
+ *       .setLayout(Legend.Layout.HORIZONTAL)
+ *   );
+ * </pre></code>
+ *
+ * @author squinn@moxiegroup.com (Shawn Quinn)
+ * @since 1.0
+ */
+public class Legend extends Configurable<Legend> {
+
+    /**
+     * An enumeration of supported legend horizontal alignment types, which can be passed to methods
+     * like {@link Legend#setAlign(Legend.Align)} method.
+     */
+    public enum Align {
+
+        /**
+         * Left align the legend
+         */
+        LEFT("left"),
+
+        /**
+         * Center the legend
+         */
+        CENTER("center"),
+
+        /**
+         * Right align the legend
+         */
+        RIGHT("right");
+
+        private Align(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
+     * An enumeration of supported legend vertical alignment types, which can be passed to methods
+     * like {@link Legend#setVerticalAlign(Legend.VerticalAlign)} method.
+     */
+    public enum VerticalAlign {
+
+        /**
+         * Show the legend at the top of the chart
+         */
+        TOP("top"),
+
+        /**
+         * Show the legend in the middle of the chart
+         */
+        MIDDLE("middle"),
+
+        /**
+         * Show the legend at the bottom of the chart
+         */
+        BOTTOM("bottom");
+
+        private VerticalAlign(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
+     * An enumeration of supported legend layout types, which can be passed to methods
+     * like {@link Legend#setLayout(Layout)} method.
+     */
+    public enum Layout {
+
+        /**
+         * Lay the legend items out in a horizontal row
+         */
+        HORIZONTAL("horizontal"),
+
+        /**
+         * Lay the legend items out in a vertical stack
+         */
+        VERTICAL("vertical");
+
+        private Layout(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
+     * Convenience method for setting the 'align' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("align", Legend.Align.LEFT);
+     * </code></pre>
+     * The horizontal alignment of the legend box within the chart area. Can be one of "left", "center" and "right".
+     * Defaults to {@link Legend.Align#CENTER}.
+     *
+     * @param align The horizontal alignment of the legend box within the chart area.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setAlign(Align align) {
+        return this.setOption("align", align != null ? align.toString() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'backgroundColor' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("backgroundColor", "#CCCCCC");
+     * </code></pre>
+     * The background color of the legend, filling the rounded corner border. Defaults to null.
+     *
+     * @param backgroundColor The value to set as the 'backgroundColor' option on the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setBackgroundColor(String backgroundColor) {
+        return this.setOption("backgroundColor", backgroundColor);
+    }
+
+    /**
+     * Convenience method for setting the 'borderColor' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("borderColor", "#CCCCCC");
+     * </code></pre>
+     * The color of the drawn border around the legend. Defaults to #909090.
+     *
+     * @param borderColor The color of the drawn border around the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setBorderColor(String borderColor) {
+        return this.setOption("borderColor", borderColor);
+    }
+
+    /**
+     * Convenience method for setting the 'borderRadius' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("borderRadius", 8);
+     * </code></pre>
+     * The border corner radius of the legend. Defaults to 5.
+     *
+     * @param borderRadius The border corner radius of the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setBorderRadius(Number borderRadius) {
+        return this.setOption("borderRadius", borderRadius);
+    }
+
+    /**
+     * Convenience method for setting the 'borderWidth' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("borderWidth", 3);
+     * </code></pre>
+     * The width of the drawn border around the legend. Defaults to 1.
+     *
+     * @param borderWidth The width of the drawn border around the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setBorderWidth(Number borderWidth) {
+        return this.setOption("borderWidth", borderWidth);
+    }
+
+    /**
+     * Convenience method for setting the 'floating' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("floating", true);
+     * </code></pre>
+     * When the legend is floating, the plot area ignores it and is allowed to be placed below it. Defaults to false.
+     *
+     * @param floating 'true' to float the legend above the plot area, or 'false' (the default) to make space for it.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setFloating(boolean floating) {
+        return this.setOption("floating", floating);
+    }
+
+    /**
+     * Convenience method for setting the 'enabled' option for the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("enabled", true);
+     * </code></pre>
+     * Enable or disable the legend. Defaults to true.
+     *
+     * @param enabled Whether or not to enable or disable the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setEnabled(boolean enabled) {
+        return this.setOption("enabled", enabled);
+    }
+
+    /**
+     * Convenience method for setting the 'itemHiddenStyle' options of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/itemHiddenStyle/fontWeight", "bold");
+     *     legend.setOption("/itemHiddenStyle/fontFamily", "serif");
+     *     etc.
+     * </code></pre>
+     * CSS styles for each legend item when the corresponding series or point is hidden. Properties are inherited
+     * from {@link #setStyle(Style)} unless overridden here. Defaults to:
+     * <ul>
+     * <li>color: '#CCC'</li>
+     * </ul>
+     *
+     * @param itemHiddenStyle CSS styles for each legend item when the corresponding series or point is hidden.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setItemHiddenStyle(Style itemHiddenStyle) {
+        return this.setOption("itemHiddenStyle", itemHiddenStyle != null ? itemHiddenStyle.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'itemHoverStyle' options of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/itemHoverStyle/fontWeight", "bold");
+     *     legend.setOption("/itemHoverStyle/fontFamily", "serif");
+     *     etc.
+     * </code></pre>
+     * CSS styles for each legend item in hover mode. Properties are inherited from {@link #setStyle(Style)}
+     * unless overridden here. Defaults to:
+     * <ul>
+     * <li>color: '#000'</li>
+     * </ul>
+     *
+     * @param itemHoverStyle CSS styles for each legend item in hover mode.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setItemHoverStyle(Style itemHoverStyle) {
+        return this.setOption("itemHoverStyle", itemHoverStyle != null ? itemHoverStyle.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'itemStyle' options of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/itemStyle/fontWeight", "bold");
+     *     legend.setOption("/itemStyle/fontFamily", "serif");
+     *     etc.
+     * </code></pre>
+     * CSS styles for each legend item. Defaults to:
+     * <ul>
+     * <li>cursor: 'pointer'</li>
+     * <li>color: '#3E576F'</li>
+     * </ul>
+     *
+     * @param itemStyle CSS styles for each legend item.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setItemStyle(Style itemStyle) {
+        return this.setOption("itemStyle", itemStyle != null ? itemStyle.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'itemWidth' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("itemWidth", 150);
+     * </code></pre>
+     * The width for each legend item. This is useful in a horizontal layout with many items
+     * when you want the items to align vertically. Defaults to null.
+     *
+     * @param itemWidth The width for each legend item, or null to automatically calculate.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setItemWidth(Number itemWidth) {
+        return this.setOption("itemWidth", itemWidth);
+    }
+
+    /**
+     * Convenience method for setting the 'layout' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("layout", Layout.VERTICAL);
+     * </code></pre>
+     * The layout of the legend items. Can be one of "horizontal" or "vertical".
+     * Defaults to {@link Layout#HORIZONTAL}.
+     *
+     * @param layout The layout of the legend items.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setLayout(Layout layout) {
+        return this.setOption("layout", layout != null ? layout.toString() : null);
+    }
+
+    // TODO: Add label formatter
+
+    /**
+     * Convenience method for setting the 'margin' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("margin", 60);
+     * </code></pre>
+     * If the plot area sized is calculated automatically and the legend is not floating, the
+     * legend margin is the space between the legend and the axis labels or plot area. Defaults to 15.
+     *
+     * @param margin The space between the legend and the axis labels or plot area.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setMargin(Number margin) {
+        return this.setOption("margin", margin);
+    }
+
+    /**
+     * Convenience method for setting the 'reversed' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("reversed", true);
+     * </code></pre>
+     * Whether to reverse the order of the legend items compared to the order of the series
+     * or points as defined in the configuration object. Defaults to false.
+     *
+     * @param reversed 'true' to reverse the order of the legend items.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setReversed(boolean reversed) {
+        return this.setOption("reversed", reversed);
+    }
+
+    /**
+     * Convenience method for setting the 'shadow' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("shadow", true);
+     * </code></pre>
+     * Whether to apply a drop shadow to the legend. A {@link #setBackgroundColor(String)}
+     * also needs to be applied for this to take effect. Defaults to false.
+     *
+     * @param shadow 'true' to apply a drop shadow to the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setShadow(boolean shadow) {
+        return this.setOption("shadow", shadow);
+    }
+
+    /**
+     * Convenience method for setting the 'style' options of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/style/fontWeight", "bold");
+     *     legend.setOption("/style/fontFamily", "serif");
+     *     etc.
+     * </code></pre>
+     * CSS styles for the legend area. In the 1.x versions the position of the legend area was
+     * determined by CSS. In 2.x, the position is determined by properties like
+     * {@link #setAlign(org.moxieapps.gwt.highcharts.client.Legend.Align)},
+     * {@link #setVerticalAlign(org.moxieapps.gwt.highcharts.client.Legend.VerticalAlign)},
+     * {@link #setX(Number)} and {@link #setY(Number)}, but the styles are still parsed for backwards compatibility.
+     *
+     * @param style CSS styles for the legend area.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setStyle(Style style) {
+        return this.setOption("style", style != null ? style.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'symbolPadding' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("symbolPadding", 4);
+     * </code></pre>
+     * The pixel padding between the legend item symbol and the legend item text. Defaults to 5.
+     *
+     * @param symbolPadding The pixel padding between the legend item symbol and the legend item text.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setSymbolPadding(Number symbolPadding) {
+        return this.setOption("symbolPadding", symbolPadding);
+    }
+
+    /**
+     * Convenience method for setting the 'symbolWidth' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("symbolWidth", 40);
+     * </code></pre>
+     * The pixel width of the legend item symbol. Defaults to 30.
+     *
+     * @param symbolWidth The pixel width of the legend item symbol.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setSymbolWidth(Number symbolWidth) {
+        return this.setOption("symbolWidth", symbolWidth);
+    }
+
+    /**
+     * Convenience method for setting the 'verticalAlign' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("verticalAlign", Legend.VerticalAlign.BOTTOM);
+     * </code></pre>
+     * The vertical alignment of the legend box. Can be one of "top", "middle" or "bottom".
+     * Vertical position can be further determined by the y option.
+     * Defaults to {@link Legend.VerticalAlign#BOTTOM}.
+     *
+     * @param verticalAlign The vertical alignment of the legend.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setVerticalAlign(VerticalAlign verticalAlign) {
+        return this.setOption("verticalAlign", verticalAlign != null ? verticalAlign.toString() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'width' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("width", 150);
+     * </code></pre>
+     * The width of the legend box, not including and padding set on the style. Defaults to null.
+     *
+     * @param width The width of the legend box (not including padding).
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setWidth(Number width) {
+        return this.setOption("width", width);
+    }
+
+    /**
+     * Convenience method for setting the 'x' position option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("x", 70);
+     * </code></pre>
+     * The x offset of the legend relative to it's horizontal alignment align within
+     * {@link Chart#setSpacingLeft(Number)} and {@link Chart#setSpacingRight(Number)}. Negative x
+     * moves it to the left, positive x moves it to the right. The default value of 15 together
+     * with {@link Align#CENTER} puts it in the center of the plot area. Defaults to 15.
+     *
+     * @param x The x offset of the legend, relative to the chart's spacing.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setX(Number x) {
+        return this.setOption("x", x);
+    }
+
+    /**
+     * Convenience method for setting the 'y' position option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("y", -20);
+     * </code></pre>
+     * The vertical offset of the legend relative to it's vertical alignment (@link VerticalAlign}
+     * within {@link Chart#setSpacingTop(Number)} and {@link Chart#setSpacingBottom(Number)}.
+     * Negative y moves it up, positive y moves it down. Defaults to 0.
+     *
+     * @param y The y position of the legend, relative to the chart's spacing.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setY(Number y) {
+        return this.setOption("y", y);
+    }
+
+}
