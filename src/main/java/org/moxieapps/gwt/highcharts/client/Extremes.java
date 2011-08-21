@@ -21,7 +21,7 @@ package org.moxieapps.gwt.highcharts.client;
  * the {@link Axis#getExtremes()} method is invoked (normally after the chart has been rendered).
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class Extremes {
 

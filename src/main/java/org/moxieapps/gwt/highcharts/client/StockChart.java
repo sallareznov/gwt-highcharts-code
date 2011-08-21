@@ -56,7 +56,7 @@ package org.moxieapps.gwt.highcharts.client;
  * on the Highcharts site for more details.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class StockChart extends BaseChart<StockChart> {
 

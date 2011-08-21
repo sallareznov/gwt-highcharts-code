@@ -28,7 +28,7 @@ import org.moxieapps.gwt.highcharts.client.labels.DataLabels;
  * mechanism.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T> {
 
@@ -283,8 +283,6 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
         return this.setOption("enableMouseTracking", enableMouseTracking);
     }
 
-    // TODO: Add events
-
     /**
      * Convenience method for setting the 'lineWidth' plot option.  Equivalent to:
      * <pre><code>
@@ -315,8 +313,6 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
     public T setMarker(Marker marker) {
         return this.setOption("marker", marker != null ? marker.getOptions() : null);
     }
-
-    // TODO: Add point
 
     /**
      * Convenience method for setting the 'pointStart' plot option.  Equivalent to:

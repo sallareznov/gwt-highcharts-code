@@ -42,7 +42,7 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class DataLabels extends BaseDataLabels<DataLabels> {
 

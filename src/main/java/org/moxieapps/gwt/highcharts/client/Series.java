@@ -17,8 +17,12 @@
 package org.moxieapps.gwt.highcharts.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 
 import java.util.ArrayList;
@@ -57,7 +61,7 @@ import java.util.Collections;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class Series extends Configurable<Series> {
 
@@ -106,7 +110,23 @@ public class Series extends Configurable<Series> {
         /**
          * Show the series as a sequence of lines that are rendered as a spline to appear as a smooth curve
          */
-        SPLINE("spline");
+        SPLINE("spline"),
+
+        /**
+         * Show the series as a sequence of bars that show the open, high, low, and close values.
+         * Only available when you're using the {@link StockChart} widget type.
+         *
+         * @since 1.1.0
+         */
+        OHLC("ohlc"),
+
+        /**
+         * Show the series as a sequence of candlesticks, where each candlestick represents four values.
+         * Only available when you're using the {@link StockChart} widget type.
+         *
+         * @since 1.1.0
+         */
+        CANDLESTICK("candlestick");
 
         private Type(String optionName) {
             this.optionName = optionName;
@@ -266,7 +286,7 @@ public class Series extends Configurable<Series> {
         // options with our root options
         JSONObject plotOptionsJSON = plotOptions.getOptions();
 
-        if(plotOptionsJSON != null) {
+        if (plotOptionsJSON != null) {
             for (String key : plotOptionsJSON.keySet()) {
                 this.setOption(key, plotOptionsJSON.get(key));
             }
@@ -464,16 +484,8 @@ public class Series extends Configurable<Series> {
         return this;
     }
 
-    /**
-     * Remove this series from the chart it is a part of.
-     * @return 'true' if the series was a part of an active chart and successfully removed, or 'false' if the
-     *         given series had not yet been added to any chart.
-     */
-    public boolean remove() {
-        return chart.removeSeries(this);
-    }
-
-    private static JavaScriptObject convertPointToJavaScriptObject(Point point) {
+    // Purposefully friendly scope so that we can get to this method from the Point class as well
+    static JavaScriptObject convertPointToJavaScriptObject(Point point) {
         final JSONObject options = point.getOptions() != null ? point.getOptions() : new JSONObject();
         Chart.addPointScalarValues(point, options);
         return options.getJavaScriptObject();
@@ -504,8 +516,19 @@ public class Series extends Configurable<Series> {
      */
     public Series setPoints(Number[] yValues, boolean redraw) {
         this.points.clear();
-        for (Number yValue : yValues) {
-            this.addPoint(yValue);
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0, pointsLength = yValues.length; i < pointsLength; i++) {
+                    jsonArray.set(i, new JSONNumber(yValues[i].doubleValue()));
+                }
+                nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
+            }
+        } else {
+            for (Number yValue : yValues) {
+                this.addPoint(yValue);
+            }
         }
         return this;
     }
@@ -530,15 +553,36 @@ public class Series extends Configurable<Series> {
      *
      * @param values A two dimensional array of values, where the main array is the list of points and
      *               each inner array contains two values representing the X and Y values respectively.
-     * @param redraw  Whether to redraw the chart after the series is altered. If doing more operations
-     *                on the chart, it is a good idea to set redraw to false and then call
-     *                {@link Chart#redraw()} after.
+     * @param redraw Whether to redraw the chart after the series is altered. If doing more operations
+     *               on the chart, it is a good idea to set redraw to false and then call
+     *               {@link Chart#redraw()} after.
      * @return A reference to this {@link Series} instance for convenient method chaining.
      */
     public Series setPoints(Number[][] values, boolean redraw) {
         this.points.clear();
-        for (Number[] xyValue : values) {
-            this.addPoint(xyValue[0], xyValue[1]);
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0, pointsLength = values.length; i < pointsLength; i++) {
+                    Number[] point = values[i];
+                    JSONValue jsonValue;
+                    if (point.length > 1) {
+                        JSONArray pointArray = new JSONArray();
+                        pointArray.set(0, new JSONNumber(point[0].doubleValue()));
+                        pointArray.set(1, new JSONNumber(point[1].doubleValue()));
+                        jsonValue = pointArray;
+                    } else {
+                        jsonValue = new JSONNumber(point[0].doubleValue());
+                    }
+                    jsonArray.set(i, jsonValue);
+                }
+                nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
+            }
+        } else {
+            for (Number[] xyValue : values) {
+                this.addPoint(xyValue[0], xyValue[1]);
+            }
         }
         return this;
     }
@@ -564,24 +608,128 @@ public class Series extends Configurable<Series> {
      */
     public Series setPoints(Point[] points, boolean redraw) {
         this.points.clear();
-        Collections.addAll(this.points, points);
         if (isRendered()) {
-            // TODO
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0, pointsLength = points.length; i < pointsLength; i++) {
+                    jsonArray.set(i, Chart.convertPointToJSON(points[i]));
+                }
+                nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
+            }
+        } else {
+            Collections.addAll(this.points, points);
         }
         return this;
     }
 
     /**
-     * Retrieve the array of points that have been added to this series.
+     * Retrieve the array of points that have been added to this series.  If this method is invoked
+     * before the series is rendered to a chart, then it will simply return the points that have been
+     * added so far.  If it is invoked after the series has been rendered, then it will retrieve
+     * the JS point instances from the live Highcharts element and convert them to GWT points.
      *
      * @return The array of points, or an empty array (non null) if no points have been added to the series yet.
      */
     public Point[] getPoints() {
-        return points.toArray(new Point[points.size()]);
+        ArrayList<Point> convertedPoints = points;
+        if (isRendered()) {
+            convertedPoints = new ArrayList<Point>();
+            // After the series has been rendered, convert the live JS data series back into GWT objects
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                JsArray<JavaScriptObject> nativePoints = nativeGetData(nativeSeries);
+                for (int i = 0; i < nativePoints.length(); i++) {
+                    JavaScriptObject nativePoint = nativePoints.get(i);
+                    convertedPoints.add(new Point(nativePoint));
+                }
+            }
+        }
+        return convertedPoints.toArray(new Point[points.size()]);
+    }
+
+    /**
+     * Remove this series from the chart it is a part of.
+     *
+     * @return 'true' if the series was a part of an active chart and successfully removed, or 'false' if the
+     *         given series had not yet been added to any chart.
+     */
+    public boolean remove() {
+        return chart.removeSeries(this);
+    }
+
+    /**
+     * Shows the series if hidden.  Only applies after the chart has been rendered.
+     *
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public Series show() {
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                nativeShow(nativeSeries);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Hides the series if visible. If the {@link BaseChart#setIgnoreHiddenSeries(boolean)} option is true,
+     * the chart is automatically redrawn without this series. Only applies after the chart has been rendered.
+     *
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public Series hide() {
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                nativeHide(nativeSeries);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Select or unselect the series. This means it's selected property is set, the checkbox in the legend is
+     * toggled and when selected, the series is returned in the {@link BaseChart#getSelectedSeries()} method.
+     *
+     * @param select When true, the series is selected. When false it is unselected.  See the {@link #selectToggle()}
+     *               method to instead toggle the selection state.
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public Series select(boolean select) {
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                nativeSelect(nativeSeries, select);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Select the series if it is currently unselected, or unselect the series if it is currently selected.
+     * See the {@link #select(boolean)} method for more explicit control over the selection state of a series.
+     *
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public Series selectToggle() {
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                nativeSelectToggle(nativeSeries);
+            }
+        }
+        return this;
     }
 
     /**
      * Internal method used to retrieve the unique id generated for this series.
+     *
      * @return The unique id of this series
      */
     String getId() {
@@ -616,12 +764,35 @@ public class Series extends Configurable<Series> {
     }-*/;
 
     private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, Number value, boolean redraw, boolean shift, JavaScriptObject animation) /*-{
-        series.addPoint(options, redraw, shift, animation);
+        series.addPoint(value, redraw, shift, animation);
     }-*/;
 
     private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, Number value, boolean redraw, boolean shift, boolean animation) /*-{
-        series.addPoint(options, redraw, shift, animation);
+        series.addPoint(value, redraw, shift, animation);
     }-*/;
 
+    private static native void nativeSetData(JavaScriptObject series, JavaScriptObject data, boolean redraw) /*-{
+        series.setData(data, redraw);
+    }-*/;
+
+    private static native void nativeShow(JavaScriptObject series) /*-{
+        series.show();
+    }-*/;
+
+    private static native void nativeHide(JavaScriptObject series) /*-{
+        series.hide();
+    }-*/;
+
+    private static native void nativeSelect(JavaScriptObject series, boolean select) /*-{
+        series.select(select);
+    }-*/;
+
+    private static native void nativeSelectToggle(JavaScriptObject series) /*-{
+        series.select(null);
+    }-*/;
+
+    private static native JsArray<JavaScriptObject> nativeGetData(JavaScriptObject series) /*-{
+        return series.data;
+    }-*/;
 
 }

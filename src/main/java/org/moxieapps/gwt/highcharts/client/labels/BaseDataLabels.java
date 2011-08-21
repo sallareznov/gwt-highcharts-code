@@ -22,7 +22,7 @@ package org.moxieapps.gwt.highcharts.client.labels;
  * in place.  You should not use this class directly, but instead use one of the base classes.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class BaseDataLabels<T extends BaseDataLabels> extends Labels<T> {
 

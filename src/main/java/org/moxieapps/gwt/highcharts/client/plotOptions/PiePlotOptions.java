@@ -35,7 +35,7 @@ import org.moxieapps.gwt.highcharts.client.labels.PieDataLabels;
  * series in the chart), use the {@link org.moxieapps.gwt.highcharts.client.Series#setPlotOptions(PlotOptions)} method.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class PiePlotOptions extends PlotOptions<PiePlotOptions> {
 

@@ -39,7 +39,7 @@ package org.moxieapps.gwt.highcharts.client;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class Loading extends Configurable<Loading> {
 

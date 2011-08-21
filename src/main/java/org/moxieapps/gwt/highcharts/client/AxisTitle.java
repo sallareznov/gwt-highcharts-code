@@ -21,7 +21,7 @@ package org.moxieapps.gwt.highcharts.client;
  * axis, which can then be set on a specific axis (via the {@link Axis#setAxisTitle(AxisTitle)} method.)
  * Example usage:
  * <code><pre>
- *   chart.getXAxis().setTitle(
+ *   chart.getXAxis().setAxisTitle(
  *     new AxisTitle()
  *       .setText("Sales by Month")
  *       .setAlign(AxisTitle.Align.MIDDLE)
@@ -29,7 +29,7 @@ package org.moxieapps.gwt.highcharts.client;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class AxisTitle extends Configurable<AxisTitle> {
 

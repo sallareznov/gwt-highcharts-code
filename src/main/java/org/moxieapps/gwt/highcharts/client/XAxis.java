@@ -27,12 +27,12 @@ import org.moxieapps.gwt.highcharts.client.labels.XAxisLabels;
  * XAxis xAxis = chart.getXAxis()
  *    .setType(Axis.Type.DATE_TIME)
  *    .setStartOfWeek(Axis.WeekDay.SUNDAY)
- *    .setTitle("Year")
+ *    .setAxisTitleText("Year")
  *    .setAlternateGridColor("#CCCCCC");
  * </code></pre>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class XAxis extends Axis<XAxis> {
 

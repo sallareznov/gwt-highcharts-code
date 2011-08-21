@@ -33,7 +33,7 @@ import com.google.gwt.json.client.JSONBoolean;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class ToolTip extends Configurable<ToolTip> {
 

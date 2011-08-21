@@ -36,7 +36,7 @@ package org.moxieapps.gwt.highcharts.client.labels;
  * capabilities available within custom formatters.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public interface DataLabelsFormatter {
 

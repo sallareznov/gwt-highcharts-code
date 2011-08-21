@@ -21,7 +21,7 @@ package org.moxieapps.gwt.highcharts.client;
  * library is released.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class RangeSelector extends Configurable<RangeSelector> {
 

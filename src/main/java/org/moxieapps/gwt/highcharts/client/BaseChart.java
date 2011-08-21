@@ -17,10 +17,13 @@
 package org.moxieapps.gwt.highcharts.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.ui.Widget;
+import org.moxieapps.gwt.highcharts.client.events.*;
 import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.DataLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.StackLabelsData;
@@ -37,7 +40,7 @@ import java.util.Iterator;
  * @author squinn@moxiegroup.com (Shawn Quinn)
  * @see Chart
  * @see StockChart
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class BaseChart<T> extends Widget {
 
@@ -236,10 +239,16 @@ public abstract class BaseChart<T> extends Widget {
      * The actual text of the chart subtitle. It can contain basic HTML text markup like
      * &lt;b&gt;, &lt;i&gt; and spans with style. Defaults to null.
      * <p/>
-     * Note that for more control over the title, utilize the {@link #setChartSubtitle(ChartSubtitle)}
+     * For more control over the title, utilize the {@link #setChartSubtitle(ChartSubtitle)}
      * method instead.
      * <p/>
-     * Also note that to hide the chart subtitle completely, simply set the text to null.
+     * To hide the chart subtitle completely, simply set the text to null.
+     * <p/>
+     * Note that this method is intended for handling configuring the chart's sub title area before
+     * the chart has been rendered, and has no affect if you invoke the method after the chart has been
+     * drawn to the DOM.  If you do want to change the sub title (or title) of the chart dynamically
+     * after it has already been rendered, you can use the {@link #setTitle(ChartTitle, ChartSubtitle)}
+     * method instead.
      *
      * @param subtitle Sets the subtitle of chart, or null to hide the subtitle.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
@@ -256,13 +265,19 @@ public abstract class BaseChart<T> extends Widget {
      *     etc...
      * </code></pre>
      * <p/>
-     * Note that if you call this method it will overwrite any existing
+     * When you call this method it will overwrite any existing
      * settings that have already been applied to the subtitle (e.g. if you
      * had previously called the {@link #setChartSubtitleText(String)} method that change
      * will get overwritten by this call.)
      * <p/>
-     * Note that if you just want to change the text of the subtitle, you can simply
+     * If you just want to change the text of the subtitle, you can simply
      * use the {@link #setChartSubtitleText(String)} method instead.
+     * <p/>
+     * Note that this method is intended for handling configuring the chart's sub title area before
+     * the chart has been rendered, and has no affect if you invoke the method after the chart has been
+     * drawn to the DOM.  If you do want to change the sub title (or title) of the chart dynamically
+     * after it has already been rendered, you can use the {@link #setTitle(ChartTitle, ChartSubtitle)}
+     * method instead.
      *
      * @param subtitle Sets the chart subtitle options, or null to hide the subtitle.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
@@ -279,10 +294,16 @@ public abstract class BaseChart<T> extends Widget {
      * The actual text of the chart title. It can contain basic HTML text markup like
      * &lt;b&gt;, &lt;i&gt; and spans with style. Defaults to "Chart title".
      * <p/>
-     * Note that for more control over the title, utilize the {@link #setChartTitle(ChartTitle)}
+     * For more control over the title, utilize the {@link #setChartTitle(ChartTitle)}
      * method instead.
      * <p/>
-     * Also note that to hide the chart title completely, simply set the text to null.
+     * To hide the chart title completely, simply set the text to null.
+     * <p/>
+     * Note that this method is intended for handling configuring the chart's title area before
+     * the chart has been rendered, and has no affect if you invoke the method after the chart has been
+     * drawn to the DOM.  If you do want to change the title (or sub title) of the chart dynamically
+     * after it has already been rendered, you can use the {@link #setTitle(ChartTitle, ChartSubtitle)}
+     * method instead.
      *
      * @param title Sets the title of chart, or null to hide the title.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
@@ -299,13 +320,18 @@ public abstract class BaseChart<T> extends Widget {
      *     etc...
      * </code></pre>
      * <p/>
-     * Note that if you call this method it will overwrite any existing
-     * settings that have already been applied to the title (e.g. if you
-     * had previously called the {@link #setChartTitleText(String)} method that change
-     * will get overwritten by this call.)
+     * If you call this method it will overwrite any existing settings that have already
+     * been applied to the title (e.g. if you had previously called the
+     * {@link #setChartTitleText(String)} method that change will get overwritten by this call.)
      * <p/>
-     * Note that if you just want to change the text of the title, you can simply
+     * If you just want to change the text of the title, you can simply
      * use the {@link #setChartTitleText(String)} method instead.
+     * <p/>
+     * Note that this method is intended for handling configuring the chart's title area before
+     * the chart has been rendered, and has no affect if you invoke the method after the chart has been
+     * drawn to the DOM.  If you do want to change the title (or sub title) of the chart dynamically
+     * after it has already been rendered, you can use the {@link #setTitle(ChartTitle, ChartSubtitle)}
+     * method instead.
      *
      * @param title Sets the chart title options, or null to hide the title.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
@@ -359,7 +385,26 @@ public abstract class BaseChart<T> extends Widget {
         return this.setOption("/credits", credits != null ? credits.getOptions() : null);
     }
 
-    // TODO: Add support for "events"
+    /**
+     * Convenience method for setting the 'exporting' options of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/exporting/enabled", true);
+     *     chart.setOption("/exporting/width", 600);
+     *     etc..
+     * </code></pre>
+     * Note that the "exporting" module must be included in the page in order for the exporting
+     * options to apply.  E.g.:
+     * <p/>
+     * &lt;script type="text/javascript" src="js/modules/exporting.js"&gt;&lt;/script&gt;
+     *
+     * @param exporting The options to apply to the exporting area of the chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @see #setNavigation(Navigation)
+     * @since 1.1.0
+     */
+    public T setExporting(Exporting exporting) {
+        return this.setOption("/exporting", exporting != null ? exporting.getOptions() : null);
+    }
 
     /**
      * Convenience method for setting the 'height' option of the chart.  Equivalent to:
@@ -568,6 +613,24 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setMarginLeft(Number marginLeft) {
         return this.setOption("/chart/marginLeft", marginLeft);
+    }
+
+    /**
+     * Convenience method for setting the 'navigation' options of the chart, which represents
+     * a collection of options for buttons and menus appearing in the exporting module.
+     * <p/>
+     * Note that the "exporting" module must be included in the page in order for the
+     * exporting navigation options to apply.  E.g.:
+     * <p/>
+     * &lt;script type="text/javascript" src="js/modules/navigation.js"&gt;&lt;/script&gt;
+     *
+     * @param navigation The options to apply to the exporting navigation area of the chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @see #setExporting(Exporting)
+     * @since 1.1.0
+     */
+    public T setNavigation(Navigation navigation) {
+        return this.setOption("/navigation", navigation != null ? navigation.getOptions() : null);
     }
 
     /**
@@ -832,6 +895,35 @@ public abstract class BaseChart<T> extends Widget {
         return this.setOption("/symbols", symbolsArray);
     }
 
+    /**
+     * Set a new title or subtitle for the chart.  This method can be called after the chart is
+     * rendered in order to change the title of the chart dynamically.
+     * <p/>
+     * Note: this method is primarily intended to allow the chart's title or sub-title area to
+     * be modified dynamically, after the chart has already been rendered to the DOM.  If you
+     * instead simply want to set the title or sub-title of the chart via normal configuration
+     * (before the chart has been rendered), then you can utilize the {@link #setChartTitleText(String)},
+     * {@link #setChartTitle(ChartTitle)}, {@link #setChartSubtitleText(String)} and
+     * {@link #setChartSubtitle(ChartSubtitle)} methods.
+     *
+     * @param chartTitle    The new options for the main title area of the chart (including the text).
+     * @param chartSubtitle The new options for the main subtitle area of the chart (including the text).
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public T setTitle(ChartTitle chartTitle, ChartSubtitle chartSubtitle) {
+        if (isRendered()) {
+            nativeSetTitle(chart,
+                chartTitle != null ? chartTitle.getOptions().getJavaScriptObject() : null,
+                chartSubtitle != null ? chartSubtitle.getOptions().getJavaScriptObject() : null
+            );
+        } else {
+            this.setChartTitle(chartTitle);
+            this.setChartSubtitle(chartSubtitle);
+        }
+        return returnThis();
+    }
+
     // We need to maintain a local reference to tooltip to deal with the formatter function
     private ToolTip toolTip;
 
@@ -1028,7 +1120,7 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     // Helper method to avoid having to do the cast and warning handling in multiple places
-    public T returnThis() {
+    private T returnThis() {
         @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
         T instance = (T) this;
         return instance;
@@ -1186,6 +1278,64 @@ public abstract class BaseChart<T> extends Widget {
         return this.setOption("/plotOptions/scatter", scatterPlotOptions.getOptions());
     }
 
+    private ChartClickEventHandler chartClickEventHandler;
+
+    /**
+     * Set a callback handler that will be invoked whenever the user clicks on the plot background.
+     * Information where the user clicked can then be found through the {@link org.moxieapps.gwt.highcharts.client.events.ChartClickEvent} instance
+     * that is passed to the handler's {@link org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler#onClick(org.moxieapps.gwt.highcharts.client.events.ChartClickEvent)} method.
+     *
+     * @param chartClickEventHandler The handler that should be invoked whenever a click event occurs.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public T setClickEventHandler(ChartClickEventHandler chartClickEventHandler) {
+        this.chartClickEventHandler = chartClickEventHandler;
+        return returnThis();
+    }
+
+    private ChartLoadEventHandler chartLoadEventHandler;
+
+    /**
+     * Set a callback handler that will be invoked whenever the chart's loading event is fired.
+     *
+     * @param chartLoadEventHandler The handler that should be invoked whenever a load event occurs.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public T setLoadEventHandler(ChartLoadEventHandler chartLoadEventHandler) {
+        this.chartLoadEventHandler = chartLoadEventHandler;
+        return returnThis();
+    }
+
+    private ChartRedrawEventHandler chartRedrawEventHandler;
+
+    /**
+     * Set a callback handler that will be invoked whenever the chart's redraw event is fired.
+     *
+     * @param chartRedrawEventHandler The handler that should be invoked whenever a redraw event occurs.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public T setRedrawEventHandler(ChartRedrawEventHandler chartRedrawEventHandler) {
+        this.chartRedrawEventHandler = chartRedrawEventHandler;
+        return returnThis();
+    }
+
+    private ChartSelectionEventHandler chartSelectionEventHandler;
+
+    /**
+     * Set a callback handler that will be invoked whenever the chart's selection event is fired.
+     *
+     * @param chartSelectionEventHandler The handler that should be invoked whenever a selection event occurs.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    public T setSelectionEventHandler(ChartSelectionEventHandler chartSelectionEventHandler) {
+        this.chartSelectionEventHandler = chartSelectionEventHandler;
+        return returnThis();
+    }
+
     /**
      * Updates the options that all spline type series within the chart will use by default.  The settings can then
      * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
@@ -1276,6 +1426,28 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * Retrieve the series instance within the chart for the given id, or null if no series exists in the chart
+     * with the given id.  Note that series ids are set automatically by the framework, so all series instances
+     * are guaranteed to have an id associated with them.
+     * <br/><br/>
+     * Some event methods (such as {@link org.moxieapps.gwt.highcharts.client.events.SeriesClickEvent#getSeriesId()})
+     * return the unique id of a series, which can then be used in conjunction with this method to access
+     * the series instance associated with the event.
+     *
+     * @param seriesId The unique id of the series to try and find.
+     * @return The series associated with the given id, or null if no series exist with the given id
+     * @since 1.1.0
+     */
+    public Series getSeries(String seriesId) {
+        for (Series series : seriesList) {
+            if (series.getId().equals(seriesId)) {
+                return series;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Return an array of all the {@link Series} instances that have been added to this chart (either before or
      * after the chart was rendered), or an empty array if none have been added yet.  Note that we're returning
      * an array instead of a java.util.List as the generic interface types require a bit of a performance hit
@@ -1313,12 +1485,14 @@ public abstract class BaseChart<T> extends Widget {
      *         given series was not a part of this chart and therefore couldn't be removed.
      */
     public boolean removeSeries(Series series, boolean redraw) {
-        if(!seriesList.remove(series)) {
+        if (!seriesList.remove(series)) {
             return false;
         }
-        final JavaScriptObject nativeSeries = nativeGet(chart, series.getId());
-        if(nativeSeries != null) {
-            nativeRemoveSeries(chart, nativeSeries, redraw);
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = nativeGet(chart, series.getId());
+            if (nativeSeries != null) {
+                nativeRemoveSeries(chart, nativeSeries, redraw);
+            }
         }
         return true;
     }
@@ -1363,13 +1537,74 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * Returns an array of all currently selected series in the chart. Series can be selected either programmatically by the
+     * {@link Series#select(boolean)} method or by checking the checkbox next to the legend item if the
+     * {@link SeriesPlotOptions#setShowCheckbox(boolean)} option is true.
+     *
+     * @return An array of the selected Series items, or an empty array if either no series are selected or the
+     *         chart has not yet been rendered.
+     * @since 1.1.0
+     */
+    public Series[] getSelectedSeries() {
+        ArrayList<Series> selectedSeries = new ArrayList<Series>();
+        if (isRendered()) {
+            JsArrayString selectedSeriesIds = nativeGetSelectedSeriesIds(chart);
+            for (int i = 0; i < selectedSeriesIds.length(); i++) {
+                String selectedSeriesId = selectedSeriesIds.get(i);
+                for (Series series : seriesList) {
+                    if (series.getId().equals(selectedSeriesId)) {
+                        selectedSeries.add(series);
+                    }
+                }
+            }
+        }
+        return selectedSeries.toArray(new Series[selectedSeries.size()]);
+    }
+
+    /**
+     * Returns an array of all currently selected points in the chart. Points can be selected either
+     * programmatically via the {@link Point#select(boolean, boolean)} method or by clicking on them.
+     *
+     * @return An array of the selected Point items, or an empty array if either no points are selected or the
+     *         chart has not yet been rendered.
+     * @since 1.1.0
+     */
+    public Point[] getSelectedPoints() {
+        ArrayList<Point> selectedPoints = new ArrayList<Point>();
+        if (isRendered()) {
+            JsArray<JavaScriptObject> nativeSelectedPoints = nativeGetSelectedPoints(chart);
+            for (int i = 0; i < nativeSelectedPoints.length(); i++) {
+                selectedPoints.add(new Point(nativeSelectedPoints.get(i)));
+            }
+        }
+        return selectedPoints.toArray(new Point[selectedPoints.size()]);
+    }
+
+    /**
+     * Exporting module required. Get an SVG string representing the chart.<p/>
+     * This method has no effect if the chart has not yet been rendered.
+     *
+     * @return An SVG representation of the chart, or null if the chart has not yet been rendered
+     */
+    public String getSVG() {
+        if (isRendered()) {
+            return nativeGetSVG(chart);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Hide the loading screen. Options for the loading screen are defined via {@link Chart#setLoading(Loading)}.
-     * Should be used in conjunction with the {@link #showLoading(String)} method.
+     * Should be used in conjunction with the {@link #showLoading(String)} method.<p/>
+     * This method has no effect if the chart has not yet been rendered.
      *
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
     public T hideLoading() {
-        nativeHideLoading(chart);
+        if (isRendered()) {
+            nativeHideLoading(chart);
+        }
         return returnThis();
     }
 
@@ -1377,13 +1612,30 @@ public abstract class BaseChart<T> extends Widget {
      * Dim the chart's plot area and show a loading label text. Options for the loading screen are defined via
      * {@link Chart#setLoading(Loading)}.  A custom text can be given as a parameter, otherwise the default
      * message specified via the {@link Lang} options will be used.
-     * Should be used in conjunction with the {@link #hideLoading()} method.
+     * Should be used in conjunction with the {@link #hideLoading()} method.<p/>
+     * This method has no effect if the chart has not yet been rendered.
      *
      * @param message A custom message to appear as the loading text.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
     public T showLoading(String message) {
-        nativeShowLoading(chart, message);
+        if (isRendered()) {
+            nativeShowLoading(chart, message);
+        }
+        return returnThis();
+    }
+
+    /**
+     * Exporting module required. Clears away other elements in the page and prints the chart as it is
+     * displayed. By default, when the exporting module is enabled, a button at the upper left calls this method.<p/>
+     * This method has no effect if the chart has not yet been rendered.
+     *
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T print() {
+        if (isRendered()) {
+            nativePrint(chart);
+        }
         return returnThis();
     }
 
@@ -1518,10 +1770,73 @@ public abstract class BaseChart<T> extends Widget {
             seriesLabelFormatters.set(i, hasDataLabelsFormatter(series));
         }
 
+        // Another one for events fired on the chart
+        JSONObject chartEventHandlers = new JSONObject();
+        chartEventHandlers.put("click", JSONBoolean.getInstance(chartClickEventHandler != null));
+        chartEventHandlers.put("load", JSONBoolean.getInstance(chartLoadEventHandler != null));
+        chartEventHandlers.put("redraw", JSONBoolean.getInstance(chartRedrawEventHandler != null));
+        chartEventHandlers.put("selection", JSONBoolean.getInstance(chartSelectionEventHandler != null));
+
+        // And two more for events that have been applied to the series (or the points within the series)
+        JSONObject seriesEventHandlers = new JSONObject();
+        JSONObject pointEventHandlers = new JSONObject();
+
+        if (seriesPlotOptions != null) {
+
+            // Series event
+            seriesEventHandlers.put("click",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesClickEventHandler() != null)
+            );
+            seriesEventHandlers.put("checkboxClick",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesCheckboxClickEventHandler() != null)
+            );
+            seriesEventHandlers.put("hide",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesHideEventHandler() != null)
+            );
+            seriesEventHandlers.put("legendItemClick",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesLegendItemClickEventHandler() != null)
+            );
+            seriesEventHandlers.put("mouseOver",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesMouseOverEventHandler() != null)
+            );
+            seriesEventHandlers.put("mouseOut",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesMouseOutEventHandler() != null)
+            );
+            seriesEventHandlers.put("show",
+                JSONBoolean.getInstance(seriesPlotOptions.getSeriesShowEventHandler() != null)
+            );
+
+            // Point events
+            pointEventHandlers.put("click",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointClickEventHandler() != null)
+            );
+            pointEventHandlers.put("mouseOver",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointMouseOverEventHandler() != null)
+            );
+            pointEventHandlers.put("mouseOut",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointMouseOutEventHandler() != null)
+            );
+            pointEventHandlers.put("remove",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointRemoveEventHandler() != null)
+            );
+            pointEventHandlers.put("select",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointSelectEventHandler() != null)
+            );
+            pointEventHandlers.put("unselect",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointUnselectEventHandler() != null)
+            );
+            pointEventHandlers.put("update",
+                JSONBoolean.getInstance(seriesPlotOptions.getPointUpdateEventHandler() != null)
+            );
+        }
+
         chart = nativeRenderChart(
             getChartTypeName(),
             createNativeOptions(),
             toolTip != null && toolTip.getToolTipFormatter() != null,
+            chartEventHandlers.getJavaScriptObject(),
+            seriesEventHandlers.getJavaScriptObject(),
+            pointEventHandlers.getJavaScriptObject(),
             xAxisLabelFormatters.getJavaScriptObject(),
             yAxisLabelFormatters.getJavaScriptObject(),
             yAxisStackLabelFormatters.getJavaScriptObject(),
@@ -1602,8 +1917,14 @@ public abstract class BaseChart<T> extends Widget {
 
         // #3: We need to add references to our axis so that we can later lookup the
         // axis by id (as well as pass along any configuration options that were applied to the axis)
-        options.put("xAxis", convertToJSONValue(xAxes.toArray(new Configurable[xAxes.size()])));
-        options.put("yAxis", convertToJSONValue(yAxes.toArray(new Configurable[yAxes.size()])));
+        final JSONValue xAxisJSONValue = convertToJSONValue(xAxes.toArray(new Configurable[xAxes.size()]));
+        if (xAxisJSONValue != null && xAxisJSONValue.isNull() == null) {
+            options.put("xAxis", xAxisJSONValue);
+        }
+        final JSONValue yAxisJSONValue = convertToJSONValue(yAxes.toArray(new Configurable[yAxes.size()]));
+        if (yAxisJSONValue != null && yAxisJSONValue.isNull() == null) {
+            options.put("yAxis", yAxisJSONValue);
+        }
 
         // For debugging the raw options that we're passing to the chart on startup, uncomment the following line
         // com.google.gwt.user.client.Window.alert(options.toString());
@@ -1644,12 +1965,16 @@ public abstract class BaseChart<T> extends Widget {
         }
     }
 
-    private static JSONValue convertPointToJSON(Point point) {
+    // Purposefully package scope so we can get to this method from the Series and Point classes as well
+    static JSONValue convertPointToJSON(Point point) {
         final JSONObject options = point.getOptions();
         if (options != null) {
             return addPointScalarValues(point, options);
         } else if (point.getX() != null) {
-            return addPointScalarValues(point, new JSONObject());
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.set(0, new JSONNumber(point.getX().doubleValue()));
+            jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
+            return jsonArray;
         } else if (point.getY() != null) {
             return new JSONNumber(point.getY().doubleValue());
         } else {
@@ -1680,6 +2005,9 @@ public abstract class BaseChart<T> extends Widget {
     private native JavaScriptObject nativeRenderChart(String chartTypeName,
                                                       JavaScriptObject options,
                                                       boolean toolTipFormatterFlag,
+                                                      JavaScriptObject chartEventHandlerFlags,
+                                                      JavaScriptObject seriesEventHandlerFlags,
+                                                      JavaScriptObject pointEventHandlerFlags,
                                                       JavaScriptObject xAxisLabelFormatterFlags,
                                                       JavaScriptObject yAxisLabelFormatterFlags,
                                                       JavaScriptObject yAxisStackLabelFormatterFlags,
@@ -1687,6 +2015,44 @@ public abstract class BaseChart<T> extends Widget {
                                                       JavaScriptObject seriesLabelsFormatterFlags) /*-{
 
         var self = this;
+
+        // Add in GWT interceptor callback functions for the various core chart event handlers
+        for (var type1 in chartEventHandlerFlags) {
+            if (type1.indexOf("gwt") < 0 && chartEventHandlerFlags[type1]) {
+                options.chart.events = options.chart.events || {};
+                var chartEventType = type1;
+                options.chart.events[type1] = function(e) {
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::chartEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(e, chartEventType);
+                }
+            }
+        }
+
+        // Add in GWT interceptor callback functions for the various series event handlers
+        for (var type2 in seriesEventHandlerFlags) {
+            if (type2.indexOf("gwt") < 0 && seriesEventHandlerFlags[type2]) {
+                options.plotOptions = options.plotOptions || {};
+                options.plotOptions.series = options.plotOptions.series || {};
+                options.plotOptions.series.events = options.plotOptions.series.events || {};
+                var seriesEventType = type2;
+                options.plotOptions.series.events[type2] = function(e) {
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::seriesEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, seriesEventType);
+                }
+            }
+        }
+
+        // Add in GWT interceptor callback functions for the various series point event handlers
+        for (var type3 in pointEventHandlerFlags) {
+            if (type3.indexOf("gwt") < 0 && pointEventHandlerFlags[type3]) {
+                options.plotOptions = options.plotOptions || {};
+                options.plotOptions.series = options.plotOptions.series || {};
+                options.plotOptions.series.point = options.plotOptions.series.point || {};
+                options.plotOptions.series.point.events = options.plotOptions.series.point.events || {};
+                var pointEventType = type3;
+                options.plotOptions.series.point.events[type3] = function(e) {
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::pointEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, pointEventType);
+                }
+            }
+        }
 
         // Add in GWT interceptor callback functions for the various formatters so that we can move from
         // the native JS world back to the Java world...
@@ -1732,13 +2098,13 @@ public abstract class BaseChart<T> extends Widget {
         }
 
         // Plot options data label formatters
-        for (var type in plotOptionsLabelsFormatterFlags) {
-            if (type.indexOf("gwt") < 0 && plotOptionsLabelsFormatterFlags[type]) {
+        for (var type4 in plotOptionsLabelsFormatterFlags) {
+            if (type4.indexOf("gwt") < 0 && plotOptionsLabelsFormatterFlags[type4]) {
                 options.plotOptions = options.plotOptions || {};
-                options.plotOptions[type] = options.plotOptions[type] || {};
-                options.plotOptions[type].dataLabels = options.plotOptions[type].dataLabels || {};
-                var seriesType = type;
-                options.plotOptions[type].dataLabels.formatter = function() {
+                options.plotOptions[type4] = options.plotOptions[type4] || {};
+                options.plotOptions[type4].dataLabels = options.plotOptions[type].dataLabels || {};
+                var seriesType = type4;
+                options.plotOptions[type4].dataLabels.formatter = function() {
                     return self.@org.moxieapps.gwt.highcharts.client.BaseChart::plotOptionsLabelsFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, seriesType);
                 };
             }
@@ -1758,6 +2124,57 @@ public abstract class BaseChart<T> extends Widget {
         // Draw the chart!
         return new $wnd.Highcharts[chartTypeName](options);
     }-*/;
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void chartEventCallback(JavaScriptObject nativeEvent, String eventType) {
+        if ("click".equals(eventType) && chartClickEventHandler != null) {
+            chartClickEventHandler.onClick(new ChartClickEvent(nativeEvent));
+        } else if ("load".equals(eventType) && chartLoadEventHandler != null) {
+            chartLoadEventHandler.onLoad(new ChartLoadEvent(nativeEvent));
+        } else if ("redraw".equals(eventType) && chartRedrawEventHandler != null) {
+            chartRedrawEventHandler.onRedraw(new ChartRedrawEvent(nativeEvent));
+        } else if ("selection".equals(eventType) && chartSelectionEventHandler != null) {
+            chartSelectionEventHandler.onSelection(new ChartSelectionEvent(nativeEvent));
+        }
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void seriesEventCallback(JavaScriptObject nativeSeries, JavaScriptObject nativeEvent, String eventType) {
+        if ("click".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesClickEventHandler() != null) {
+            seriesPlotOptions.getSeriesClickEventHandler().onClick(new SeriesClickEvent(nativeEvent, nativeSeries));
+        } else if ("checkboxClick".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesCheckboxClickEventHandler() != null) {
+            seriesPlotOptions.getSeriesCheckboxClickEventHandler().onClick(new SeriesCheckboxClickEvent(nativeEvent, nativeSeries));
+        } else if ("hide".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesHideEventHandler() != null) {
+            seriesPlotOptions.getSeriesHideEventHandler().onHide(new SeriesHideEvent(nativeEvent, nativeSeries));
+        } else if ("legendItemClick".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesLegendItemClickEventHandler() != null) {
+            seriesPlotOptions.getSeriesLegendItemClickEventHandler().onClick(new SeriesLegendItemClickEvent(nativeEvent, nativeSeries));
+        } else if ("mouseOver".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesMouseOverEventHandler() != null) {
+            seriesPlotOptions.getSeriesMouseOverEventHandler().onMouseOver(new SeriesMouseOverEvent(nativeEvent, nativeSeries));
+        } else if ("mouseOut".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesMouseOutEventHandler() != null) {
+            seriesPlotOptions.getSeriesMouseOutEventHandler().onMouseOut(new SeriesMouseOutEvent(nativeEvent, nativeSeries));
+        } else if ("show".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesShowEventHandler() != null) {
+            seriesPlotOptions.getSeriesShowEventHandler().onShow(new SeriesShowEvent(nativeEvent, nativeSeries));
+        }
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private void pointEventCallback(JavaScriptObject nativePoint, JavaScriptObject nativeEvent, String eventType) {
+        if ("click".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointClickEventHandler() != null) {
+            seriesPlotOptions.getPointClickEventHandler().onClick(new PointClickEvent(nativeEvent, nativePoint));
+        } else if ("mouseOver".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointMouseOverEventHandler() != null) {
+            seriesPlotOptions.getPointMouseOverEventHandler().onMouseOver(new PointMouseOverEvent(nativeEvent, nativePoint));
+        } else if ("mouseOut".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointMouseOutEventHandler() != null) {
+            seriesPlotOptions.getPointMouseOutEventHandler().onMouseOut(new PointMouseOutEvent(nativeEvent, nativePoint));
+        } else if ("remove".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointRemoveEventHandler() != null) {
+            seriesPlotOptions.getPointRemoveEventHandler().onRemove(new PointRemoveEvent(nativeEvent, nativePoint));
+        } else if ("select".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointSelectEventHandler() != null) {
+            seriesPlotOptions.getPointSelectEventHandler().onSelect(new PointSelectEvent(nativeEvent, nativePoint));
+        } else if ("unselect".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointUnselectEventHandler() != null) {
+            seriesPlotOptions.getPointUnselectEventHandler().onUnselect(new PointUnselectEvent(nativeEvent, nativePoint));
+        } else if ("update".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointUpdateEventHandler() != null) {
+            seriesPlotOptions.getPointUpdateEventHandler().onUpdate(new PointUpdateEvent(nativeEvent, nativePoint));
+        }
+    }
 
     @SuppressWarnings({"UnusedDeclaration"})
     private String toolTipFormatterCallback(JavaScriptObject nativeData) {
@@ -1865,6 +2282,31 @@ public abstract class BaseChart<T> extends Widget {
 
     private static native void nativeShowLoading(JavaScriptObject chart, String message) /*-{
         chart.showLoading(message);
+    }-*/;
+
+    private static native void nativePrint(JavaScriptObject chart) /*-{
+        chart.print();
+    }-*/;
+
+    private static native JsArrayString nativeGetSelectedSeriesIds(JavaScriptObject chart) /*-{
+        var seriesIds = [];
+        var selectedSeries = chart.getSelectedSeries();
+        for (var i = 0; i < selectedSeries.length; i++) {
+            seriesIds.push(selectedSeries[i].options["id"]);
+        }
+        return seriesIds;
+    }-*/;
+
+    private static native JsArray<JavaScriptObject> nativeGetSelectedPoints(JavaScriptObject chart) /*-{
+        return chart.getSelectedPoints();
+    }-*/;
+
+    private static native String nativeGetSVG(JavaScriptObject chart) /*-{
+        return chart.getSVG();
+    }-*/;
+
+    private static native void nativeSetTitle(JavaScriptObject chart, JavaScriptObject title, JavaScriptObject subTitle) /*-{
+        chart.setTitle(title, subTitle);
     }-*/;
 
 }

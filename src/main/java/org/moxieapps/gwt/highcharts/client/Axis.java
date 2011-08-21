@@ -31,7 +31,7 @@ import com.google.gwt.json.client.JSONValue;
  * such as {@link XAxis} or {@link YAxis}.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class Axis<T extends Axis> extends Configurable<T> {
 

@@ -45,7 +45,7 @@ import com.google.gwt.json.client.JSONValue;
  * </code></pre>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class Color extends Configurable<Color> {
 

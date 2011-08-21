@@ -26,7 +26,7 @@ import com.google.gwt.json.client.*;
  * to be set at any level.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class Configurable<T> {
 

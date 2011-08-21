@@ -29,7 +29,7 @@ package org.moxieapps.gwt.highcharts.client.labels;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class StackLabels extends Labels<StackLabels> {
 

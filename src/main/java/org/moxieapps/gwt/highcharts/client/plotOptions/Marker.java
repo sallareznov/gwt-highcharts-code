@@ -23,19 +23,18 @@ import org.moxieapps.gwt.highcharts.client.Configurable;
  * Controls configuration options for the markers within a series.  Can be set as a plot option on a series
  * via the {@link PlotOptions#setMarker(Marker)} method.  Example usage:
  * <code><pre>
- *   chart.setPlotOptions(
- *     new PlotOptions()
- *       .setMarker(
- *           new Marker()
- *              .setEnabled(true)
- *              .setFillColor("#CC0000")
- *              .setRadius(4)
- *       )
+ *   chart.setPlotOptions(new PlotOptions()
+ *      .setMarker(
+ *         new Marker()
+ *            .setEnabled(true)
+ *            .setFillColor("#CC0000")
+ *            .setRadius(4)
+ *      )
  *   );
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class Marker extends Configurable<Marker> {
 

@@ -27,12 +27,12 @@ import org.moxieapps.gwt.highcharts.client.labels.YAxisLabels;
  * <pre><code>
  * chart.getYAxis()
  *    .setType(Axis.Type.LINEAR)
- *    .setTitle("Sales")
+ *    .setAxisTitleText("Sales")
  *    .setLineWidth(3);
  * </code></pre>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class YAxis extends Axis<YAxis> {
 

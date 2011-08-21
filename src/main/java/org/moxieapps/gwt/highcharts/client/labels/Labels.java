@@ -30,7 +30,7 @@ import org.moxieapps.gwt.highcharts.client.Style;
  * or {@link DataLabels}.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class Labels<T extends Labels> extends Configurable<T> {
 

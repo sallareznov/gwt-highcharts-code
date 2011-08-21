@@ -25,11 +25,11 @@ import com.google.gwt.core.client.JavaScriptObject;
  * that custom formatters can provide.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0
+ * @since 1.0.0
  */
 public class ToolTipData {
 
-    @SuppressWarnings({"FieldCanBeLocal"})
+    @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     private JavaScriptObject data;
 
     // Purposefully restricted to package scope
@@ -48,12 +48,37 @@ public class ToolTipData {
     }-*/;
 
     /**
+     * Retrieve the unique id of the series that the point is a part of. This id can then be used
+     * to obtain the Series instance itself via the
+     * {@link org.moxieapps.gwt.highcharts.client.BaseChart#getSeries(String)} method.
+     *
+     * @return The unique id of the series that the event was triggered on.
+     */
+    public native String getSeriesId() /*-{
+        return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.series.options.id;
+    }-*/;
+
+    /**
      * Return the name of the series that the point is a part of.
      *
      * @return The name of the series that the point is a part of
      */
     public native String getSeriesName() /*-{
         return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.series.name;
+    }-*/;
+
+    /**
+     * Create a new GWT point instance that is connected to the Highcharts JS point instance associated
+     * with this tooltip.
+     *
+     * @return A Point instance that is connected to the Highcharts data point associated with the tooltip.
+     */
+    public Point getPoint() {
+        return new Point(getNativePoint());
+    }
+
+    private native JavaScriptObject getNativePoint() /*-{
+        return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.point;
     }-*/;
 
     /**
@@ -144,6 +169,6 @@ public class ToolTipData {
         return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.y;
     }-*/;
 
+    // TODO: Add "points" accessors
 
-    // TODO: Add "point" and "points" accessors
 }
