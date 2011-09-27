@@ -624,7 +624,7 @@ public class Point extends Configurable<Point> {
         return point[key];
     }-*/;
 
-    private static native String nativeGetString(JavaScriptObject point, String name) /*-{
+    private static native String nativeGetString(JavaScriptObject point, String key) /*-{
         return point[key];
     }-*/;
 

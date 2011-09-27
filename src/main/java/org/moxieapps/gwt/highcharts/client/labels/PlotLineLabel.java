@@ -189,6 +189,20 @@ public class PlotLineLabel extends Configurable<PlotLineLabel> {
     }
 
     /**
+     * Convenience method for setting the 'text' option of the label.  Equivalent to:
+     * <pre><code>
+     *     plotLineLabel.setOption("text", "Hi Mom!");
+     * </code></pre>
+     *
+     * @param text The raw text to display as the label.
+     * @return A reference to this {@link PlotLineLabel} instance for convenient method chaining.
+     * @since 1.1.1
+     */
+    public PlotLineLabel setText(String text) {
+        return this.setOption("text", text);
+    }
+
+    /**
      * Convenience method for setting the 'textAlign' option for the label.  Equivalent to:
      * <pre><code>
      *     plotLineLabel.setOption("textAlign", PlotLineLabel.TextAlign.RIGHT);

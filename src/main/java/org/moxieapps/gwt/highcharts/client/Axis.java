@@ -298,7 +298,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public T setExtremes(Number min, Number max, boolean redraw, Animation animation) {
         if (chart.isRendered()) {
             // We'll update the axis live in the DOM if we've already been rendered
-            final JavaScriptObject nativeAxis = chart.get(this.id);
+            final JavaScriptObject nativeAxis = getNativeAxis();
             if (nativeAxis != null) {
                 if (animation == null || animation.getOptions() == null) {
                     final boolean animationFlag = animation != null;
@@ -327,7 +327,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
 
         if (chart.isRendered()) {
             // If we've already been rendered, we can ask the running chart for it's actual extremes
-            final JavaScriptObject nativeAxis = chart.get(this.id);
+            final JavaScriptObject nativeAxis = getNativeAxis();
             if (nativeAxis != null) {
                 final JavaScriptObject nativeExtremes = nativeGetExtremes(nativeAxis);
                 if (nativeExtremes != null) {
@@ -348,6 +348,10 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
             extremes = new Extremes(null, null, this.min, this.max);
         }
         return extremes;
+    }
+
+    protected JavaScriptObject getNativeAxis() {
+        return chart.get(this.id);
     }
 
     // Save some typing in the getExtremes() method
@@ -710,19 +714,17 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         return this.setOption("opposite", opposite);
     }
 
-    // TODO: Add plot bands
-
-
     /**
      * Sets the 'plotLines' array for the axis.  A plot line is a line stretching across the plot area,
      * marking a specific value on one of the axes.  Example usage:
      * <code><pre>
-     *   chart.getXAxis()
+     *   XAxis xAxis = chart.getXAxis()
+     *   xAxis.getXAxis()
      *     .setPlotLines(
-     *       new PlotLine()
+     *       xAxis.createPlotLine()
      *          .setColor("#CC0000")
      *          .setValue(40),
-     *       new PlotLine()
+     *       xAxis.createPlotLine()
      *          .setColor("#009900")
      *          .setValue(60)
      *     )
@@ -740,13 +742,13 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      * Sets the 'plotBands' array for the axis.  A plot band is a colored band stretching across the plot
      * area marking an interval on the axis.  Example usage:
      * <code><pre>
-     *   chart.getXAxis()
+     *   XAxis xAxis = chart.getXAxis()
      *     .setPlotBands(
-     *       new PlotBand()
+     *       xAxis.createPlotBand()
      *          .setColor("#CC0000")
      *          .setFrom(40)
      *          .setTo(80),
-     *       new PlotBand()
+     *       xAxis.createPlotBand()
      *          .setColor("#009900")
      *          .setFrom(90)
      *          .setTo(120),

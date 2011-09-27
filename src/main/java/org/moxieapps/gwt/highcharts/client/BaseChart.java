@@ -1055,7 +1055,7 @@ public abstract class BaseChart<T> extends Widget {
         if (isRendered()) {
             // If we're already on the screen, then do the resize natively
             if (animation == null || animation.getOptions() == null) {
-                nativeSetSize(chart, width, height, animation == null);
+                nativeSetSize(chart, width, height, animation != null);
             } else {
                 nativeSetSize(chart, width, height, animation.getOptions().getJavaScriptObject());
             }
@@ -1973,7 +1973,11 @@ public abstract class BaseChart<T> extends Widget {
         } else if (point.getX() != null) {
             JSONArray jsonArray = new JSONArray();
             jsonArray.set(0, new JSONNumber(point.getX().doubleValue()));
-            jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
+            if(point.getY() != null) {
+                jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
+            } else {
+                jsonArray.set(1, JSONNull.getInstance());
+            }
             return jsonArray;
         } else if (point.getY() != null) {
             return new JSONNumber(point.getY().doubleValue());
@@ -1989,6 +1993,8 @@ public abstract class BaseChart<T> extends Widget {
         }
         if (point.getY() != null) {
             options.put("y", new JSONNumber(point.getY().doubleValue()));
+        } else {
+            options.put("y", JSONNull.getInstance());
         }
         return options;
     }
@@ -2020,10 +2026,10 @@ public abstract class BaseChart<T> extends Widget {
         for (var type1 in chartEventHandlerFlags) {
             if (type1.indexOf("gwt") < 0 && chartEventHandlerFlags[type1]) {
                 options.chart.events = options.chart.events || {};
-                var chartEventType = type1;
                 options.chart.events[type1] = function(e) {
-                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::chartEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(e, chartEventType);
-                }
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::chartEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(e, arguments.callee.type);
+                };
+                options.chart.events[type1].type = type1;
             }
         }
 
@@ -2033,10 +2039,10 @@ public abstract class BaseChart<T> extends Widget {
                 options.plotOptions = options.plotOptions || {};
                 options.plotOptions.series = options.plotOptions.series || {};
                 options.plotOptions.series.events = options.plotOptions.series.events || {};
-                var seriesEventType = type2;
                 options.plotOptions.series.events[type2] = function(e) {
-                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::seriesEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, seriesEventType);
-                }
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::seriesEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, arguments.callee.type);
+                };
+                options.plotOptions.series.events[type2].type = type2;
             }
         }
 
@@ -2047,10 +2053,10 @@ public abstract class BaseChart<T> extends Widget {
                 options.plotOptions.series = options.plotOptions.series || {};
                 options.plotOptions.series.point = options.plotOptions.series.point || {};
                 options.plotOptions.series.point.events = options.plotOptions.series.point.events || {};
-                var pointEventType = type3;
                 options.plotOptions.series.point.events[type3] = function(e) {
-                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::pointEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, pointEventType);
-                }
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::pointEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, arguments.callee.type);
+                };
+                options.plotOptions.series.point.events[type3].type = type3;
             }
         }
 
@@ -2075,7 +2081,7 @@ public abstract class BaseChart<T> extends Widget {
             xAxis.labels.formatter = function() {
                 return self.@org.moxieapps.gwt.highcharts.client.BaseChart::xAxisLabelFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;I)(this, arguments.callee.index);
             };
-            xAxis.labels.formatter = i;
+            xAxis.labels.formatter.index = i;
         }
 
         // Y axis label formatters
@@ -2102,11 +2108,11 @@ public abstract class BaseChart<T> extends Widget {
             if (type4.indexOf("gwt") < 0 && plotOptionsLabelsFormatterFlags[type4]) {
                 options.plotOptions = options.plotOptions || {};
                 options.plotOptions[type4] = options.plotOptions[type4] || {};
-                options.plotOptions[type4].dataLabels = options.plotOptions[type].dataLabels || {};
-                var seriesType = type4;
+                options.plotOptions[type4].dataLabels = options.plotOptions[type4].dataLabels || {};
                 options.plotOptions[type4].dataLabels.formatter = function() {
-                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::plotOptionsLabelsFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, seriesType);
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::plotOptionsLabelsFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, arguments.callee.type);
                 };
+                options.plotOptions[type4].dataLabels.formatter.type = type4;
             }
         }
 

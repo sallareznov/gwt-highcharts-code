@@ -152,7 +152,7 @@ public class Series extends Configurable<Series> {
      *
      * @param chart The chart instance that this series is being created within.
      */
-    Series(BaseChart chart) {
+    protected Series(BaseChart chart) {
         this.chart = chart;
         id = Document.get().createUniqueId();
         setOption("id", id);
