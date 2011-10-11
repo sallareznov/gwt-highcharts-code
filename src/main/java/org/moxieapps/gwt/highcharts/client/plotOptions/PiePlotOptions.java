@@ -21,6 +21,7 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONString;
 import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Series;
+import org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.labels.PieDataLabels;
 
 /**
@@ -136,6 +137,36 @@ public class PiePlotOptions extends PlotOptions<PiePlotOptions> {
      */
     public PiePlotOptions setInnerSize(double innerSize) {
         return this.setOption("innerSize", new JSONString(((Double) (innerSize * 100)).intValue() + "%"));
+    }
+
+    private PointLegendItemClickEventHandler pointLegendItemClickEventHandler;
+
+    /**
+     * Set a callback handler that will be invoked whenever the user clicks on the legend item points
+     * in a pie series.   Additional information about the click (such as the values of the point clicked) can be
+     * found via the {@link org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEventHandler} instance
+     * that is passed to the handler's {@link org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEventHandler#onClick(org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEvent)} method.
+     *
+     * @param pointLegendItemClickEventHandler The handler that should be invoked whenever a legend item click event occurs.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.BaseChart} instance for convenient method chaining.
+     *
+     * @since 1.1.2
+     */
+    public PiePlotOptions setPointLegendItemClickEventHandler(PointLegendItemClickEventHandler pointLegendItemClickEventHandler) {
+        this.pointLegendItemClickEventHandler = pointLegendItemClickEventHandler;
+        return this;
+    }
+
+    /**
+     * Returns the custom event handler that has been set on the plot options, or null if no event
+     * handler has been set.
+     *
+     * @return The custom event handler that has been applied, or null if it has not been set.
+     *
+     * @since 1.1.2
+     */
+    public PointLegendItemClickEventHandler getPointLegendItemClickEventHandler() {
+        return this.pointLegendItemClickEventHandler;
     }
 
     /**

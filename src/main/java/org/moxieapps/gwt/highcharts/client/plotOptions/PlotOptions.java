@@ -230,8 +230,7 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      * </code></pre>
      * Defines the appearance of the data labels, static labels for each point.
      * <p/>
-     * Note that this method is declared to require an {@link org.moxieapps.gwt.highcharts.client.labels.BaseDataLabels}, but you should
-     * create one of the concrete sub types when calling this method.  e.g.
+     * Sample usage:
      * <pre><code>
      * plotOptions.setDataLabels(
      *     new DataLabels()

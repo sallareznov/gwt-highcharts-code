@@ -591,13 +591,13 @@ public class Point extends Configurable<Point> {
         if (this.nativePoint != null) {
             if (animation == null || animation.getOptions() == null) {
                 if (pointOptions.isSingleValue()) {
-                    nativeUpdate(this.nativePoint, pointOptions.getY(), redraw, animation != null);
+                    nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation != null);
                 } else {
                     nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation != null);
                 }
             } else {
                 if (pointOptions.isSingleValue()) {
-                    nativeUpdate(this.nativePoint, pointOptions.getY(), redraw, animation.getOptions().getJavaScriptObject());
+                    nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation.getOptions().getJavaScriptObject());
                 } else {
                     nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation.getOptions().getJavaScriptObject());
                 }
@@ -664,7 +664,7 @@ public class Point extends Configurable<Point> {
         point.update(options, redraw, animation);
     }-*/;
 
-    private static native void nativeUpdate(JavaScriptObject point, Number y, boolean redraw, JavaScriptObject animation) /*-{
+    private static native void nativeUpdate(JavaScriptObject point, double y, boolean redraw, JavaScriptObject animation) /*-{
         point.update(y, redraw, animation);
     }-*/;
 
@@ -672,7 +672,7 @@ public class Point extends Configurable<Point> {
         point.update(options, redraw, animation);
     }-*/;
 
-    private static native void nativeUpdate(JavaScriptObject point, Number y, boolean redraw, boolean animation) /*-{
+    private static native void nativeUpdate(JavaScriptObject point, double y, boolean redraw, boolean animation) /*-{
         point.update(y, redraw, animation);
     }-*/;
 

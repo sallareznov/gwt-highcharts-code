@@ -1151,7 +1151,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setAreaPlotOptions(AreaPlotOptions areaPlotOptions) {
         this.areaPlotOptions = areaPlotOptions;
-        return this.setOption("/plotOptions/area", areaPlotOptions.getOptions());
+        return areaPlotOptions != null && areaPlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/area", areaPlotOptions.getOptions()) :
+            returnThis();
     }
 
 
@@ -1169,7 +1171,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setAreaSplinePlotOptions(AreaSplinePlotOptions areaSplinePlotOptions) {
         this.areaSplinePlotOptions = areaSplinePlotOptions;
-        return this.setOption("/plotOptions/areaspline", areaSplinePlotOptions.getOptions());
+        return areaSplinePlotOptions != null && areaSplinePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/areaspline", areaSplinePlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1186,7 +1190,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setBarPlotOptions(BarPlotOptions barPlotOptions) {
         this.barPlotOptions = barPlotOptions;
-        return this.setOption("/plotOptions/bar", barPlotOptions.getOptions());
+        return barPlotOptions != null && barPlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/bar", barPlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1203,7 +1209,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setColumnPlotOptions(ColumnPlotOptions columnPlotOptions) {
         this.columnPlotOptions = columnPlotOptions;
-        return this.setOption("/plotOptions/column", columnPlotOptions.getOptions());
+        return columnPlotOptions != null && columnPlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/column", columnPlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1220,7 +1228,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setLinePlotOptions(LinePlotOptions linePlotOptions) {
         this.linePlotOptions = linePlotOptions;
-        return this.setOption("/plotOptions/line", linePlotOptions.getOptions());
+        return linePlotOptions != null && linePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/line", linePlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1237,7 +1247,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setPiePlotOptions(PiePlotOptions piePlotOptions) {
         this.piePlotOptions = piePlotOptions;
-        return this.setOption("/plotOptions/pie", piePlotOptions.getOptions());
+        return piePlotOptions != null && piePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/pie", piePlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1258,7 +1270,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setSeriesPlotOptions(SeriesPlotOptions seriesPlotOptions) {
         this.seriesPlotOptions = seriesPlotOptions;
-        return this.setOption("/plotOptions/series", seriesPlotOptions.getOptions());
+        return seriesPlotOptions != null && seriesPlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/series", seriesPlotOptions.getOptions()) :
+            returnThis();
     }
 
     /**
@@ -1275,7 +1289,9 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setScatterPlotOptions(ScatterPlotOptions scatterPlotOptions) {
         this.scatterPlotOptions = scatterPlotOptions;
-        return this.setOption("/plotOptions/scatter", scatterPlotOptions.getOptions());
+        return scatterPlotOptions != null && scatterPlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/scatter", scatterPlotOptions.getOptions()) :
+            returnThis();
     }
 
     private ChartClickEventHandler chartClickEventHandler;
@@ -1830,6 +1846,13 @@ public abstract class BaseChart<T> extends Widget {
             );
         }
 
+        // Pie charts support one additional point event
+        if (piePlotOptions != null) {
+            pointEventHandlers.put("legendItemClick",
+                JSONBoolean.getInstance(piePlotOptions.getPointLegendItemClickEventHandler() != null)
+            );
+        }
+
         chart = nativeRenderChart(
             getChartTypeName(),
             createNativeOptions(),
@@ -1973,7 +1996,7 @@ public abstract class BaseChart<T> extends Widget {
         } else if (point.getX() != null) {
             JSONArray jsonArray = new JSONArray();
             jsonArray.set(0, new JSONNumber(point.getX().doubleValue()));
-            if(point.getY() != null) {
+            if (point.getY() != null) {
                 jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
             } else {
                 jsonArray.set(1, JSONNull.getInstance());
@@ -2179,6 +2202,8 @@ public abstract class BaseChart<T> extends Widget {
             seriesPlotOptions.getPointUnselectEventHandler().onUnselect(new PointUnselectEvent(nativeEvent, nativePoint));
         } else if ("update".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointUpdateEventHandler() != null) {
             seriesPlotOptions.getPointUpdateEventHandler().onUpdate(new PointUpdateEvent(nativeEvent, nativePoint));
+        } else if ("legendItemClick".equals(eventType) && piePlotOptions != null && piePlotOptions.getPointLegendItemClickEventHandler() != null) {
+            piePlotOptions.getPointLegendItemClickEventHandler().onClick(new PointLegendItemClickEvent(nativeEvent, nativePoint));
         }
     }
 
