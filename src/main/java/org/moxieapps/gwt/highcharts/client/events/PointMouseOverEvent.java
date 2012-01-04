@@ -32,7 +32,7 @@ public class PointMouseOverEvent extends PointEvent {
 
     /**
      * This constructor is intended for internal use only.  You should not create mouse over events
-     * directly, but instead should register a {@link PointClickEventHandler}.
+     * directly, but instead should register a {@link PointMouseOverEventHandler}.
      *
      * @param event The native javascript object containing the details of the original event that was fired.
      * @param point The native javascript object that represents the point instance that the event was triggered on.

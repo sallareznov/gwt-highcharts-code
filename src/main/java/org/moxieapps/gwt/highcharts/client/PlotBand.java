@@ -156,5 +156,15 @@ public class PlotBand extends Configurable<PlotBand> {
     public PlotBand setZIndex(Number zIndex) {
         return this.setOption("zIndex", zIndex);
     }
-    
+
+    /**
+     * Internal method used to retrieve the unique id generated for this plot band.
+     *
+     * @return The unique id of this plot band
+     * @since 1.1.3
+     */
+    String getId() {
+        return id;
+    }
+
 }

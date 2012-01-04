@@ -246,4 +246,15 @@ public class PlotLine extends Configurable<PlotLine> {
         return this.setOption("zIndex", zIndex);
     }
 
+    /**
+     * Internal method used to retrieve the unique id generated for this plot line.
+     *
+     * @return The unique id of this plot line
+     * @since 1.1.3
+     */
+    String getId() {
+        return id;
+    }
+
+
 }

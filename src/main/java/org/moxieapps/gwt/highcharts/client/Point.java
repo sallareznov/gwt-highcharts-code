@@ -246,7 +246,7 @@ public class Point extends Configurable<Point> {
      * Store some arbitrary data on the point.  As the user interacts with the chart various events
      * are fired (such as {@link org.moxieapps.gwt.highcharts.client.events.PointClickEvent}), which
      * include a reference to the Point instance that the event was fired on.  The Point instances
-     * that are returned from the live rendered chart are actually different instances that the versions
+     * that are returned from the live rendered chart are actually different instances then the versions
      * that were originally added to the chart via one of the Series addPoint() or setPoints() methods,
      * as Highcharts has its own internal representation of all of the point objects.  Therefore,
      * if you need to track some additional information with each point (beyond its axis values)
@@ -591,13 +591,21 @@ public class Point extends Configurable<Point> {
         if (this.nativePoint != null) {
             if (animation == null || animation.getOptions() == null) {
                 if (pointOptions.isSingleValue()) {
-                    nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation != null);
+                    if(pointOptions.getY() == null) {
+                        nativeUpdateToNull(this.nativePoint, redraw, animation != null);
+                    } else {
+                        nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation != null);
+                    }
                 } else {
                     nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation != null);
                 }
             } else {
                 if (pointOptions.isSingleValue()) {
-                    nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation.getOptions().getJavaScriptObject());
+                    if(pointOptions.getY() == null) {
+                        nativeUpdateToNull(this.nativePoint, redraw, animation.getOptions().getJavaScriptObject());
+                    } else {
+                        nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation.getOptions().getJavaScriptObject());
+                    }
                 } else {
                     nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation.getOptions().getJavaScriptObject());
                 }
@@ -674,6 +682,14 @@ public class Point extends Configurable<Point> {
 
     private static native void nativeUpdate(JavaScriptObject point, double y, boolean redraw, boolean animation) /*-{
         point.update(y, redraw, animation);
+    }-*/;
+
+    private static native void nativeUpdateToNull(JavaScriptObject point, boolean redraw, JavaScriptObject animation) /*-{
+        point.update(null, redraw, animation);
+    }-*/;
+
+    private static native void nativeUpdateToNull(JavaScriptObject point, boolean redraw, boolean animation) /*-{
+        point.update(null, redraw, animation);
     }-*/;
 
     private static native JavaScriptObject nativeGetUserData(JavaScriptObject point) /*-{

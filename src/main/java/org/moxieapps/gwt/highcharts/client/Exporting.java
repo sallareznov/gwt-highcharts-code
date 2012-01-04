@@ -125,7 +125,7 @@ public class Exporting extends Configurable<Exporting> {
      * @param width The pixel width of charts exported to PNG or JPG.
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
-    public Exporting setUrl(Number width) {
+    public Exporting setWidth(Number width) {
         return this.setOption("width", width);
     }
 

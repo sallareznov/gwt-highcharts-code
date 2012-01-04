@@ -1119,6 +1119,19 @@ public abstract class BaseChart<T> extends Widget {
         return returnThis();
     }
 
+    /**
+     * Retrieve all of the options that have been configured for this chart instance
+     * as a JSONObject.
+     *
+     * @return A JSONObject representing all of the configuration options
+     *         that have been set on the instance (will be null if no options have been set)
+     *
+     * @since 1.1.3
+     */
+    public JSONObject getOptions() {
+        return configurable.getOptions();
+    }
+
     // Helper method to avoid having to do the cast and warning handling in multiple places
     private T returnThis() {
         @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})

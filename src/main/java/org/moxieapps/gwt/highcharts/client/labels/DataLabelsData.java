@@ -89,6 +89,17 @@ public class DataLabelsData {
     }
 
     /**
+     * Returns 'true' if the X value associated with this data label is non null.  This method
+     * is useful when rendering data labels in a chart that may contain null point values.
+     *
+     * @return 'true' if the X value is non null, 'false' otherwise.
+     * @since 1.1.3
+     */
+    public native boolean hasXValue() /*-{
+        return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.x != null;
+    }-*/;
+
+    /**
      * Return the x value of the point as a double.  An exception will be thrown
      * if the native value of the object is not a number.
      *
@@ -118,6 +129,16 @@ public class DataLabelsData {
         return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.x;
     }-*/;
 
+    /**
+     * Returns 'true' if the Y value associated with this data label is non null.  This method
+     * is useful when rendering data labels in a chart that may contain null point values.
+     *
+     * @return 'true' if the Y value is non null, 'false' otherwise.
+     * @since 1.1.3
+     */
+    public native boolean hasYValue() /*-{
+        return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.y != null;
+    }-*/;
 
     /**
      * Return the y value of the point as a double.  An exception will be thrown

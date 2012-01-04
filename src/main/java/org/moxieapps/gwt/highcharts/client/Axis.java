@@ -983,6 +983,81 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         return this.setOption("type", type != null ? type.toString() : null);
     }
 
+    /**
+     * Allows plot lines to be added to an axis after the chart is rendered.  If you want to add
+     * plot lines to chart before it is rendered, please utilize the {@link #setPlotLines(PlotLine...)}
+     * method instead.
+     *
+     * @param plotLines One or more PlotLine instances that represent the options of each line to render
+     * @return A reference to this {@link Axis} instance for convenient method chaining.
+     * @since 1.1.3
+     */
+    public T addPlotLines(PlotLine... plotLines) {
+        if (getNativeAxis() != null) {
+            for (PlotLine plotLine : plotLines) {
+                nativeAddPlotLine(getNativeAxis(), plotLine.getOptions().getJavaScriptObject());
+            }
+        } else {
+            setPlotLines(plotLines);
+        }
+        return getThis();
+    }
+
+    /**
+     * Allows plot bands to be added to an axis after the chart is rendered.  If you want to add
+     * plot bands to chart before it is rendered, please utilize the {@link #setPlotBands(PlotBand...)}
+     * method instead.
+     *
+     * @param plotBands One or more PlotBand instances that represent the options of each band to render
+     * @return A reference to this {@link Axis} instance for convenient method chaining.
+     * @since 1.1.3
+     */
+    public T addPlotBands(PlotBand... plotBands) {
+        if (getNativeAxis() != null) {
+            for (PlotBand plotBand : plotBands) {
+                nativeAddPlotBand(getNativeAxis(), plotBand.getOptions().getJavaScriptObject());
+            }
+        } else {
+            setPlotBands(plotBands);
+        }
+        return getThis();
+    }
+
+    /**
+     * Remove the given plot line from the chart after it has been rendered, automatically
+     * redrawing the chart after the plot line has been removed.
+     *
+     * @param plotLine The PlotLine instance to remove from the chart.
+     * @return A reference to this {@link Axis} instance for convenient method chaining.
+     * @since 1.1.3
+     */
+    public T removePlotLine(PlotLine plotLine) {
+        if (getNativeAxis() != null) {
+            nativeRemovePlotLine(getNativeAxis(), plotLine.getId());
+        } else {
+            // TODO: Add support for removing a plot line for the set before the chart is rendered
+        }
+        return getThis();
+    }
+
+    /**
+     * Remove the given plot band from the chart after it has been rendered, automatically
+     * redrawing the chart after the plot band has been removed.
+     *
+     * @param plotBand The PlotBand instance to remove from the chart.
+     * @return A reference to this {@link Axis} instance for convenient method chaining.
+     * @since 1.1.3
+     */
+    public T removePlotBand(PlotBand plotBand) {
+        if (getNativeAxis() != null) {
+            nativeRemovePlotBand(getNativeAxis(), plotBand.getId());
+        } else {
+            // TODO: Add support for removing a plot band for the set before the chart is rendered
+        }
+        return getThis();
+    }
+
+
     // Handle the unchecked cast limitation with generics in one place
     private T getThis() {
         @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
@@ -1002,4 +1077,19 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         return axis.getExtremes();
     }-*/;
 
+    private native void nativeAddPlotLine(JavaScriptObject axis, JavaScriptObject plotLineOptions)/*-{
+        axis.addPlotLine(plotLineOptions);
+    }-*/;
+
+    private native void nativeAddPlotBand(JavaScriptObject axis, JavaScriptObject plotBandOptions)/*-{
+        axis.addPlotBand(plotBandOptions);
+    }-*/;
+
+    private native void nativeRemovePlotLine(JavaScriptObject axis, String id)/*-{
+        axis.removePlotLine(id);
+    }-*/;
+
+    private native void nativeRemovePlotBand(JavaScriptObject axis, String id)/*-{
+        axis.removePlotBand(id);
+    }-*/;
 }
