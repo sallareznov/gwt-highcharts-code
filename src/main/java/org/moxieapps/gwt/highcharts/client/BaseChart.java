@@ -1125,7 +1125,6 @@ public abstract class BaseChart<T> extends Widget {
      *
      * @return A JSONObject representing all of the configuration options
      *         that have been set on the instance (will be null if no options have been set)
-     *
      * @since 1.1.3
      */
     public JSONObject getOptions() {
@@ -1380,6 +1379,48 @@ public abstract class BaseChart<T> extends Widget {
     public T setSplinePlotOptions(SplinePlotOptions splinePlotOptions) {
         this.splinePlotOptions = splinePlotOptions;
         return this.setOption("/plotOptions/spline", splinePlotOptions.getOptions());
+    }
+
+    // Whether or not to retain the data points associated with each series in local GWT arrays (as
+    // well as within the core Highcharts DOM elements)
+    private boolean persistent = false;
+
+    /**
+     * By default the data associated with the series of the chart is only maintained within a GWT managed Java
+     * array until the chart is rendered, at which point the data points of the series are maintained
+     * exclusively within the DOM via the Highcharts API.  This is primarily intended for memory
+     * savings, to avoid having to keep the all of the data point information in two places.  However,
+     * if you need to support dynamically moving a chart from one panel to another within the application
+     * you can set the persistent option to 'true', which will then retain the GWT managed Java array
+     * as well so that when the chart is redrawn in the new panel all of the data will still be available.
+     *
+     * @return 'true' if the data associated with the points in the series in the chart will be retained locally
+     *         within a GWT managed Java array (as well as within the DOM via the core Highcharts JS library).
+     *         Defaults to 'false' for memory savings.
+     * @since 1.2.0
+     */
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    /**
+     * By default the data associated with the series of the chart is only maintained within a GWT managed Java
+     * array until the chart is rendered, at which point the data points of the series are maintained
+     * exclusively within the DOM via the Highcharts API.  This is primarily intended for memory
+     * savings, to avoid having to keep the all of the data point information in two places.  However,
+     * if you need to support dynamically moving a chart from one panel to another within the application
+     * you can set the persistent option to 'true', which will then retain the GWT managed Java array
+     * as well so that when the chart is redrawn in the new panel all of the data will still be available.
+     *
+     * @param persistent 'true' to retain the data associated with the points in the series in the chart locally
+     *                   within a GWT managed Java array (as well as within the DOM via the core Highcharts JS library).
+     *                   Defaults to 'false' for memory savings.
+     * @since 1.2.0
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setPersistent(boolean persistent) {
+        this.persistent = persistent;
+        return returnThis();
     }
 
     // Purposefully not using the generic "List" interface here in order to optimize GWT performance.
@@ -1918,6 +1959,12 @@ public abstract class BaseChart<T> extends Widget {
         if (isRendered()) {
             nativeDestroy(chart);
             chart = null;
+
+            // If they're going to move the widget to another parent, make sure that everything
+            // starts off as if it's unrendered...
+            for (Series series : seriesList) {
+                series.setRendered(false);
+            }
         }
     }
 
@@ -1950,6 +1997,12 @@ public abstract class BaseChart<T> extends Widget {
                 seriesArray.set(i, seriesOptions);
             }
         }
+
+        // In the case that they're going to wait to access the X/Y axis after the chart is rendered,
+        // we need to call the 'get' methods once (at least for the primary X/Y axis) so that the ids
+        // are set on the Highcharts options correctly
+        this.getXAxis();
+        this.getYAxis();
 
         // #3: We need to add references to our axis so that we can later lookup the
         // axis by id (as well as pass along any configuration options that were applied to the axis)
@@ -2012,7 +2065,14 @@ public abstract class BaseChart<T> extends Widget {
             if (point.getY() != null) {
                 jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
             } else {
-                jsonArray.set(1, JSONNull.getInstance());
+                if (point.getOpen() != null && point.getHigh() != null && point.getLow() != null && point.getClose() != null) {
+                    jsonArray.set(1, new JSONNumber(point.getOpen().doubleValue()));
+                    jsonArray.set(2, new JSONNumber(point.getHigh().doubleValue()));
+                    jsonArray.set(3, new JSONNumber(point.getLow().doubleValue()));
+                    jsonArray.set(4, new JSONNumber(point.getClose().doubleValue()));
+                } else {
+                    jsonArray.set(1, JSONNull.getInstance());
+                }
             }
             return jsonArray;
         } else if (point.getY() != null) {
@@ -2031,6 +2091,18 @@ public abstract class BaseChart<T> extends Widget {
             options.put("y", new JSONNumber(point.getY().doubleValue()));
         } else {
             options.put("y", JSONNull.getInstance());
+        }
+        if (point.getOpen() != null) {
+            options.put("open", new JSONNumber(point.getOpen().doubleValue()));
+        }
+        if (point.getHigh() != null) {
+            options.put("high", new JSONNumber(point.getHigh().doubleValue()));
+        }
+        if (point.getLow() != null) {
+            options.put("low", new JSONNumber(point.getLow().doubleValue()));
+        }
+        if (point.getClose() != null) {
+            options.put("close", new JSONNumber(point.getClose().doubleValue()));
         }
         return options;
     }
@@ -2168,56 +2240,59 @@ public abstract class BaseChart<T> extends Widget {
     }-*/;
 
     @SuppressWarnings({"UnusedDeclaration"})
-    private void chartEventCallback(JavaScriptObject nativeEvent, String eventType) {
+    private boolean chartEventCallback(JavaScriptObject nativeEvent, String eventType) {
         if ("click".equals(eventType) && chartClickEventHandler != null) {
-            chartClickEventHandler.onClick(new ChartClickEvent(nativeEvent));
+            return chartClickEventHandler.onClick(new ChartClickEvent(nativeEvent));
         } else if ("load".equals(eventType) && chartLoadEventHandler != null) {
-            chartLoadEventHandler.onLoad(new ChartLoadEvent(nativeEvent));
+            return chartLoadEventHandler.onLoad(new ChartLoadEvent(nativeEvent));
         } else if ("redraw".equals(eventType) && chartRedrawEventHandler != null) {
-            chartRedrawEventHandler.onRedraw(new ChartRedrawEvent(nativeEvent));
+            return chartRedrawEventHandler.onRedraw(new ChartRedrawEvent(nativeEvent));
         } else if ("selection".equals(eventType) && chartSelectionEventHandler != null) {
-            chartSelectionEventHandler.onSelection(new ChartSelectionEvent(nativeEvent));
+            return chartSelectionEventHandler.onSelection(new ChartSelectionEvent(nativeEvent));
         }
+        return true;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    private void seriesEventCallback(JavaScriptObject nativeSeries, JavaScriptObject nativeEvent, String eventType) {
+    private boolean seriesEventCallback(JavaScriptObject nativeSeries, JavaScriptObject nativeEvent, String eventType) {
         if ("click".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesClickEventHandler() != null) {
-            seriesPlotOptions.getSeriesClickEventHandler().onClick(new SeriesClickEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesClickEventHandler().onClick(new SeriesClickEvent(nativeEvent, nativeSeries));
         } else if ("checkboxClick".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesCheckboxClickEventHandler() != null) {
-            seriesPlotOptions.getSeriesCheckboxClickEventHandler().onClick(new SeriesCheckboxClickEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesCheckboxClickEventHandler().onClick(new SeriesCheckboxClickEvent(nativeEvent, nativeSeries));
         } else if ("hide".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesHideEventHandler() != null) {
-            seriesPlotOptions.getSeriesHideEventHandler().onHide(new SeriesHideEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesHideEventHandler().onHide(new SeriesHideEvent(nativeEvent, nativeSeries));
         } else if ("legendItemClick".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesLegendItemClickEventHandler() != null) {
-            seriesPlotOptions.getSeriesLegendItemClickEventHandler().onClick(new SeriesLegendItemClickEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesLegendItemClickEventHandler().onClick(new SeriesLegendItemClickEvent(nativeEvent, nativeSeries));
         } else if ("mouseOver".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesMouseOverEventHandler() != null) {
-            seriesPlotOptions.getSeriesMouseOverEventHandler().onMouseOver(new SeriesMouseOverEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesMouseOverEventHandler().onMouseOver(new SeriesMouseOverEvent(nativeEvent, nativeSeries));
         } else if ("mouseOut".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesMouseOutEventHandler() != null) {
-            seriesPlotOptions.getSeriesMouseOutEventHandler().onMouseOut(new SeriesMouseOutEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesMouseOutEventHandler().onMouseOut(new SeriesMouseOutEvent(nativeEvent, nativeSeries));
         } else if ("show".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesShowEventHandler() != null) {
-            seriesPlotOptions.getSeriesShowEventHandler().onShow(new SeriesShowEvent(nativeEvent, nativeSeries));
+            return seriesPlotOptions.getSeriesShowEventHandler().onShow(new SeriesShowEvent(nativeEvent, nativeSeries));
         }
+        return true;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    private void pointEventCallback(JavaScriptObject nativePoint, JavaScriptObject nativeEvent, String eventType) {
+    private boolean pointEventCallback(JavaScriptObject nativePoint, JavaScriptObject nativeEvent, String eventType) {
         if ("click".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointClickEventHandler() != null) {
-            seriesPlotOptions.getPointClickEventHandler().onClick(new PointClickEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointClickEventHandler().onClick(new PointClickEvent(nativeEvent, nativePoint));
         } else if ("mouseOver".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointMouseOverEventHandler() != null) {
-            seriesPlotOptions.getPointMouseOverEventHandler().onMouseOver(new PointMouseOverEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointMouseOverEventHandler().onMouseOver(new PointMouseOverEvent(nativeEvent, nativePoint));
         } else if ("mouseOut".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointMouseOutEventHandler() != null) {
-            seriesPlotOptions.getPointMouseOutEventHandler().onMouseOut(new PointMouseOutEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointMouseOutEventHandler().onMouseOut(new PointMouseOutEvent(nativeEvent, nativePoint));
         } else if ("remove".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointRemoveEventHandler() != null) {
-            seriesPlotOptions.getPointRemoveEventHandler().onRemove(new PointRemoveEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointRemoveEventHandler().onRemove(new PointRemoveEvent(nativeEvent, nativePoint));
         } else if ("select".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointSelectEventHandler() != null) {
-            seriesPlotOptions.getPointSelectEventHandler().onSelect(new PointSelectEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointSelectEventHandler().onSelect(new PointSelectEvent(nativeEvent, nativePoint));
         } else if ("unselect".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointUnselectEventHandler() != null) {
-            seriesPlotOptions.getPointUnselectEventHandler().onUnselect(new PointUnselectEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointUnselectEventHandler().onUnselect(new PointUnselectEvent(nativeEvent, nativePoint));
         } else if ("update".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointUpdateEventHandler() != null) {
-            seriesPlotOptions.getPointUpdateEventHandler().onUpdate(new PointUpdateEvent(nativeEvent, nativePoint));
+            return seriesPlotOptions.getPointUpdateEventHandler().onUpdate(new PointUpdateEvent(nativeEvent, nativePoint));
         } else if ("legendItemClick".equals(eventType) && piePlotOptions != null && piePlotOptions.getPointLegendItemClickEventHandler() != null) {
-            piePlotOptions.getPointLegendItemClickEventHandler().onClick(new PointLegendItemClickEvent(nativeEvent, nativePoint));
+            return piePlotOptions.getPointLegendItemClickEventHandler().onClick(new PointLegendItemClickEvent(nativeEvent, nativePoint));
         }
+        return true;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

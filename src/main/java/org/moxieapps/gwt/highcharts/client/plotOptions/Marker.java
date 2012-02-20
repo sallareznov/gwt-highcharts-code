@@ -23,7 +23,7 @@ import org.moxieapps.gwt.highcharts.client.Configurable;
  * Controls configuration options for the markers within a series.  Can be set as a plot option on a series
  * via the {@link PlotOptions#setMarker(Marker)} method.  Example usage:
  * <code><pre>
- *   chart.setPlotOptions(new PlotOptions()
+ *   chart.setSeriesPlotOptions(new SeriesPlotOptions()
  *      .setMarker(
  *         new Marker()
  *            .setEnabled(true)
@@ -41,6 +41,11 @@ public class Marker extends Configurable<Marker> {
     /**
      * An enumeration of supported marker symbol types, which can be passed to methods
      * like {@link Marker#setSymbol(Marker.Symbol)} method.
+     * <p/>Note that custom marker images are also supported by simply setting the
+     * "symbol" option to a URL reference.  E.g.
+     * <pre><code>
+     *    marker.setOption("symbol", "url(/serverpath/image.png)");
+     * </code></pre>
      */
     public enum Symbol {
 
@@ -246,6 +251,11 @@ public class Marker extends Configurable<Marker> {
      * A predefined shape or symbol for the marker. When null, the symbol is pulled from the default
      * {@link org.moxieapps.gwt.highcharts.client.Chart#setSymbols(org.moxieapps.gwt.highcharts.client.plotOptions.Marker.Symbol[])}
      * options. Defaults to null.
+     * <p/>
+     * Note that custom marker images are also supported by simply setting the "symbol" option to a URL reference.  E.g.
+     * <pre><code>
+     *     marker.setOption("symbol", "url(/serverpath/image.png)");
+     * </code></pre>
      *
      * @param symbol The shape or symbol for the marker.
      * @return A reference to this {@link Marker} instance for convenient method chaining.

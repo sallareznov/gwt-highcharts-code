@@ -368,6 +368,24 @@ public class Series extends Configurable<Series> {
     }
 
     /**
+     * Simple way to add a point using the default options, and setting only the X, Open, High,
+     * Low, and Close values that the point should be rendered at within the series (for OHLC
+     * charts).  See the various overloaded  versions of the <code>addPoint()</code> method for
+     * more control over the way the point is rendered.
+     *
+     * @param x     The value on the X axis that the point should be drawn at within the series.
+     * @param open  The "open" Y value that the point should be rendered at within the series.
+     * @param high  The "high" Y value that the point should be rendered at within the series.
+     * @param low   The "low" Y value that the point should be rendered at within the series.
+     * @param close The "close" Y value that the point should be rendered at within the series.
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.2.0
+     */
+    public Series addPoint(Number x, Number open, Number high, Number low, Number close) {
+        return this.addPoint(new Point(x, open, high, low, close));
+    }
+
+    /**
      * Add a point to the series with a specific value on the X and Y axis, controlling the
      * options on how the change will be drawn to the series.
      *
@@ -407,6 +425,30 @@ public class Series extends Configurable<Series> {
      */
     public Series addPoint(Number x, Number y, boolean redraw, boolean shift, Animation animation) {
         return this.addPoint(new Point(x, y), redraw, shift, animation);
+    }
+
+    /**
+     * Add a point to the series with a specific value on the X and Y axis (in OHLC format), controlling the
+     * options on how the change will be drawn to the series.
+     *
+     * @param x         The value on the X axis that the point should be drawn at within the series.
+     * @param open      The "open" Y value that the point should be rendered at within the series.
+     * @param high      The "high" Y value that the point should be rendered at within the series.
+     * @param low       The "low" Y value that the point should be rendered at within the series.
+     * @param close     The "close" Y value that the point should be rendered at within the series.
+     * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
+     *                  point, it is highly recommended that the redraw option be set to false, and instead
+     *                  {@link Chart#redraw()} is explicitly called
+     *                  after the adding of points is finished.
+     * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
+     *                  series as one is appended to the end. Use this option for live charts monitoring
+     *                  a value over time.
+     * @param animation The custom animation to use when adding the point to the series.
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.2.0
+     */
+    public Series addPoint(Number x, Number open, Number high, Number low, Number close, boolean redraw, boolean shift, Animation animation) {
+        return this.addPoint(new Point(x, open, high, low, close), redraw, shift, animation);
     }
 
     /**
@@ -456,6 +498,15 @@ public class Series extends Configurable<Series> {
      * @return A reference to this {@link Series} instance for convenient method chaining.
      */
     public Series addPoint(Point point, boolean redraw, boolean shift, Animation animation) {
+
+        // If we haven't been rendered, then just store the point in ourselves for now. Or,
+        // if persistence is enabled than we need to store the point locally as well (so we have it if
+        // the chart is dynamically moved to another panel).
+        if (!isRendered() || chart.isPersistent()) {
+            // If we haven't been rendered, then just store the point in ourselves for now.
+            points.add(point);
+        }
+
         if (isRendered()) {
             // We'll store the point directly in the DOM if we've already been rendered
             final JavaScriptObject nativeSeries = chart.get(this.id);
@@ -475,11 +526,7 @@ public class Series extends Configurable<Series> {
                         nativeAddPoint(nativeSeries, convertPointToJavaScriptObject(point), redraw, shift, animationOptions);
                     }
                 }
-
             }
-        } else {
-            // If we haven't been rendered, then store the point in ourselves for now
-            points.add(point);
         }
         return this;
     }
@@ -516,6 +563,15 @@ public class Series extends Configurable<Series> {
      */
     public Series setPoints(Number[] yValues, boolean redraw) {
         this.points.clear();
+
+        // If persistence is enabled than we need to store the point locally as well (so we have it if
+        // the chart is dynamically moved to another panel).
+        if (!isRendered() || chart.isPersistent()) {
+            for (Number yValue : yValues) {
+                this.addPoint(yValue);
+            }
+        }
+
         if (isRendered()) {
             final JavaScriptObject nativeSeries = chart.get(this.id);
             if (nativeSeries != null) {
@@ -525,11 +581,8 @@ public class Series extends Configurable<Series> {
                 }
                 nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
             }
-        } else {
-            for (Number yValue : yValues) {
-                this.addPoint(yValue);
-            }
         }
+
         return this;
     }
 
@@ -560,6 +613,20 @@ public class Series extends Configurable<Series> {
      */
     public Series setPoints(Number[][] values, boolean redraw) {
         this.points.clear();
+
+        // If persistence is enabled than we need to store the point locally as well (so we have it if
+        // the chart is dynamically moved to another panel).
+        if (!isRendered() || chart.isPersistent()) {
+            for (Number[] xyValue : values) {
+                if (xyValue.length == 5) {
+                    // For OHLC charts
+                    this.addPoint(xyValue[0], xyValue[1], xyValue[2], xyValue[3], xyValue[4]);
+                } else {
+                    this.addPoint(xyValue[0], xyValue[1]);
+                }
+            }
+        }
+
         if (isRendered()) {
             final JavaScriptObject nativeSeries = chart.get(this.id);
             if (nativeSeries != null) {
@@ -567,7 +634,16 @@ public class Series extends Configurable<Series> {
                 for (int i = 0, pointsLength = values.length; i < pointsLength; i++) {
                     Number[] point = values[i];
                     JSONValue jsonValue;
-                    if (point.length > 1) {
+                    if (point.length == 5) {
+                        // For OHLC charts
+                        JSONArray pointArray = new JSONArray();
+                        pointArray.set(0, new JSONNumber(point[0].doubleValue()));
+                        pointArray.set(1, new JSONNumber(point[1].doubleValue()));
+                        pointArray.set(2, new JSONNumber(point[2].doubleValue()));
+                        pointArray.set(3, new JSONNumber(point[3].doubleValue()));
+                        pointArray.set(4, new JSONNumber(point[4].doubleValue()));
+                        jsonValue = pointArray;
+                    } else if (point.length > 1) {
                         JSONArray pointArray = new JSONArray();
                         pointArray.set(0, new JSONNumber(point[0].doubleValue()));
                         pointArray.set(1, new JSONNumber(point[1].doubleValue()));
@@ -579,11 +655,8 @@ public class Series extends Configurable<Series> {
                 }
                 nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
             }
-        } else {
-            for (Number[] xyValue : values) {
-                this.addPoint(xyValue[0], xyValue[1]);
-            }
         }
+
         return this;
     }
 
@@ -608,6 +681,13 @@ public class Series extends Configurable<Series> {
      */
     public Series setPoints(Point[] points, boolean redraw) {
         this.points.clear();
+
+        // If persistence is enabled than we need to store the point locally as well (so we have it if
+        // the chart is dynamically moved to another panel).
+        if (!isRendered() || chart.isPersistent()) {
+            Collections.addAll(this.points, points);
+        }
+
         if (isRendered()) {
             final JavaScriptObject nativeSeries = chart.get(this.id);
             if (nativeSeries != null) {
@@ -617,9 +697,8 @@ public class Series extends Configurable<Series> {
                 }
                 nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
             }
-        } else {
-            Collections.addAll(this.points, points);
         }
+
         return this;
     }
 
@@ -645,7 +724,7 @@ public class Series extends Configurable<Series> {
                 }
             }
         }
-        return convertedPoints.toArray(new Point[points.size()]);
+        return convertedPoints.toArray(new Point[convertedPoints.size()]);
     }
 
     /**
@@ -741,7 +820,9 @@ public class Series extends Configurable<Series> {
 
     // Purposefully setting to package scope
     void clearInternalPointsList() {
-        this.points.clear();
+        if (!chart.isPersistent()) {
+            this.points.clear();
+        }
     }
 
     boolean rendered = false;

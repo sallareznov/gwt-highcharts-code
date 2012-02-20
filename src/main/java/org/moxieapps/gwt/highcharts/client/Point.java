@@ -62,6 +62,10 @@ public class Point extends Configurable<Point> {
 
     private Number y;
     private Number x;
+    private Number open;
+    private Number high;
+    private Number low;
+    private Number close;
 
     /**
      * Create a new point, setting only the Y axis value that the point should be
@@ -83,6 +87,24 @@ public class Point extends Configurable<Point> {
     public Point(Number x, Number y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Create a new point for an OHLC chart, setting the x and all four OHLC values.
+     *
+     * @param x The X value that the point should be rendered at within the series.
+     * @param open The "open" Y value that the point should be rendered at within the series.
+     * @param high The "high" Y value that the point should be rendered at within the series.
+     * @param low The "low" Y value that the point should be rendered at within the series.
+     * @param close The "close" Y value that the point should be rendered at within the series.
+     * @since 1.2.0
+     */
+    public Point(Number x, Number open, Number high, Number low, Number close) {
+        this.x = x;
+        this.open = open;
+        this.high = high;
+        this.low = low;
+        this.close = close;
     }
 
     /**
@@ -133,6 +155,62 @@ public class Point extends Configurable<Point> {
             return nativeGetNumber(this.nativePoint, "x");
         } else {
             return x;
+        }
+    }
+
+    /**
+     * For OHLC charts, return the "open" value of the data point
+     *
+     * @return The "open" value of the point, or null if no open value was set.
+     * @since 1.2.0
+     */
+    public Number getOpen() {
+        if (this.nativePoint != null) {
+            return nativeGetNumber(this.nativePoint, "open");
+        } else {
+            return open;
+        }
+    }
+
+    /**
+     * For OHLC charts, return the "high" value of the data point
+     *
+     * @return The "high" value of the point, or null if no high value was set.
+     * @since 1.2.0
+     */
+    public Number getHigh() {
+        if (this.nativePoint != null) {
+            return nativeGetNumber(this.nativePoint, "high");
+        } else {
+            return high;
+        }
+    }
+
+    /**
+     * For OHLC charts, return the "low" value of the data point
+     *
+     * @return The "low" value of the point, or null if no low value was set.
+     * @since 1.2.0
+     */
+    public Number getLow() {
+        if (this.nativePoint != null) {
+            return nativeGetNumber(this.nativePoint, "low");
+        } else {
+            return low;
+        }
+    }
+
+    /**
+     * For OHLC charts, return the "close" value of the data point
+     *
+     * @return The "close" value of the point, or null if no close value was set.
+     * @since 1.2.0
+     */
+    public Number getClose() {
+        if (this.nativePoint != null) {
+            return nativeGetNumber(this.nativePoint, "close");
+        } else {
+            return close;
         }
     }
 
@@ -613,6 +691,10 @@ public class Point extends Configurable<Point> {
         } else {
             this.x = pointOptions.x;
             this.y = pointOptions.y;
+            this.open = pointOptions.open;
+            this.high = pointOptions.high;
+            this.low = pointOptions.low;
+            this.close = pointOptions.close;
             this.name = pointOptions.name;
             this.selected = pointOptions.selected;
             this.sliced = pointOptions.sliced;
