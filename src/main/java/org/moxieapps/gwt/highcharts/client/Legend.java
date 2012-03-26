@@ -16,6 +16,8 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import org.moxieapps.gwt.highcharts.client.labels.LegendLabelsFormatter;
+
 /**
  * A configurable class that can be used to represent custom legend options for the
  * chart, which can then be set on the chart (via the {@link Chart#setLegend(Legend)} method.)
@@ -317,7 +319,35 @@ public class Legend extends Configurable<Legend> {
         return this.setOption("layout", layout != null ? layout.toString() : null);
     }
 
-    // TODO: Add label formatter
+    private LegendLabelsFormatter legendLabelsFormatter;
+
+    /**
+     * Sets a custom formatter for the labels that can be used to control how the text of the
+     * legend labels will be displayed.  See the {@link LegendLabelsFormatter} interface, and
+     * in particular the {@link LegendLabelsFormatter#format(org.moxieapps.gwt.highcharts.client.labels.LegendLabelsData)}
+     * method for more details on the capabilities available to custom legend formatters.
+     *
+     * @param legendLabelsFormatter The custom formatter to use for the labels (if not given a built-in
+     *                            generic formatter is used which simply returns the name of the series
+     *                            or, for pie charts, the name of the point).
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public Legend setLabelsFormatter(LegendLabelsFormatter legendLabelsFormatter) {
+        this.legendLabelsFormatter = legendLabelsFormatter;
+        return this;
+    }
+
+    /**
+     * Returns the custom labels formatter that has been applied to the legend, or null if the
+     * built-in generic formatter is being used instead.
+     *
+     * @return The custom data labels formatter that has been applied, or null if it has not been set.
+     * @since 1.3.0
+     */
+    public LegendLabelsFormatter getLabelsFormatter() {
+        return this.legendLabelsFormatter;
+    }
 
     /**
      * Convenience method for setting the 'margin' option of the legend.  Equivalent to:

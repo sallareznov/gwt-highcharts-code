@@ -26,6 +26,96 @@ package org.moxieapps.gwt.highcharts.client.labels;
  */
 public abstract class BaseDataLabels<T extends BaseDataLabels> extends Labels<T> {
 
+    /**
+     * Convenience method for setting the 'backgroundColor' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("backgroundColor", "#CC0000");
+     * </code></pre>
+     * The background color or gradient for the data label. Defaults to undefined.
+     *
+     * @param backgroundColor The background color or gradient for the data label.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setBackgroundColor(String backgroundColor) {
+        return this.setOption("backgroundColor", backgroundColor);
+    }
+
+    /**
+     * Convenience method for setting the 'borderColor' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("borderColor", "#CC0000");
+     * </code></pre>
+     * The border color for the data label. Defaults to undefined.
+     *
+     * @param borderColor The border color for the data label.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setBorderColor(String borderColor) {
+        return this.setOption("borderColor", borderColor);
+    }
+
+    /**
+     * Convenience method for setting the 'borderRadius' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("borderRadius", 3);
+     * </code></pre>
+     * The border radius in pixels for the data label. Defaults to 0.
+     *
+     * @param borderRadius The border radius in pixels for the data label.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setBorderRadius(Number borderRadius) {
+        return this.setOption("borderRadius", borderRadius);
+    }
+
+    /**
+     * Convenience method for setting the 'borderWidth' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("borderWidth", 3);
+     * </code></pre>
+     * The border width in pixels for the data label. Defaults to 0.
+     *
+     * @param borderWidth The border width in pixels for the data label.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setBorderWidth(Number borderWidth) {
+        return this.setOption("borderWidth", borderWidth);
+    }
+
+    /**
+     * Convenience method for setting the 'padding' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("padding", 3);
+     * </code></pre>
+     * When either the borderWidth or the backgroundColor is set, this is the padding within the box. Defaults to 2.
+     *
+     * @param padding The padding within the box (only visible when 'borderWidth' is non-zero).
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setPadding(Number padding) {
+        return this.setOption("padding", padding);
+    }
+
+    /**
+     * Convenience method for setting the 'shadow' option for the data labels.  Equivalent to:
+     * <pre><code>
+     *     labels.setOption("shadow", true);
+     * </code></pre>
+     * The shadow of the box. Works best with borderWidth or backgroundColor Defaults to false.
+     *
+     * @param shadow 'true' to disable a shadow around the box.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public T setShadow(boolean shadow) {
+        return this.setOption("shadow", shadow);
+    }
+
     private DataLabelsFormatter dataLabelsFormatter;
 
     /**

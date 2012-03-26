@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.moxieapps.gwt.highcharts.client.events.*;
 import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.DataLabelsData;
+import org.moxieapps.gwt.highcharts.client.labels.LegendLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.StackLabelsData;
 import org.moxieapps.gwt.highcharts.client.plotOptions.*;
 
@@ -485,6 +486,9 @@ public abstract class BaseChart<T> extends Widget {
         return this.setOption("/labels/style", style != null ? style.getOptions() : null);
     }
 
+    // We need to maintain a local reference to legend to deal with the formatter function
+    private Legend legend;
+
     /**
      * Convenience method for setting the 'legend' options of the chart.  Equivalent to:
      * <pre><code>
@@ -498,6 +502,7 @@ public abstract class BaseChart<T> extends Widget {
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
     public T setLegend(Legend legend) {
+        this.legend = legend;
         return this.setOption("/legend", legend != null ? legend.getOptions() : null);
     }
 
@@ -1415,8 +1420,8 @@ public abstract class BaseChart<T> extends Widget {
      * @param persistent 'true' to retain the data associated with the points in the series in the chart locally
      *                   within a GWT managed Java array (as well as within the DOM via the core Highcharts JS library).
      *                   Defaults to 'false' for memory savings.
-     * @since 1.2.0
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.2.0
      */
     public T setPersistent(boolean persistent) {
         this.persistent = persistent;
@@ -1708,7 +1713,7 @@ public abstract class BaseChart<T> extends Widget {
         }
         return returnThis();
     }
-
+    
     // Purposefully using a specific type instead of the generic List interface for enhanced GWT performance
     private ArrayList<XAxis> xAxes = new ArrayList<XAxis>();
     private ArrayList<YAxis> yAxes = new ArrayList<YAxis>();
@@ -1770,6 +1775,30 @@ public abstract class BaseChart<T> extends Widget {
         }
         return yAxes.get(axisIndex);
     }
+    
+    /**
+     * Get a axis by id
+     * @param axisId the id of the Axis
+     * @return the Axis instance, may be XAxis or YAxis, null if not found
+     */
+    private Axis<?> getAxis(String axisId) {
+        if (axisId == null) {
+            return null;
+        }
+        for (XAxis xAxis : xAxes) {
+            if (axisId.equals(xAxis.getId())) {
+                return xAxis;
+            }
+        }
+        
+        for (YAxis yAxis : yAxes) {
+            if (axisId.equals(yAxis.getId())) {
+                return yAxis;
+            }
+        }
+        
+        return null;
+    }
 
     /**
      * Redraw the chart after changes have been done to the data or axis extremes. All methods for
@@ -1807,18 +1836,28 @@ public abstract class BaseChart<T> extends Widget {
     protected void onLoad() {
 
         // Build some arrays that we can pass into the JS function so that it knows how many custom callback functions it needs to wire
-        // up on the client side for formatter functions.
+        // up on the client side for formatter functions and event handlers.
         JSONArray xAxisLabelFormatters = new JSONArray();
+        JSONArray xAxisEventHandlers = new JSONArray();
         for (int i = 0, xAxesSize = xAxes.size(); i < xAxesSize; i++) {
             XAxis xAxis = xAxes.get(i);
             xAxisLabelFormatters.set(i, JSONBoolean.getInstance(xAxis.getLabels() != null && xAxis.getLabels().getFormatter() != null));
+            
+            JSONObject axisEventHandlers = new JSONObject();
+            axisEventHandlers.put("setExtremes", JSONBoolean.getInstance(xAxis.getAxisSetExtremesEventHandler() != null));
+            xAxisEventHandlers.set(i, axisEventHandlers);
         }
         JSONArray yAxisLabelFormatters = new JSONArray();
         JSONArray yAxisStackLabelFormatters = new JSONArray();
+        JSONArray yAxisEventHandlers = new JSONArray();
         for (int i = 0, yAxesSize = yAxes.size(); i < yAxesSize; i++) {
             YAxis yAxis = yAxes.get(i);
             yAxisLabelFormatters.set(i, JSONBoolean.getInstance(yAxis.getLabels() != null && yAxis.getLabels().getFormatter() != null));
             yAxisStackLabelFormatters.set(i, JSONBoolean.getInstance(yAxis.getStackLabels() != null && yAxis.getStackLabels().getFormatter() != null));
+                        
+            JSONObject axisEventHandlers = new JSONObject();
+            axisEventHandlers.put("setExtremes", JSONBoolean.getInstance(yAxis.getAxisSetExtremesEventHandler() != null));
+            yAxisEventHandlers.set(i, axisEventHandlers);
         }
 
         // Build a similar object for dealing with all of the data label formatters that may be set on the plot options
@@ -1850,7 +1889,7 @@ public abstract class BaseChart<T> extends Widget {
         // And two more for events that have been applied to the series (or the points within the series)
         JSONObject seriesEventHandlers = new JSONObject();
         JSONObject pointEventHandlers = new JSONObject();
-
+        
         if (seriesPlotOptions != null) {
 
             // Series event
@@ -1911,9 +1950,12 @@ public abstract class BaseChart<T> extends Widget {
             getChartTypeName(),
             createNativeOptions(),
             toolTip != null && toolTip.getToolTipFormatter() != null,
+            legend != null && legend.getLabelsFormatter() != null,
             chartEventHandlers.getJavaScriptObject(),
             seriesEventHandlers.getJavaScriptObject(),
             pointEventHandlers.getJavaScriptObject(),
+            xAxisEventHandlers.getJavaScriptObject(),
+            yAxisEventHandlers.getJavaScriptObject(),
             xAxisLabelFormatters.getJavaScriptObject(),
             yAxisLabelFormatters.getJavaScriptObject(),
             yAxisStackLabelFormatters.getJavaScriptObject(),
@@ -2047,7 +2089,7 @@ public abstract class BaseChart<T> extends Widget {
         return JSONNull.getInstance();
     }
 
-    private static void copyPointsToJSONArray(Point[] points, JSONArray jsonArray) {
+    private void copyPointsToJSONArray(Point[] points, JSONArray jsonArray) {
         for (int i = 0, pointsLength = points.length; i < pointsLength; i++) {
             final Point point = points[i];
             jsonArray.set(i, convertPointToJSON(point));
@@ -2055,10 +2097,20 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     // Purposefully package scope so we can get to this method from the Series and Point classes as well
-    static JSONValue convertPointToJSON(Point point) {
-        final JSONObject options = point.getOptions();
+    JSONValue convertPointToJSON(Point point) {
+        JSONObject options = point.getOptions();
         if (options != null) {
-            return addPointScalarValues(point, options);
+            addPointScalarValues(point, options);
+            return addPointId(point, options);
+        } else if(point.hasNativeProperties()) {
+            options = new JSONObject();
+            addPointScalarValues(point, options);
+            addPointId(point, options);
+            return Point.addPointNativeProperties(point, options);
+        } else if(isPersistent()) {
+            options = new JSONObject();
+            addPointScalarValues(point, options);
+            return addPointId(point, options);
         } else if (point.getX() != null) {
             JSONArray jsonArray = new JSONArray();
             jsonArray.set(0, new JSONNumber(point.getX().doubleValue()));
@@ -2080,6 +2132,19 @@ public abstract class BaseChart<T> extends Widget {
         } else {
             return JSONNull.getInstance();
         }
+    }
+
+    // Purposefully package scope
+    JSONValue addPointId(Point point, JSONObject options) {
+        if (isPersistent()) {
+            String id = point.getId();
+            if(id == null) {
+                id = Document.get().createUniqueId();
+                point.setId(id);
+            }
+            options.put("id", new JSONString(id));
+        }
+        return options;
     }
 
     // Purposefully package scope
@@ -2119,9 +2184,12 @@ public abstract class BaseChart<T> extends Widget {
     private native JavaScriptObject nativeRenderChart(String chartTypeName,
                                                       JavaScriptObject options,
                                                       boolean toolTipFormatterFlag,
+                                                      boolean legendLabelsFormatterFlag,
                                                       JavaScriptObject chartEventHandlerFlags,
                                                       JavaScriptObject seriesEventHandlerFlags,
                                                       JavaScriptObject pointEventHandlerFlags,
+                                                      JavaScriptObject xAxisEventHandlerFlags,
+                                                      JavaScriptObject yAxisEventHandlerFlags,
                                                       JavaScriptObject xAxisLabelFormatterFlags,
                                                       JavaScriptObject yAxisLabelFormatterFlags,
                                                       JavaScriptObject yAxisStackLabelFormatterFlags,
@@ -2167,6 +2235,32 @@ public abstract class BaseChart<T> extends Widget {
                 options.plotOptions.series.point.events[type3].type = type3;
             }
         }
+        
+        // Add in GWT interceptor callback functions for the various X axis event handlers
+        for (i = 0; i < xAxisEventHandlerFlags.length; i++) {
+            if (!xAxisEventHandlerFlags[i]) continue;
+            var xAxisA = xAxisEventHandlerFlags.length == 1 ? options.xAxis : options.xAxis[i];
+            xAxisA.events = xAxisA.events || {};
+            for (var type4 in xAxisEventHandlerFlags[i]) {
+                xAxisA.events[type4] = function(e) {
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::axisEventCallback(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this.options.id, e, arguments.callee.type);
+                };
+                xAxisA.events[type4].type = type4;
+            }
+        }
+        
+        // Add in GWT interceptor callback functions for the various Y axis event handlers
+        for (i = 0; i < yAxisEventHandlerFlags.length; i++) {
+            if (!yAxisEventHandlerFlags[i]) continue;
+            var yAxisA = yAxisEventHandlerFlags.length == 1 ? options.yAxis : options.yAxis[i];
+            yAxisA.events = yAxisA.events || {};
+            for (var type5 in yAxisEventHandlerFlags[i]) {
+                yAxisA.events[type5] = function(e) {
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::axisEventCallback(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this.options.id, e, arguments.callee.type);
+                };
+                yAxisA.events[type5].type = type5;
+            }
+        }
 
         // Add in GWT interceptor callback functions for the various formatters so that we can move from
         // the native JS world back to the Java world...
@@ -2180,47 +2274,57 @@ public abstract class BaseChart<T> extends Widget {
                 return result;
             };
         }
+        if (legendLabelsFormatterFlag) {
+            options.legend = options.legend || {};
+            options.legend.labelFormatter = function() {
+                var result = self.@org.moxieapps.gwt.highcharts.client.BaseChart::legendLabelsFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;)(this);
+                if (result == null) {
+                    return false;
+                }
+                return result;
+            };
+        }
 
         // X axis label formatters
         for (i = 0; i < xAxisLabelFormatterFlags.length; i++) {
             if (!xAxisLabelFormatterFlags[i]) continue;
-            var xAxis = xAxisLabelFormatterFlags.length == 1 ? options.xAxis : options.xAxis[i];
-            xAxis.labels = xAxis.labels || {};
-            xAxis.labels.formatter = function() {
+            var xAxisB = xAxisLabelFormatterFlags.length == 1 ? options.xAxis : options.xAxis[i];
+            xAxisB.labels = xAxisB.labels || {};
+            xAxisB.labels.formatter = function() {
                 return self.@org.moxieapps.gwt.highcharts.client.BaseChart::xAxisLabelFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;I)(this, arguments.callee.index);
             };
-            xAxis.labels.formatter.index = i;
+            xAxisB.labels.formatter.index = i;
         }
 
         // Y axis label formatters
         for (i = 0; i < yAxisLabelFormatterFlags.length && i < yAxisStackLabelFormatterFlags.length; i++) {
-            var yAxis = yAxisLabelFormatterFlags.length == 1 ? options.yAxis : options.yAxis[i];
+            var yAxisB = yAxisLabelFormatterFlags.length == 1 ? options.yAxis : options.yAxis[i];
             if (yAxisLabelFormatterFlags[i]) {
-                yAxis.labels = yAxis.labels || {};
-                yAxis.labels.formatter = function() {
+                yAxisB.labels = yAxisB.labels || {};
+                yAxisB.labels.formatter = function() {
                     return self.@org.moxieapps.gwt.highcharts.client.BaseChart::yAxisLabelFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;I)(this, arguments.callee.index);
                 };
-                yAxis.labels.formatter.index = i;
+                yAxisB.labels.formatter.index = i;
             }
             if (yAxisStackLabelFormatterFlags[i]) {
-                yAxis.stackLabels = yAxis.stackLabels || {};
-                yAxis.stackLabels.formatter = function() {
+                yAxisB.stackLabels = yAxisB.stackLabels || {};
+                yAxisB.stackLabels.formatter = function() {
                     return self.@org.moxieapps.gwt.highcharts.client.BaseChart::yAxisStackLabelFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;I)(this, arguments.callee.index);
                 };
-                yAxis.stackLabels.formatter.index = i;
+                yAxisB.stackLabels.formatter.index = i;
             }
         }
 
         // Plot options data label formatters
-        for (var type4 in plotOptionsLabelsFormatterFlags) {
-            if (type4.indexOf("gwt") < 0 && plotOptionsLabelsFormatterFlags[type4]) {
+        for (var type6 in plotOptionsLabelsFormatterFlags) {
+            if (type6.indexOf("gwt") < 0 && plotOptionsLabelsFormatterFlags[type6]) {
                 options.plotOptions = options.plotOptions || {};
-                options.plotOptions[type4] = options.plotOptions[type4] || {};
-                options.plotOptions[type4].dataLabels = options.plotOptions[type4].dataLabels || {};
-                options.plotOptions[type4].dataLabels.formatter = function() {
+                options.plotOptions[type6] = options.plotOptions[type6] || {};
+                options.plotOptions[type6].dataLabels = options.plotOptions[type6].dataLabels || {};
+                options.plotOptions[type6].dataLabels.formatter = function() {
                     return self.@org.moxieapps.gwt.highcharts.client.BaseChart::plotOptionsLabelsFormatterCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, arguments.callee.type);
                 };
-                options.plotOptions[type4].dataLabels.formatter.type = type4;
+                options.plotOptions[type6].dataLabels.formatter.type = type6;
             }
         }
 
@@ -2294,6 +2398,16 @@ public abstract class BaseChart<T> extends Widget {
         }
         return true;
     }
+    
+    @SuppressWarnings({"UnusedDeclaration"})
+    private boolean axisEventCallback(String axisId, JavaScriptObject nativeEvent, String eventType) {
+        Axis<?> axis = getAxis(axisId);
+        //noinspection SimplifiableIfStatement
+        if ("setExtremes".equals(eventType) && axis != null && axis.getAxisSetExtremesEventHandler() != null) {
+            return axis.getAxisSetExtremesEventHandler().onSetExtremes(new AxisSetExtremesEvent(nativeEvent, axis));
+        }
+        return true;
+    }
 
     @SuppressWarnings({"UnusedDeclaration"})
     private String toolTipFormatterCallback(JavaScriptObject nativeData) {
@@ -2301,6 +2415,14 @@ public abstract class BaseChart<T> extends Widget {
             return null;
         }
         return toolTip.getToolTipFormatter().format(new ToolTipData(nativeData));
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    private String legendLabelsFormatterCallback(JavaScriptObject nativeData) {
+        if (legend == null || legend.getLabelsFormatter() == null) {
+            return null;
+        }
+        return legend.getLabelsFormatter().format(new LegendLabelsData(nativeData));
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

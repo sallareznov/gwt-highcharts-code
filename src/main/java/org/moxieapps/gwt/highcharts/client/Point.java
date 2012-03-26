@@ -18,6 +18,8 @@ package org.moxieapps.gwt.highcharts.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 
 /**
@@ -92,10 +94,10 @@ public class Point extends Configurable<Point> {
     /**
      * Create a new point for an OHLC chart, setting the x and all four OHLC values.
      *
-     * @param x The X value that the point should be rendered at within the series.
-     * @param open The "open" Y value that the point should be rendered at within the series.
-     * @param high The "high" Y value that the point should be rendered at within the series.
-     * @param low The "low" Y value that the point should be rendered at within the series.
+     * @param x     The X value that the point should be rendered at within the series.
+     * @param open  The "open" Y value that the point should be rendered at within the series.
+     * @param high  The "high" Y value that the point should be rendered at within the series.
+     * @param low   The "low" Y value that the point should be rendered at within the series.
      * @param close The "close" Y value that the point should be rendered at within the series.
      * @since 1.2.0
      */
@@ -138,7 +140,7 @@ public class Point extends Configurable<Point> {
      * @return The Y value of the point (should always be non null).
      */
     public Number getY() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "y")) {
             return nativeGetNumber(this.nativePoint, "y");
         } else {
             return y;
@@ -151,7 +153,7 @@ public class Point extends Configurable<Point> {
      * @return The X value of the point, or null if no X value was set.
      */
     public Number getX() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "x")) {
             return nativeGetNumber(this.nativePoint, "x");
         } else {
             return x;
@@ -165,7 +167,7 @@ public class Point extends Configurable<Point> {
      * @since 1.2.0
      */
     public Number getOpen() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "open")) {
             return nativeGetNumber(this.nativePoint, "open");
         } else {
             return open;
@@ -179,7 +181,7 @@ public class Point extends Configurable<Point> {
      * @since 1.2.0
      */
     public Number getHigh() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "high")) {
             return nativeGetNumber(this.nativePoint, "high");
         } else {
             return high;
@@ -193,7 +195,7 @@ public class Point extends Configurable<Point> {
      * @since 1.2.0
      */
     public Number getLow() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "low")) {
             return nativeGetNumber(this.nativePoint, "low");
         } else {
             return low;
@@ -207,7 +209,7 @@ public class Point extends Configurable<Point> {
      * @since 1.2.0
      */
     public Number getClose() {
-        if (this.nativePoint != null) {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "close")) {
             return nativeGetNumber(this.nativePoint, "close");
         } else {
             return close;
@@ -350,11 +352,11 @@ public class Point extends Configurable<Point> {
      * @since 1.1.0
      */
     public JSONObject getUserData() {
-        if(nativePoint != null) {
+        if (nativePoint != null) {
             JavaScriptObject nativeUserData = nativeGetUserData(nativePoint);
             return nativeUserData != null ? new JSONObject(nativeUserData) : null;
         } else {
-            return this.getOptions() != null ? (JSONObject)this.getOptions().get("userData") : null;
+            return this.getOptions() != null ? (JSONObject) this.getOptions().get("userData") : null;
         }
     }
 
@@ -363,7 +365,10 @@ public class Point extends Configurable<Point> {
      * animation options. <p/>
      * Note that this method is only relevant on Point instance that are obtained from the chart
      * after it has been rendered, such as via an event or dynamically retrieving the points of
-     * a series.
+     * a series.<p/>
+     * Also note that when using persistent chart's, you'll normally want to use the
+     * {@link Series#removePoint(Point)} method instead of this one.
+     *
      *
      * @return A reference to this {@link Point} instance for convenient method chaining.
      * @since 1.1.0
@@ -377,7 +382,9 @@ public class Point extends Configurable<Point> {
      * and/or animated or not. <p/>
      * Note that this method is only relevant on Point instance that are obtained from the chart
      * after it has been rendered, such as via an event or dynamically retrieving the points of
-     * a series.
+     * a series.<p/>
+     * Also note that when using persistent chart's, you'll normally want to use the
+     * {@link Series#removePoint(Point, boolean, boolean)} method instead of this one.
      *
      * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
@@ -397,7 +404,9 @@ public class Point extends Configurable<Point> {
      * and the details of the animation options. <p/>
      * Note that this method is only relevant on Point instance that are obtained from the chart
      * after it has been rendered, such as via an event or dynamically retrieving the points of
-     * a series.
+     * a series.<p/>
+     * Also note that when using persistent chart's, you'll normally want to use the
+     * {@link Series#removePoint(Point, boolean, Animation)}  method instead of this one.
      *
      * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
@@ -669,23 +678,23 @@ public class Point extends Configurable<Point> {
         if (this.nativePoint != null) {
             if (animation == null || animation.getOptions() == null) {
                 if (pointOptions.isSingleValue()) {
-                    if(pointOptions.getY() == null) {
+                    if (pointOptions.getY() == null) {
                         nativeUpdateToNull(this.nativePoint, redraw, animation != null);
                     } else {
                         nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation != null);
                     }
                 } else {
-                    nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation != null);
+                    nativeUpdate(this.nativePoint, convertPointToJavaScriptObject(pointOptions), redraw, animation != null);
                 }
             } else {
                 if (pointOptions.isSingleValue()) {
-                    if(pointOptions.getY() == null) {
+                    if (pointOptions.getY() == null) {
                         nativeUpdateToNull(this.nativePoint, redraw, animation.getOptions().getJavaScriptObject());
                     } else {
                         nativeUpdate(this.nativePoint, pointOptions.getY().doubleValue(), redraw, animation.getOptions().getJavaScriptObject());
                     }
                 } else {
-                    nativeUpdate(this.nativePoint, Series.convertPointToJavaScriptObject(pointOptions), redraw, animation.getOptions().getJavaScriptObject());
+                    nativeUpdate(this.nativePoint, convertPointToJavaScriptObject(pointOptions), redraw, animation.getOptions().getJavaScriptObject());
                 }
             }
         } else {
@@ -709,6 +718,52 @@ public class Point extends Configurable<Point> {
     boolean isSingleValue() {
         return this.getOptions() == null && this.getX() == null;
     }
+
+    // Purposefully package scope
+    boolean hasNativeProperties() {
+        return this.nativePoint != null && (nativeContainsKey(this.nativePoint, "name") || nativeContainsKey(this.nativePoint, "userData"));
+    }
+
+    // Purposefully package scope
+    static JSONValue addPointNativeProperties(Point point, JSONObject options) {
+        if (options.get("name") == null && nativeContainsKey(point.nativePoint, "name")) {
+            options.put("name", new JSONString(point.getName()));
+        }
+        if (options.get("userData") == null && nativeContainsKey(point.nativePoint, "userData")) {
+            options.put("userData", point.getUserData());
+        }
+        return options;
+    }
+
+    // Only needed and used when handling removing of points from charts that have been set in "persistent" mode
+    private String id;
+
+    // Internal method purposefully package scope
+    void setId(String id) {
+        this.id = id;
+    }
+
+    // Internal method purposefully package scope
+    String getId() {
+        if(this.nativePoint != null) {
+            return nativeGetString(this.nativePoint, "id");
+        } else {
+            return this.id;
+        }
+    }
+
+    private static JavaScriptObject convertPointToJavaScriptObject(Point point) {
+        final JSONObject options = point.getOptions() != null ? point.getOptions() : new JSONObject();
+        Chart.addPointScalarValues(point, options);
+        if(point.hasNativeProperties()) {
+            Point.addPointNativeProperties(point, options);
+        }
+        return options.getJavaScriptObject();
+    }
+
+    private static native boolean nativeContainsKey(JavaScriptObject point, String key) /*-{
+        return point[key] != undefined;
+    }-*/;
 
     private static native double nativeGetNumber(JavaScriptObject point, String key) /*-{
         return point[key];

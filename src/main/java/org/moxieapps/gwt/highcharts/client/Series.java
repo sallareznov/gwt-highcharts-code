@@ -27,6 +27,7 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Manages a data series (and its options) that can then be added to a {@link Chart}.  As an extension
@@ -513,14 +514,14 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 if (animation == null || animation.getOptions() == null) {
                     final boolean animationFlag = animation != null;
-                    if (point.isSingleValue()) {
+                    if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
                         nativeAddPoint(nativeSeries, point.getY(), redraw, shift, animationFlag);
                     } else {
                         nativeAddPoint(nativeSeries, convertPointToJavaScriptObject(point), redraw, shift, animationFlag);
                     }
                 } else {
                     final JavaScriptObject animationOptions = animation.getOptions().getJavaScriptObject();
-                    if (point.isSingleValue()) {
+                    if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
                         nativeAddPoint(nativeSeries, point.getY(), redraw, shift, animationOptions);
                     } else {
                         nativeAddPoint(nativeSeries, convertPointToJavaScriptObject(point), redraw, shift, animationOptions);
@@ -531,10 +532,15 @@ public class Series extends Configurable<Series> {
         return this;
     }
 
-    // Purposefully friendly scope so that we can get to this method from the Point class as well
-    static JavaScriptObject convertPointToJavaScriptObject(Point point) {
+    private JavaScriptObject convertPointToJavaScriptObject(Point point) {
         final JSONObject options = point.getOptions() != null ? point.getOptions() : new JSONObject();
         Chart.addPointScalarValues(point, options);
+        if(point.hasNativeProperties()) {
+            Point.addPointNativeProperties(point, options);
+        }
+        if(chart != null) {
+            chart.addPointId(point, options);
+        }
         return options.getJavaScriptObject();
     }
 
@@ -693,7 +699,7 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0, pointsLength = points.length; i < pointsLength; i++) {
-                    jsonArray.set(i, Chart.convertPointToJSON(points[i]));
+                    jsonArray.set(i, chart.convertPointToJSON(points[i]));
                 }
                 nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
             }
@@ -725,6 +731,91 @@ public class Series extends Configurable<Series> {
             }
         }
         return convertedPoints.toArray(new Point[convertedPoints.size()]);
+    }
+
+    /**
+     * Remove the point from the series, automatically redrawing the chart using the default
+     * animation options. <p/>
+     * Note that this method is only relevant given Point instances that are obtained from the chart
+     * after it has been rendered, such as via an event or dynamically retrieving the points of
+     * a series.<p/>
+     * Also note that this method is primarily intended to ensure compatibility with chart's
+     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * If you're using non-persistent charts, you can instead simply use the
+     * {@link Point#remove()} method to achieve the same affect.
+     *
+     * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
+     *
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public Series removePoint(Point point) {
+        return this.removePoint(point, true, true);
+    }
+
+    /**
+     * Remove the point from the series, explicitly controlling whether the chart is redrawn
+     * and/or animated or not. <p/>
+     * Note that this method is only relevant given Point instances that are obtained from the chart
+     * after it has been rendered, such as via an event or dynamically retrieving the points of
+     * a series. <p/>
+     * Also note that this method is primarily intended to ensure compatibility with chart's
+     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * If you're using non-persistent charts, you can instead simply use the
+     * {@link Point#remove(boolean, boolean)} method to achieve the same affect.
+     *
+     * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
+     * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
+     *                  point, it is highly recommended that the redraw option be set to false, and instead
+     *                  {@link Chart#redraw()} is explicitly called after the removing of points is finished.
+     * @param animation Defaults to true. When true, the graph will be animated with default animation options.
+     *                  Note, see the {@link #removePoint(Point, boolean, Animation)} method
+     *                  for more control over how the animation will run.
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public Series removePoint(Point point, boolean redraw, boolean animation) {
+        return this.removePoint(point, redraw, animation ? new Animation() : null);
+    }
+
+    /**
+     * Remove the point from the series, explicitly controlling whether the chart is redrawn
+     * and the details of the animation options. <p/>
+     * Note that this method is only relevant given Point instances that are obtained from the chart
+     * after it has been rendered, such as via an event or dynamically retrieving the points of
+     * a series.<p/>
+     * Also note that this method is primarily intended to ensure compatibility with chart's
+     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * If you're using non-persistent charts, you can instead simply use the
+     * {@link Point#remove(boolean, Animation)} method to achieve the same affect.
+     *
+     * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
+     * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
+     *                  point, it is highly recommended that the redraw option be set to false, and instead
+     *                  {@link Chart#redraw()} is explicitly called after the removing of points is finished.
+     * @param animation The custom animation to use when removing the point from the series.
+     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @since 1.3.0
+     */
+    public Series removePoint(Point point, boolean redraw, Animation animation) {
+        String id = point.getId();
+
+        // First, tell the point to remove itself from the underlying Highcharts instance
+        point.remove(redraw, animation);
+
+        // Second, find the matching point within the series, and remove it.
+        // Note that this logic is purposefully only functional for chart's that are using the "setPersistent()"
+        // option.  Removing a point from a non-persistent chart can be achieved by simply using
+        // the "Point.remove()" methods.
+        if(id != null && points != null) {
+            for (Iterator<Point> iterator = points.iterator(); iterator.hasNext(); ) {
+                Point existingPoint = iterator.next();
+                if(id.equals(existingPoint.getId())) {
+                    iterator.remove();
+                }
+            }
+        }
+        return this;
     }
 
     /**
