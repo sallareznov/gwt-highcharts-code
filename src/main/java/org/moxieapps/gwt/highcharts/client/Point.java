@@ -369,7 +369,6 @@ public class Point extends Configurable<Point> {
      * Also note that when using persistent chart's, you'll normally want to use the
      * {@link Series#removePoint(Point)} method instead of this one.
      *
-     *
      * @return A reference to this {@link Point} instance for convenient method chaining.
      * @since 1.1.0
      */
@@ -745,7 +744,7 @@ public class Point extends Configurable<Point> {
 
     // Internal method purposefully package scope
     String getId() {
-        if(this.nativePoint != null) {
+        if (this.nativePoint != null) {
             return nativeGetString(this.nativePoint, "id");
         } else {
             return this.id;
@@ -755,10 +754,25 @@ public class Point extends Configurable<Point> {
     private static JavaScriptObject convertPointToJavaScriptObject(Point point) {
         final JSONObject options = point.getOptions() != null ? point.getOptions() : new JSONObject();
         Chart.addPointScalarValues(point, options);
-        if(point.hasNativeProperties()) {
+        if (point.hasNativeProperties()) {
             Point.addPointNativeProperties(point, options);
         }
         return options.getJavaScriptObject();
+    }
+
+    /**
+     * For advanced use-cases only.  Returns a pointer to the native Highchart's JS point instance
+     * that this GWT Point instance is associated with.  Note that this method will only return
+     * a non-null value if it is called on a Point instance that was retrieved from the chart
+     * after the chart has been rendered, such as via a {@link org.moxieapps.gwt.highcharts.client.events.PointEvent}
+     * or {@link org.moxieapps.gwt.highcharts.client.Series#getPoints()}.
+     *
+     * @return The native Highcharts JS point instance that this point is associated with, or
+     *         null if the Point instance was not retrieved dynamically from a rendered chart.
+     * @since 1.4.0
+     */
+    public JavaScriptObject getNativePoint() {
+        return this.nativePoint;
     }
 
     private static native boolean nativeContainsKey(JavaScriptObject point, String key) /*-{

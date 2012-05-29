@@ -124,7 +124,7 @@ public class ToolTipData {
      */
     public Point getPoint(int index) {
         JsArray<JavaScriptObject> nativePoints = getNativePoints();
-        return new Point(nativePoints.get(index));
+        return new Point(getNativePointFromReference(nativePoints.get(index)));
     }
 
     /**
@@ -140,7 +140,7 @@ public class ToolTipData {
         JsArray<JavaScriptObject> nativePoints = getNativePoints();
         Point[] points = new Point[nativePoints.length()];
         for (int i = 0; i < nativePoints.length(); i++) {
-            points[i] = new Point(nativePoints.get(i));
+            points[i] = new Point(getNativePointFromReference(nativePoints.get(i)));
         }
         return points;
     }
@@ -164,6 +164,10 @@ public class ToolTipData {
         return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.points;
     }-*/;
 
+    private native JavaScriptObject getNativePointFromReference(JavaScriptObject reference) /*-{
+        return reference.point;
+    }-*/;
+
     /**
      * Return the name of the point (e.g. "point.name").
      *
@@ -181,7 +185,7 @@ public class ToolTipData {
      * @since 1.1.3
      */
     public native String getPointName(int index) /*-{
-        return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.point[index].name;
+        return this.@org.moxieapps.gwt.highcharts.client.ToolTipData::data.points[index].point.name;
     }-*/;
 
     /**

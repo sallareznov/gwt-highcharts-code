@@ -19,10 +19,7 @@ package org.moxieapps.gwt.highcharts.client;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.json.client.*;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 
 import java.util.ArrayList;
@@ -514,15 +511,19 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 if (animation == null || animation.getOptions() == null) {
                     final boolean animationFlag = animation != null;
-                    if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
-                        nativeAddPoint(nativeSeries, point.getY(), redraw, shift, animationFlag);
+                    if(point == null || (point.isSingleValue() && point.getY() == null)) {
+                        nativeAddPoint(nativeSeries, null, redraw, shift, animationFlag);
+                    } else if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
+                        nativeAddPoint(nativeSeries, point.getY().doubleValue(), redraw, shift, animationFlag);
                     } else {
                         nativeAddPoint(nativeSeries, convertPointToJavaScriptObject(point), redraw, shift, animationFlag);
                     }
                 } else {
                     final JavaScriptObject animationOptions = animation.getOptions().getJavaScriptObject();
-                    if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
-                        nativeAddPoint(nativeSeries, point.getY(), redraw, shift, animationOptions);
+                    if(point == null || (point.isSingleValue() && point.getY() == null)) {
+                        nativeAddPoint(nativeSeries, null, redraw, shift, animationOptions);
+                    } else if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
+                        nativeAddPoint(nativeSeries, point.getY().doubleValue(), redraw, shift, animationOptions);
                     } else {
                         nativeAddPoint(nativeSeries, convertPointToJavaScriptObject(point), redraw, shift, animationOptions);
                     }
@@ -583,7 +584,11 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0, pointsLength = yValues.length; i < pointsLength; i++) {
-                    jsonArray.set(i, new JSONNumber(yValues[i].doubleValue()));
+                    if((yValues[i] != null)) {
+                        jsonArray.set(i, new JSONNumber(yValues[i].doubleValue()));
+                    } else {
+                        jsonArray.set(i, JSONNull.getInstance());
+                    }
                 }
                 nativeSetData(nativeSeries, jsonArray.getJavaScriptObject(), redraw);
             }
@@ -640,22 +645,24 @@ public class Series extends Configurable<Series> {
                 for (int i = 0, pointsLength = values.length; i < pointsLength; i++) {
                     Number[] point = values[i];
                     JSONValue jsonValue;
-                    if (point.length == 5) {
+                    if(point == null) {
+                        jsonValue = JSONNull.getInstance();
+                    } else if (point.length == 5) {
                         // For OHLC charts
                         JSONArray pointArray = new JSONArray();
-                        pointArray.set(0, new JSONNumber(point[0].doubleValue()));
-                        pointArray.set(1, new JSONNumber(point[1].doubleValue()));
-                        pointArray.set(2, new JSONNumber(point[2].doubleValue()));
-                        pointArray.set(3, new JSONNumber(point[3].doubleValue()));
-                        pointArray.set(4, new JSONNumber(point[4].doubleValue()));
+                        pointArray.set(0, convertToJSONValue(point[0]));
+                        pointArray.set(1, convertToJSONValue(point[1]));
+                        pointArray.set(2, convertToJSONValue(point[2]));
+                        pointArray.set(3, convertToJSONValue(point[3]));
+                        pointArray.set(4, convertToJSONValue(point[4]));
                         jsonValue = pointArray;
                     } else if (point.length > 1) {
                         JSONArray pointArray = new JSONArray();
-                        pointArray.set(0, new JSONNumber(point[0].doubleValue()));
-                        pointArray.set(1, new JSONNumber(point[1].doubleValue()));
+                        pointArray.set(0, convertToJSONValue(point[0]));
+                        pointArray.set(1, convertToJSONValue(point[1]));
                         jsonValue = pointArray;
                     } else {
-                        jsonValue = new JSONNumber(point[0].doubleValue());
+                        jsonValue = convertToJSONValue(point[0]);
                     }
                     jsonArray.set(i, jsonValue);
                 }
@@ -664,6 +671,15 @@ public class Series extends Configurable<Series> {
         }
 
         return this;
+    }
+
+    // Internal helper method
+    private JSONValue convertToJSONValue(Number number) {
+        if(number != null) {
+            return new JSONNumber(number.doubleValue());
+        } else {
+            return JSONNull.getInstance();
+        }
     }
 
     /**
@@ -898,6 +914,22 @@ public class Series extends Configurable<Series> {
     }
 
     /**
+     * For advanced use-cases only.  Returns a pointer to the native Highchart's JS series instance
+     * that this GWT Series instance is associated with.  Note that this method will only return
+     * a non-null value if it is called on a Series instance after the chart has been rendered.
+     *
+     * @return The native Highcharts JS series instance that this Series is associated with, or
+     *         null if the chart has not yet been rendered.
+     * @since 1.4.0
+     */
+    public JavaScriptObject getNativeSeries() {
+        if (isRendered()) {
+            return chart.get(this.id);
+        }
+        return null;
+    }
+
+    /**
      * Internal method used to retrieve the unique id generated for this series.
      *
      * @return The unique id of this series
@@ -935,11 +967,11 @@ public class Series extends Configurable<Series> {
         series.addPoint(options, redraw, shift, animation);
     }-*/;
 
-    private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, Number value, boolean redraw, boolean shift, JavaScriptObject animation) /*-{
+    private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, double value, boolean redraw, boolean shift, JavaScriptObject animation) /*-{
         series.addPoint(value, redraw, shift, animation);
     }-*/;
 
-    private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, Number value, boolean redraw, boolean shift, boolean animation) /*-{
+    private static native JavaScriptObject nativeAddPoint(JavaScriptObject series, double value, boolean redraw, boolean shift, boolean animation) /*-{
         series.addPoint(value, redraw, shift, animation);
     }-*/;
 

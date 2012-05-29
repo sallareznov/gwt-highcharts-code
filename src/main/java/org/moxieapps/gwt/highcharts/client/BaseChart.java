@@ -1154,6 +1154,9 @@ public abstract class BaseChart<T> extends Widget {
     private ScatterPlotOptions scatterPlotOptions;
     private SplinePlotOptions splinePlotOptions;
 
+    // The OHLC plot options are managed by the StockChart sub class, but the reference is managed here for rendering
+    protected OHLCPlotOptions ohlcPlotOptions;
+
     /**
      * Updates the options that all area type series within the chart will use by default.  The settings can then
      * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
@@ -1801,6 +1804,19 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * For advanced use-cases only.  Returns a pointer to the native Highcharts or Highstock chart instance
+     * that this GWT BaseChart instance is associated with.  Note that this method will only return
+     * a non-null value if it is called after the chart has been rendered
+     *
+     * @return The native Highcharts or Highstock JS chart instance that this BaseChart is associated with, or
+     *         null if the chart has not yet been rendered.
+     * @since 1.4.0
+     */
+    public JavaScriptObject getNativeChart() {
+        return chart;
+    }
+
+    /**
      * Redraw the chart after changes have been done to the data or axis extremes. All methods for
      * updating axes, series or points have a parameter for redrawing the chart. This is true by default.
      * But in many cases you want to do more than one operation on the chart before redrawing, for
@@ -1868,6 +1884,7 @@ public abstract class BaseChart<T> extends Widget {
         plotOptionsLabelFormatters.put("column", hasDataLabelsFormatter(columnPlotOptions));
         plotOptionsLabelFormatters.put("line", hasDataLabelsFormatter(linePlotOptions));
         plotOptionsLabelFormatters.put("pie", hasDataLabelsFormatter(piePlotOptions));
+        plotOptionsLabelFormatters.put("ohlc", hasDataLabelsFormatter(ohlcPlotOptions));
         plotOptionsLabelFormatters.put("series", hasDataLabelsFormatter(seriesPlotOptions));
         plotOptionsLabelFormatters.put("scatter", hasDataLabelsFormatter(scatterPlotOptions));
         plotOptionsLabelFormatters.put("spline", hasDataLabelsFormatter(splinePlotOptions));
@@ -2463,6 +2480,7 @@ public abstract class BaseChart<T> extends Widget {
         if ("bar".equals(type)) plotOptions = barPlotOptions;
         if ("column".equals(type)) plotOptions = columnPlotOptions;
         if ("line".equals(type)) plotOptions = linePlotOptions;
+        if ("ohlc".equals(type)) plotOptions = ohlcPlotOptions;
         if ("pie".equals(type)) plotOptions = piePlotOptions;
         if ("scatter".equals(type)) plotOptions = scatterPlotOptions;
         if ("series".equals(type)) plotOptions = seriesPlotOptions;

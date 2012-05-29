@@ -390,8 +390,20 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         return extremes;
     }
 
-    protected JavaScriptObject getNativeAxis() {
-        return chart.get(this.id);
+    /**
+     * For advanced use-cases only.  Returns a pointer to the native Highchart's Axis instance
+     * that this GWT Axis instance is associated with.  Note that this method will only return
+     * a non-null value if it is called after the chart has been rendered
+     *
+     * @return The native Highcharts axis instance that this Axis is associated with, or
+     *         null if the chart has not yet been rendered.
+     * @since 1.4.0
+     */
+    public JavaScriptObject getNativeAxis() {
+        if(chart != null) {
+            return chart.get(this.id);
+        }
+        return null;
     }
     
     /* package */ String getId() {

@@ -270,7 +270,7 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
     /**
      * Convenience method for setting the 'enableMouseTracking' plot option.  Equivalent to:
      * <pre><code>
-     * plotOptions.setOption("enableMouseTracking", false);
+     *     plotOptions.setOption("enableMouseTracking", false);
      * </code></pre>
      * Enable or disable the mouse tracking for a specific series. This includes point tooltips
      * and click events on graphs and points. For large datasets it improves performance. Defaults to true.
@@ -280,6 +280,22 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      */
     public T setEnableMouseTracking(boolean enableMouseTracking) {
         return this.setOption("enableMouseTracking", enableMouseTracking);
+    }
+
+    /**
+     * Convenience method for setting the 'legendIndex' option of the plot options.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOption("legendIndex", 3);
+     * </code></pre>
+     * The sequential index of the series in the legend.  Series default to being added to the
+     * legend in the same index as they are added to the chart.
+     *
+     * @param legendIndex The sequential index of the series in the legend.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public T setLegendIndex(int legendIndex) {
+        return this.setOption("legendIndex", legendIndex);
     }
 
     /**

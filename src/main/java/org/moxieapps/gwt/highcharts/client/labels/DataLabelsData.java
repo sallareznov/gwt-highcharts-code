@@ -17,6 +17,7 @@
 package org.moxieapps.gwt.highcharts.client.labels;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.moxieapps.gwt.highcharts.client.Point;
 
 /**
  * An object that represents the state information that will be passed to any custom
@@ -70,6 +71,21 @@ public class DataLabelsData {
         return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.point.name;
     }-*/;
 
+    /**
+     * Create a new GWT point instance that is connected to the Highcharts JS point instance associated
+     * with this data label.
+     *
+     * @return A Point instance that is connected to the Highcharts data point associated with the data label.
+     * @since 1.4.0
+     */
+    public Point getPoint() {
+        return new Point(getNativePoint());
+    }
+
+    private native JavaScriptObject getNativePoint() /*-{
+        return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.point;
+    }-*/;
+    
     /**
      * Return the total value at this point's x value.  Stacked series only.
      *

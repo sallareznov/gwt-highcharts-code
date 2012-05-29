@@ -211,6 +211,10 @@ public class ToolTip extends Configurable<ToolTip> {
      * of the text that appears in the tooltip.  See the {@link ToolTipFormatter} interface, and
      * in particular the {@link ToolTipFormatter#format(ToolTipData)} method for more details on
      * the capabilities available to custom formatters.
+     * <p>
+     * Note that for more simple custom point format cases see the {@link #setPointFormat(String)}
+     * mechanism instead.
+     * </p>
      *
      * @param toolTipFormatter The custom formatter to use for the tooltips (if not given a built-in
      *                         generic formatter is used when tooltips are enabled).
@@ -224,6 +228,31 @@ public class ToolTip extends Configurable<ToolTip> {
     // Purposefully restricted to package scope
     ToolTipFormatter getToolTipFormatter() {
         return this.toolTipFormatter;
+    }
+    
+    /**
+     * Convenience method for setting the 'pointFormat' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("pointFormat", "<b>{point.y}</b>);
+     * </code></pre>
+     * The HTML of the point's line in the tooltip. Variables are enclosed by curly brackets. 
+     * Available variables are point.x, point.y, series.name and series.color and other 
+     * properties on the same form. Furthermore, point.y can be extended by the 
+     * tooltip.yPrefix and tooltip.ySuffix variables. This can also be overridden for each 
+     * series, which makes it a good hook for displaying units.
+     * <p>
+     * Defaults to &lt;span style="color:{series.color}"&gt;{series.name}&lt;/span&gt;: &lt;b&gt;{point.y}&lt;/b&gt;&lt;br/&gt;
+     * </p>
+     * Note that for more advanced use cases, see the {@link #setFormatter(ToolTipFormatter)}
+     * mechanism instead.
+     *
+     * @param pointFormat The HTML of the point's line in the tooltip.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     *
+     * @since 1.4.0
+     */
+    public ToolTip setPointFormat(String pointFormat) {
+        return this.setOption("pointFormat", pointFormat);
     }
 
     /**
@@ -291,6 +320,86 @@ public class ToolTip extends Configurable<ToolTip> {
      */
     public ToolTip setStyle(Style style) {
         return this.setOption("style", style != null ? style.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'valueDecimals' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("valueDecimals", 3);
+     * </code></pre>
+     * How many decimals to show in each series' y value. This is overridable in each series'
+     * tooltip options object. The default is to preserve all decimals.
+     *
+     * @param valueDecimals How many decimals to show in each series' y value.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public ToolTip setValueDecimals(Number valueDecimals) {
+        return this.setOption("valueDecimals", valueDecimals);
+    }
+
+    /**
+     * Convenience method for setting the 'valuePrefix' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("valuePrefix", "$");
+     * </code></pre>
+     * A string to prepend to each series' y value. Overridable in each series' tooltip options
+     * object. Defaults to "".
+     *
+     * @param valuePrefix The string to prepend to each series' y value.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public ToolTip setValuePrefix(String valuePrefix) {
+        return this.setOption("valuePrefix", valuePrefix);
+    }
+
+    /**
+     * Convenience method for setting the 'valueSuffix' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("valueSuffix", " cents");
+     * </code></pre>
+     * A string to append to each series' y value. Overridable in each series' tooltip options
+     * object. Defaults to "".
+     *
+     * @param valueSuffix The string to append to each series' y value.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public ToolTip setValueSuffix(String valueSuffix) {
+        return this.setOption("valueSuffix", valueSuffix);
+    }
+
+    /**
+     * Convenience method for setting the 'xDateFormat' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("xDateFormat", "%Y-%m-%d");
+     * </code></pre>
+     * The format for the date in the tooltip header if the X axis is a datetime axis.
+     *
+     * @param xDateFormat The format for the date in the tooltip header if the X axis is a datetime axis.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public ToolTip setXDateFormat(String xDateFormat) {
+        return this.setOption("xDateFormat", xDateFormat);
+    }
+
+    /**
+     * Convenience method for setting the 'useHTML' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("useHTML", true);
+     * </code></pre>
+     * Use HTML to render the contents of the tooltip instead of SVG. Using HTML allows
+     * advanced formatting like tables and images in the tooltip. It is also recommended
+     * for rtl languages as it works around rtl bugs in early Firefox. Defaults to false.
+     *
+     * @param useHTML Use HTML to render the contents of the tooltip instead of SVG.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     * @since 1.4.0
+     */
+    public ToolTip setUseHTML(boolean useHTML) {
+        return this.setOption("useHTML", useHTML);
     }
 
 }
