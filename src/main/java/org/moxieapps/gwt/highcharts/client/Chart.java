@@ -110,6 +110,41 @@ public class Chart extends BaseChart<Chart> {
     }
 
     /**
+     * Convenience method for setting the 'pane' options of the chart, which represents
+     * a collection of options that apply only to polar charts and angular gauges.
+     * <p/>
+     * Note: mane of the pane options are only available if the highcharts-more.js script is included in your GWT module. E.g.:
+     * </p>
+     * &lt;script type="text/javascript" src="js/highcharts-more.js"&gt;&lt;/script&gt;
+     *
+     * @param pane The pane options to apply to the chart.
+     * @return A reference to this {@link Chart} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+    public Chart setPane(Pane pane) {
+        return this.setOption("/pane", pane != null ? pane.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'polar' option of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/polar", true);
+     * </code></pre>
+     * When true, cartesian charts like line, spline, area and column are transformed
+     * into the polar coordinate system. Defaults to false.
+     * <p>
+     * Note: this option is only available if the highcharts-more.js script is included in your GWT module.
+     * </p>
+     *
+     * @param polar The value to set as the 'polar' option on the chart.
+     * @return A reference to this {@link Chart} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+    public Chart setPolar(boolean polar) {
+        return this.setOption("/chart/polar", polar);
+    }
+
+    /**
      * Sets which dimensions the user can zoom by dragging the mouse.
      * Can be one of {@link Chart.ZoomType#X}, {@link Chart.ZoomType#Y} or
      * {@link Chart.ZoomType#X_AND_Y}. Defaults to null.
@@ -124,7 +159,6 @@ public class Chart extends BaseChart<Chart> {
     public Chart setZoomType(Chart.ZoomType zoomType) {
         return this.setOption("/chart/zoomType", zoomType != null ? zoomType.toString() : null);
     }
-
 
     @Override
     protected String getChartTypeName() {

@@ -72,6 +72,20 @@ package org.moxieapps.gwt.highcharts.client;
 public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
 
     /**
+     * Convenience method for setting the 'millisecond' format.  Equivalent to:
+     * <pre><code>
+     *     dateTimeLabelFormats.setOption("millisecond", "%H:%M:%S.%L");
+     * </code></pre>
+     *
+     * @param millisecond The format to use when displaying labels in units of milliseconds.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+	public DateTimeLabelFormats setMillisecond(String millisecond){
+		return this.setOption("millisecond", millisecond);
+	}
+
+    /**
      * Convenience method for setting the 'second' format.  Equivalent to:
      * <pre><code>
      *     dateTimeLabelFormats.setOption("second", "%H:%M:%S");

@@ -20,11 +20,12 @@ package org.moxieapps.gwt.highcharts.client.labels;
  * An interface that can be used to control the display of the Y axis stack labels to contain
  * custom text or formatting.  General usage is as follows:
  * <code><pre>
- * chart.getYAxis().setLabels(
- *   new YAxisLabels()
+ * chart.getYAxis().setStackLabels(
+ *   new StackLabels()
+ *     .setEnabled(true)
  *     .setFormatter(new StackLabelsFormatter() {
  *        public String format(StackLabelsData stackLabelsData) {
- *            return stackLabelsData.getValueAsLong() + " degrees";
+ *            return stackLabelsData.getTotalAsLong() + " degrees";
  *        }
  *     })
  * );

@@ -27,10 +27,10 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * Manages a data series (and its options) that can then be added to a {@link Chart}.  As an extension
- * of {@link Configurable} each series instance can also optionally have configuration options set on it.
- * In order to create a new series, utilize the {@link Chart#createSeries()} method, configure it, add data
- * to it, and then add it to the chart via the {@link Chart#addSeries(Series)} method.  Note that a series
+ * Manages a data series (and its options) that can then be added to a {@link org.moxieapps.gwt.highcharts.client.Chart}.  As an extension
+ * of {@link org.moxieapps.gwt.highcharts.client.Configurable} each series instance can also optionally have configuration options set on it.
+ * In order to create a new series, utilize the {@link org.moxieapps.gwt.highcharts.client.Chart#createSeries()} method, configure it, add data
+ * to it, and then add it to the chart via the {@link org.moxieapps.gwt.highcharts.client.Chart#addSeries(org.moxieapps.gwt.highcharts.client.Series)} method.  Note that a series
  * can be modified after the chart has been rendered as well, which allows for support of dynamic charts or series
  * that change in some way based on user behavior.  Simple example of setting up a series on a chart:
  * <code><pre>
@@ -65,7 +65,7 @@ public class Series extends Configurable<Series> {
 
     /**
      * An enumeration of supported series types, which can be passed to methods such as
-     * {@link Series#setType(Series.Type)} or {@link Chart#setType(Series.Type)}.
+     * {@link org.moxieapps.gwt.highcharts.client.Series#setType(org.moxieapps.gwt.highcharts.client.Series.Type)} or {@link org.moxieapps.gwt.highcharts.client.Chart#setType(org.moxieapps.gwt.highcharts.client.Series.Type)}.
      */
     public enum Type {
 
@@ -73,12 +73,27 @@ public class Series extends Configurable<Series> {
          * Show the series as an area filled in beneath a non-curved line
          */
         AREA("area"),
+        
+        /**
+         * Show the series as an area filled between two non-curved lines.<p>
+         * Only available if the highcharts-more.js script is included in your GWT module.
+         * 
+         * @since 1.5.0
+         */
+        AREA_RANGE("arearange"),
 
         /**
          * Show the series as an area filled in beneath a curved line
          */
-
         AREA_SPLINE("areaspline"),
+                
+        /**
+         * Show the series as an area filled between two curved lines.<p>
+         * Only available if the highcharts-more.js script is included in your GWT module.
+         * 
+         * @since 1.5.0
+         */
+        AREA_SPLINE_RANGE("areasplinerange"),
 
         /**
          * Show the series as horizontal bars
@@ -90,6 +105,12 @@ public class Series extends Configurable<Series> {
          */
         COLUMN("column"),
 
+        /**
+         * Show the series as vertical bars each designating a low to high range.<p>
+         * Only available if the highcharts-more.js script is included in your GWT module.
+         */
+        COLUMN_RANGE("columnrange"),
+        
         /**
          * Show the series as a sequence of connected straight lines
          */
@@ -112,7 +133,7 @@ public class Series extends Configurable<Series> {
 
         /**
          * Show the series as a sequence of bars that show the open, high, low, and close values.
-         * Only available when you're using the {@link StockChart} widget type.
+         * Only available when you're using the {@link org.moxieapps.gwt.highcharts.client.StockChart} widget type.
          *
          * @since 1.1.0
          */
@@ -120,7 +141,7 @@ public class Series extends Configurable<Series> {
 
         /**
          * Show the series as a sequence of candlesticks, where each candlestick represents four values.
-         * Only available when you're using the {@link StockChart} widget type.
+         * Only available when you're using the {@link org.moxieapps.gwt.highcharts.client.StockChart} widget type.
          *
          * @since 1.1.0
          */
@@ -146,7 +167,7 @@ public class Series extends Configurable<Series> {
     private String id;
 
     /**
-     * Use the {@link Chart#createSeries()} method to create new series instances.
+     * Use the {@link org.moxieapps.gwt.highcharts.client.Chart#createSeries()} method to create new series instances.
      *
      * @param chart The chart instance that this series is being created within.
      */
@@ -164,7 +185,7 @@ public class Series extends Configurable<Series> {
      * The name of the series as shown in the legend, tooltip etc. Defaults to "".
      *
      * @param name The string to set as the series name.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setName(String name) {
         return this.setOption("name", name);
@@ -179,7 +200,7 @@ public class Series extends Configurable<Series> {
      * that you can also set this option to a number instead via the {@link #setStack(Number)} method.
      *
      * @param stack The string to set as the 'stack' option on the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setStack(String stack) {
         return this.setOption("stack", stack);
@@ -194,7 +215,7 @@ public class Series extends Configurable<Series> {
      * that you can also set this option to a string instead via the {@link #setStack(String)} method.
      *
      * @param stack The number to set as the 'stack' option on the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setStack(Number stack) {
         return this.setOption("stack", stack);
@@ -207,10 +228,10 @@ public class Series extends Configurable<Series> {
      * <pre><code>
      *     series.setOption("type", "line");
      * </code></pre>
-     * Note that if you don't set this explicitly the default series type is {@link Series.Type#LINE}.
+     * Note that if you don't set this explicitly the default series type is {@link org.moxieapps.gwt.highcharts.client.Series.Type#LINE}.
      *
      * @param type One of the supported series types.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setType(Type type) {
         return this.setOption("type", type.toString());
@@ -226,7 +247,7 @@ public class Series extends Configurable<Series> {
      * Defaults to 0.
      *
      * @param xAxis The number to set as the 'xAxis' option on the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setXAxis(Number xAxis) {
         return this.setOption("xAxis", xAxis);
@@ -242,7 +263,7 @@ public class Series extends Configurable<Series> {
      * Defaults to 0.
      *
      * @param yAxis The number to set as the 'yAxis' option on the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setYAxis(Number yAxis) {
         return this.setOption("yAxis", yAxis);
@@ -253,11 +274,11 @@ public class Series extends Configurable<Series> {
 
     /**
      * Updates the plot options for this series to reflect the given options.  The default
-     * options for all series in the chart (of each type) can be set on the {@link Chart} instance,
+     * options for all series in the chart (of each type) can be set on the {@link org.moxieapps.gwt.highcharts.client.Chart} instance,
      * and therefore you only need to use this method if you want to override the plot options for
      * this series only.
      * <p/>
-     * Note that the general {@link PlotOptions} type only represents the abstract base class of all the
+     * Note that the general {@link org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions} type only represents the abstract base class of all the
      * different series types.  To call this method you need to instantiate one of the concrete
      * sub-classes instead (e.g. {@link org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions},
      * {@link org.moxieapps.gwt.highcharts.client.plotOptions.BarPlotOptions}, etc.).
@@ -265,10 +286,10 @@ public class Series extends Configurable<Series> {
      * Also note that changing the plot options for a series after it has been rendered to the screen
      * does not change the way the live series will appear.  If you need to change the plot options
      * after the series is rendered, you'd instead need to first {@link #remove()} the series from
-     * the chart and then re-add it to the chart via the {@link Chart#addSeries(Series)} method.
+     * the chart and then re-add it to the chart via the {@link org.moxieapps.gwt.highcharts.client.Chart#addSeries(org.moxieapps.gwt.highcharts.client.Series)} method.
      *
      * @param plotOptions The plot options to use for this series (or one of its sub-types)
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPlotOptions(PlotOptions plotOptions) {
 
@@ -305,7 +326,7 @@ public class Series extends Configurable<Series> {
      * point is rendered.
      *
      * @param y The value on the Y axis that the point should be drawn at within the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number y) {
         return this.addPoint(new Point(y));
@@ -318,15 +339,15 @@ public class Series extends Configurable<Series> {
      * @param y         The value on the Y axis that the point should be drawn at within the series.
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation Defaults to true. When true, the graph will be animated with default animation options.
-     *                  Note, see the {@link #addPoint(Number, boolean, boolean, Animation)} method
+     *                  Note, see the {@link #addPoint(Number, boolean, boolean, org.moxieapps.gwt.highcharts.client.Animation)} method
      *                  for more control over how the animation will run.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number y, boolean redraw, boolean shift, boolean animation) {
         return this.addPoint(new Point(y), redraw, shift, animation);
@@ -339,13 +360,13 @@ public class Series extends Configurable<Series> {
      * @param y         The value on the Y axis that the point should be drawn at within the series.
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation The custom animation to use when adding the point to the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number y, boolean redraw, boolean shift, Animation animation) {
         return this.addPoint(new Point(y), redraw, shift, animation);
@@ -359,10 +380,26 @@ public class Series extends Configurable<Series> {
      *
      * @param x The value on the X axis that the point should be drawn at within the series.
      * @param y The value on the Y axis that the point should be drawn at within the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number x, Number y) {
         return this.addPoint(new Point(x, y));
+    }
+    
+    /**
+     * Simple way to add a point using the default options, and setting only the X, Low, and High
+     * values that the point should be rendered at within the series (for Area Range
+     * charts).  See the various overloaded  versions of the <code>addPoint()</code> method for
+     * more control over the way the point is rendered.
+     *
+     * @param x     The value on the X axis that the point should be drawn at within the series.
+     * @param low   The "low" Y value that the point should be rendered at within the series.
+     * @param high  The "high" Y value that the point should be rendered at within the series.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+    public Series addPoint(Number x, Number low, Number high) {
+        return this.addPoint(new Point(x, low, high));
     }
 
     /**
@@ -376,7 +413,7 @@ public class Series extends Configurable<Series> {
      * @param high  The "high" Y value that the point should be rendered at within the series.
      * @param low   The "low" Y value that the point should be rendered at within the series.
      * @param close The "close" Y value that the point should be rendered at within the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.2.0
      */
     public Series addPoint(Number x, Number open, Number high, Number low, Number close) {
@@ -391,15 +428,15 @@ public class Series extends Configurable<Series> {
      * @param y         The value on the Y axis that the point should be drawn at within the series.
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation Defaults to true. When true, the graph will be animated with default animation options.
-     *                  Note, see the {@link #addPoint(Number, Number, boolean, boolean, Animation)} method
+     *                  Note, see the {@link #addPoint(Number, Number, boolean, boolean, org.moxieapps.gwt.highcharts.client.Animation)} method
      *                  for more control over how the animation will run.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number x, Number y, boolean redraw, boolean shift, boolean animation) {
         return this.addPoint(new Point(x, y), redraw, shift, animation);
@@ -413,13 +450,13 @@ public class Series extends Configurable<Series> {
      * @param y         The value on the Y axis that the point should be drawn at within the series.
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation The custom animation to use when adding the point to the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Number x, Number y, boolean redraw, boolean shift, Animation animation) {
         return this.addPoint(new Point(x, y), redraw, shift, animation);
@@ -436,13 +473,13 @@ public class Series extends Configurable<Series> {
      * @param close     The "close" Y value that the point should be rendered at within the series.
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation The custom animation to use when adding the point to the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.2.0
      */
     public Series addPoint(Number x, Number open, Number high, Number low, Number close, boolean redraw, boolean shift, Animation animation) {
@@ -453,7 +490,7 @@ public class Series extends Configurable<Series> {
      * Add a point to the series accepting the default options on how the point will be drawn.
      *
      * @param point The point to add to the series (which, in turn, can have its own configuration options).
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Point point) {
         return this.addPoint(point, true, false, true);
@@ -466,15 +503,15 @@ public class Series extends Configurable<Series> {
      * @param point     The point to add to the series (which, in turn, can have its own configuration options).
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation Defaults to true. When true, the graph will be animated with default animation options.
-     *                  Note, see the {@link #addPoint(Point, boolean, boolean, Animation)} method
+     *                  Note, see the {@link #addPoint(org.moxieapps.gwt.highcharts.client.Point, boolean, boolean, org.moxieapps.gwt.highcharts.client.Animation)} method
      *                  for more control over how the animation will run.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Point point, boolean redraw, boolean shift, boolean animation) {
         return this.addPoint(point, redraw, shift, animation ? new Animation() : null);
@@ -487,13 +524,13 @@ public class Series extends Configurable<Series> {
      * @param point     The point to add to the series (which, in turn, can have its own configuration options).
      * @param redraw    Whether to redraw the chart after the point is added. When adding more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called
      *                  after the adding of points is finished.
      * @param shift     Defaults to false. When shift is true, one point is shifted off the start of the
      *                  series as one is appended to the end. Use this option for live charts monitoring
      *                  a value over time.
      * @param animation The custom animation to use when adding the point to the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series addPoint(Point point, boolean redraw, boolean shift, Animation animation) {
 
@@ -548,10 +585,10 @@ public class Series extends Configurable<Series> {
     /**
      * Apply a new set of data (Y values only) to the series and automatically redraw it.  If you need
      * more control than just simply setting the y values of each data point, then use the
-     * {@link #setPoints(Point[])} method instead.
+     * {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[])} method instead.
      *
      * @param yValues The array of Y values to set on the data series (replacing any data already in place)
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Number[] yValues) {
         return this.setPoints(yValues, true);
@@ -560,13 +597,13 @@ public class Series extends Configurable<Series> {
     /**
      * Apply a new set of data (Y values only) to the series and optionally redraw it.  If you need
      * more control than just simply setting the y values of each data point, then use the
-     * {@link #setPoints(Point[], boolean)} method instead.
+     * {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[], boolean)} method instead.
      *
      * @param yValues The array of Y values to set on the data series (replacing any data already in place)
      * @param redraw  Whether to redraw the chart after the series is altered. If doing more operations
      *                on the chart, it is a good idea to set redraw to false and then call
-     *                {@link Chart#redraw()} after.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     *                {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} after.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Number[] yValues, boolean redraw) {
         this.points.clear();
@@ -598,29 +635,43 @@ public class Series extends Configurable<Series> {
     }
 
     /**
-     * Apply a new set of data (X and Y values) to the series and automatically redraw it.  If you need
-     * more control than just simply setting the x and y values of each data point, then use the
-     * {@link #setPoints(Point[])} method instead.
+     * Apply a new set of data to the series and automatically redraw it. The format of the data values 
+     * should match the chart type of the Series:
+     * <ul>
+     * <li>[x, y] - for standard line or area charts</li>
+     * <li>[x, low, high] - for area range charts</li>
+     * <li>[x, open, high, low, close] - for OHLC charts</li>
+     * </ul> 
+     * 
+     * <p>If you need more control than just simply setting the x and y values of each data point, then 
+     * use the {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[])} method instead.
      *
      * @param values A two dimensional array of values, where the main array is the list of points and
-     *               each inner array contains two values representing the X and Y values respectively.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     *               each inner array contains values matching the series data type, described above.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Number[][] values) {
         return this.setPoints(values, true);
     }
 
     /**
-     * Apply a new set of data (X and Y values) to the series and optionally redraw it.  If you need
-     * more control than just simply setting the x and y values of each data point, then use the
-     * {@link #setPoints(Point[])} method instead.
+     * Apply a new set of data to the series and optionally redraw it. The format of the data values 
+     * should match the chart type of the Series:
+     * <ul>
+     * <li>[x, y] - for standard line or area charts</li>
+     * <li>[x, low, high] - for area range charts</li>
+     * <li>[x, open, high, low, close] - for OHLC charts</li>
+     * </ul> 
+     * 
+     * <p>If you need more control than just simply setting the x and y values of each data point, then 
+     * use the {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[])} method instead.
      *
      * @param values A two dimensional array of values, where the main array is the list of points and
-     *               each inner array contains two values representing the X and Y values respectively.
+     *               each inner array contains values matching the series data type, described above.
      * @param redraw Whether to redraw the chart after the series is altered. If doing more operations
      *               on the chart, it is a good idea to set redraw to false and then call
-     *               {@link Chart#redraw()} after.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     *               {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} after.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Number[][] values, boolean redraw) {
         this.points.clear();
@@ -632,6 +683,9 @@ public class Series extends Configurable<Series> {
                 if (xyValue.length == 5) {
                     // For OHLC charts
                     this.addPoint(xyValue[0], xyValue[1], xyValue[2], xyValue[3], xyValue[4]);
+                } else if (xyValue.length == 3) {
+                    // For area range charts
+                    this.addPoint(xyValue[0], xyValue[1], xyValue[2]);
                 } else {
                     this.addPoint(xyValue[0], xyValue[1]);
                 }
@@ -650,19 +704,26 @@ public class Series extends Configurable<Series> {
                     } else if (point.length == 5) {
                         // For OHLC charts
                         JSONArray pointArray = new JSONArray();
-                        pointArray.set(0, convertToJSONValue(point[0]));
-                        pointArray.set(1, convertToJSONValue(point[1]));
-                        pointArray.set(2, convertToJSONValue(point[2]));
-                        pointArray.set(3, convertToJSONValue(point[3]));
-                        pointArray.set(4, convertToJSONValue(point[4]));
+                        pointArray.set(0, BaseChart.convertNumberToJSONValue(point[0]));
+                        pointArray.set(1, BaseChart.convertNumberToJSONValue(point[1]));
+                        pointArray.set(2, BaseChart.convertNumberToJSONValue(point[2]));
+                        pointArray.set(3, BaseChart.convertNumberToJSONValue(point[3]));
+                        pointArray.set(4, BaseChart.convertNumberToJSONValue(point[4]));
+                        jsonValue = pointArray;
+                    } else if (point.length == 3) {
+                        // For Area Range charts
+                        JSONArray pointArray = new JSONArray();
+                        pointArray.set(0, BaseChart.convertNumberToJSONValue(point[0]));
+                        pointArray.set(1, BaseChart.convertNumberToJSONValue(point[1]));
+                        pointArray.set(2, BaseChart.convertNumberToJSONValue(point[2]));
                         jsonValue = pointArray;
                     } else if (point.length > 1) {
                         JSONArray pointArray = new JSONArray();
-                        pointArray.set(0, convertToJSONValue(point[0]));
-                        pointArray.set(1, convertToJSONValue(point[1]));
+                        pointArray.set(0, BaseChart.convertNumberToJSONValue(point[0]));
+                        pointArray.set(1, BaseChart.convertNumberToJSONValue(point[1]));
                         jsonValue = pointArray;
                     } else {
-                        jsonValue = convertToJSONValue(point[0]);
+                        jsonValue = BaseChart.convertNumberToJSONValue(point[0]);
                     }
                     jsonArray.set(i, jsonValue);
                 }
@@ -673,20 +734,11 @@ public class Series extends Configurable<Series> {
         return this;
     }
 
-    // Internal helper method
-    private JSONValue convertToJSONValue(Number number) {
-        if(number != null) {
-            return new JSONNumber(number.doubleValue());
-        } else {
-            return JSONNull.getInstance();
-        }
-    }
-
     /**
      * Apply a new set of data to the series and automatically redraw it.
      *
      * @param points The array of points to set on the data series (replacing any data already in place)
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Point[] points) {
         return this.setPoints(points, true);
@@ -698,8 +750,8 @@ public class Series extends Configurable<Series> {
      * @param points The array of points to set on the data series (replacing any data already in place)
      * @param redraw Whether to redraw the chart after the series is altered. If doing more operations
      *               on the chart, it is a good idea to set redraw to false and then call
-     *               {@link Chart#redraw()} after.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     *               {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} after.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setPoints(Point[] points, boolean redraw) {
         this.points.clear();
@@ -756,13 +808,13 @@ public class Series extends Configurable<Series> {
      * after it has been rendered, such as via an event or dynamically retrieving the points of
      * a series.<p/>
      * Also note that this method is primarily intended to ensure compatibility with chart's
-     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * that have been set in persistent mode via the {@link org.moxieapps.gwt.highcharts.client.BaseChart#setPersistent(boolean)} method.
      * If you're using non-persistent charts, you can instead simply use the
-     * {@link Point#remove()} method to achieve the same affect.
+     * {@link org.moxieapps.gwt.highcharts.client.Point#remove()} method to achieve the same affect.
      *
      * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
      *
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.3.0
      */
     public Series removePoint(Point point) {
@@ -776,18 +828,18 @@ public class Series extends Configurable<Series> {
      * after it has been rendered, such as via an event or dynamically retrieving the points of
      * a series. <p/>
      * Also note that this method is primarily intended to ensure compatibility with chart's
-     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * that have been set in persistent mode via the {@link org.moxieapps.gwt.highcharts.client.BaseChart#setPersistent(boolean)} method.
      * If you're using non-persistent charts, you can instead simply use the
-     * {@link Point#remove(boolean, boolean)} method to achieve the same affect.
+     * {@link org.moxieapps.gwt.highcharts.client.Point#remove(boolean, boolean)} method to achieve the same affect.
      *
      * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
      * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called after the removing of points is finished.
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called after the removing of points is finished.
      * @param animation Defaults to true. When true, the graph will be animated with default animation options.
-     *                  Note, see the {@link #removePoint(Point, boolean, Animation)} method
+     *                  Note, see the {@link #removePoint(org.moxieapps.gwt.highcharts.client.Point, boolean, org.moxieapps.gwt.highcharts.client.Animation)} method
      *                  for more control over how the animation will run.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.3.0
      */
     public Series removePoint(Point point, boolean redraw, boolean animation) {
@@ -801,16 +853,16 @@ public class Series extends Configurable<Series> {
      * after it has been rendered, such as via an event or dynamically retrieving the points of
      * a series.<p/>
      * Also note that this method is primarily intended to ensure compatibility with chart's
-     * that have been set in persistent mode via the {@link BaseChart#setPersistent(boolean)} method.
+     * that have been set in persistent mode via the {@link org.moxieapps.gwt.highcharts.client.BaseChart#setPersistent(boolean)} method.
      * If you're using non-persistent charts, you can instead simply use the
-     * {@link Point#remove(boolean, Animation)} method to achieve the same affect.
+     * {@link org.moxieapps.gwt.highcharts.client.Point#remove(boolean, org.moxieapps.gwt.highcharts.client.Animation)} method to achieve the same affect.
      *
      * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
      * @param redraw    Whether to redraw the chart after the point is removed. When removing more than one
      *                  point, it is highly recommended that the redraw option be set to false, and instead
-     *                  {@link Chart#redraw()} is explicitly called after the removing of points is finished.
+     *                  {@link org.moxieapps.gwt.highcharts.client.Chart#redraw()} is explicitly called after the removing of points is finished.
      * @param animation The custom animation to use when removing the point from the series.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.3.0
      */
     public Series removePoint(Point point, boolean redraw, Animation animation) {
@@ -847,7 +899,7 @@ public class Series extends Configurable<Series> {
     /**
      * Shows the series if hidden.  Only applies after the chart has been rendered.
      *
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
      */
     public Series show() {
@@ -861,10 +913,10 @@ public class Series extends Configurable<Series> {
     }
 
     /**
-     * Hides the series if visible. If the {@link BaseChart#setIgnoreHiddenSeries(boolean)} option is true,
+     * Hides the series if visible. If the {@link org.moxieapps.gwt.highcharts.client.BaseChart#setIgnoreHiddenSeries(boolean)} option is true,
      * the chart is automatically redrawn without this series. Only applies after the chart has been rendered.
      *
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
      */
     public Series hide() {
@@ -879,11 +931,11 @@ public class Series extends Configurable<Series> {
 
     /**
      * Select or unselect the series. This means it's selected property is set, the checkbox in the legend is
-     * toggled and when selected, the series is returned in the {@link BaseChart#getSelectedSeries()} method.
+     * toggled and when selected, the series is returned in the {@link org.moxieapps.gwt.highcharts.client.BaseChart#getSelectedSeries()} method.
      *
      * @param select When true, the series is selected. When false it is unselected.  See the {@link #selectToggle()}
      *               method to instead toggle the selection state.
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
      */
     public Series select(boolean select) {
@@ -900,7 +952,7 @@ public class Series extends Configurable<Series> {
      * Select the series if it is currently unselected, or unselect the series if it is currently selected.
      * See the {@link #select(boolean)} method for more explicit control over the selection state of a series.
      *
-     * @return A reference to this {@link Series} instance for convenient method chaining.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
      */
     public Series selectToggle() {
@@ -911,6 +963,15 @@ public class Series extends Configurable<Series> {
             }
         }
         return this;
+    }
+    
+    /**
+     * Retrieve the series' visibility state as set by {@link #show()}, {@link #hide()}, or the initial configuration. 
+     * @return true if the series is visible, false if hidden or the chart has not yet been rendered.
+     */
+    public boolean isVisible() {
+        final JavaScriptObject nativeSeries = getNativeSeries();
+        return nativeSeries != null && nativeIsVisible(nativeSeries);
     }
 
     /**
@@ -998,5 +1059,8 @@ public class Series extends Configurable<Series> {
     private static native JsArray<JavaScriptObject> nativeGetData(JavaScriptObject series) /*-{
         return series.data;
     }-*/;
-
+    
+    private static native boolean nativeIsVisible(JavaScriptObject series) /*-{
+        return series.visible;
+    }-*/;
 }

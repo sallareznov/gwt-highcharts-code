@@ -186,5 +186,15 @@ public class DataLabelsData {
         return this.@org.moxieapps.gwt.highcharts.client.labels.DataLabelsData::data.y;
     }-*/;
 
+    /**
+     * Returns a pointer to the native Highchart's instance data object that this GWT
+     * instance is wrapping.  For advanced JSNI use-cases only.
+     *
+     * @return The native Highcharts object instance that this GWT instance is associated with.
+     * @since 1.5.0
+     */
+    public JavaScriptObject getNativeData() {
+        return this.data;
+    }
 
 }

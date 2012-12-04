@@ -21,19 +21,21 @@ import org.moxieapps.gwt.highcharts.client.Series;
 
 /**
  * Represents the general plot options available for all column type series, which can be set either generically
- * on the chart via the {@link Chart#setColumnPlotOptions(ColumnPlotOptions)} )} method or directly on a
+ * on the chart via the {@link Chart#setColumnRangePlotOptions(ColumnRangePlotOptions)} )} method or directly on a
  * series via the {@link Series#setPlotOptions(PlotOptions)} method.
  * <p/>
  * Note that these options are only needed if you want to specifically control the general options
- * for all column type series in the entire chart.  If you instead want to control the options for all
- * series in the chart (not just those of a column type), then you can use the {@link SeriesPlotOptions}
- * class instead.  Or, if you want to control the plot options for just one series (and not all column type
- * series in the chart), use the {@link org.moxieapps.gwt.highcharts.client.Series#setPlotOptions(PlotOptions)} method.
+ * for all column range type series in the entire chart.  If you instead want to control the options for all
+ * series in the chart (not just those of a column range type), then you can use the {@link SeriesPlotOptions}
+ * class instead.  Or, if you want to control the plot options for just one series (and not all column range type
+ * series in the chart), use the {@link Series#setPlotOptions(PlotOptions)} method.
+ * <p/>
+ * Note that the highcharts-more.js script must be included in your GWT module to use AreaSplineRange charts.
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
  * @since 1.0.0
  */
-public class ColumnPlotOptions extends BaseColumnPlotOptions<ColumnPlotOptions> {
+public class ColumnRangePlotOptions extends BaseColumnPlotOptions<ColumnRangePlotOptions> {
 
     // Everything we need is inherited from our base class, so this class is really only needed to
     // handle setting the correct generic type (so the user doesn't need to deal with the type manually)

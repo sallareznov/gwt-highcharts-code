@@ -61,6 +61,36 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
  * @since 1.0.0
  */
 public class Point extends Configurable<Point> {
+	
+	/**
+     * An enumeration describing the type of data contained within the Point. Retrievable via
+     * {@link Point#getType()}.  (The type is purposefully restricted to package scope to hide
+     * this as an implementation detail since an equivalent concept doesn't exist in the core
+     * Highcharts API, but exposing this enum could be reconsidered if a use case was identified.)
+     */
+	static enum Type {
+		/**
+		 * Indicates the point contains only a Y value
+		 */
+		Y,
+		
+		/**
+		 * Indicates the point contains an X and Y value
+		 */
+		X_Y,
+		
+		/**
+		 * Indicates the point contains an X, Low and High values
+		 */
+		X_LOW_HIGH,
+		
+		/**
+		 * Indicates the point contains an X, Open, High, Low, and Close values
+		 */
+		X_OPEN_HIGH_LOW_CLOSE
+	}
+	
+	private final Type type;
 
     private Number y;
     private Number x;
@@ -77,6 +107,7 @@ public class Point extends Configurable<Point> {
      */
     public Point(Number y) {
         this.y = y;
+        this.type = Type.Y;
     }
 
     /**
@@ -89,6 +120,23 @@ public class Point extends Configurable<Point> {
     public Point(Number x, Number y) {
         this.x = x;
         this.y = y;
+        this.type = Type.X_Y;
+    }
+    
+    /**
+     * Create a new point for an area range / area range spline chart, setting the x and low / high y values.
+     *
+     * @param x     The X value that the point should be rendered at within the series.
+     * @param low   The "low" Y value that the point should be rendered at within the series.
+     * @param high  The "high" Y value that the point should be rendered at within the series.
+     *
+     * @since 1.5.0
+     */
+    public Point(Number x, Number low, Number high) {
+        this.x = x;
+        this.low = low;
+        this.high = high;
+        this.type = Type.X_LOW_HIGH;
     }
 
     /**
@@ -107,11 +155,13 @@ public class Point extends Configurable<Point> {
         this.high = high;
         this.low = low;
         this.close = close;
+        this.type = Type.X_OPEN_HIGH_LOW_CLOSE;
     }
 
     /**
      * Create a new point, setting the Y axis value that the point should be
-     * rendered at within the series as well as the "name" property of the point.
+     * rendered at within the series as well as the "name" property of the point
+     * (which is often the case for pie charts.)
      *
      * @param name The value to set as the "property" of the point.
      * @param y    The Y value that the point should be rendered at within the series.
@@ -119,6 +169,7 @@ public class Point extends Configurable<Point> {
     public Point(String name, Number y) {
         setName(name);
         this.y = y;
+        this.type = Type.Y;
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
@@ -132,6 +183,20 @@ public class Point extends Configurable<Point> {
      */
     public Point(JavaScriptObject nativePoint) {
         this.nativePoint = nativePoint;
+        this.type = determineType(nativePoint);
+    }
+        
+    /**
+     * Retrieve the type of data stored within this Point instance (purposefully restricted to
+     * package scope to hide this as an implementation detail since the concept doesn't exist
+     * in the core Highcharts API, but exposing this properly could be reconsidered if a
+     * use case was identified.)
+     *
+     * @return The point's type
+     * @since 1.5.0
+     */
+    Type getType() {
+    	return type;
     }
 
     /**
@@ -599,6 +664,20 @@ public class Point extends Configurable<Point> {
     public Point update(Number x, Number y) {
         return this.update(new Point(x, y));
     }
+    
+    /**
+     * Update the point with the new values, automatically redrawing
+     * the chart with the default animation options.
+     *
+     * @param x The new x value for the point.
+     * @param low The new low value for the point.
+     * @param high The new high value for the point.
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+    public Point update(Number x, Number low, Number high) {
+        return this.update(new Point(x, low, high));
+    }
 
     /**
      * Update the point with the new values, specifying whether or not the chart should be automatically
@@ -629,6 +708,23 @@ public class Point extends Configurable<Point> {
      */
     public Point update(Number x, Number y, boolean redraw) {
         return this.update(new Point(x, y), redraw, true);
+    }
+    
+    /**
+     * Update the point with the new values, specifying whether or not the chart should be automatically
+     * redrawn with the new values.
+     *
+     * @param x      The new x value for the point.
+     * @param low    The new low value for the point.
+     * @param high    The new high value for the point.
+     * @param redraw Whether to redraw the chart after the point is updated. When updating more than one
+     *               point, it is highly recommended that the redraw option be set to false, and instead
+     *               {@link Chart#redraw()} is explicitly called after the updating of points is finished.
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.5.0
+     */
+    public Point update(Number x, Number low, Number high, boolean redraw) {
+        return this.update(new Point(x, low, high), redraw, true);
     }
 
     /**
@@ -760,12 +856,50 @@ public class Point extends Configurable<Point> {
         return options.getJavaScriptObject();
     }
 
+    private static Type determineType(JavaScriptObject nativePoint) {
+        boolean hasX = nativeContainsKey(nativePoint, "x");
+        boolean hasY = nativeContainsKey(nativePoint, "y");
+        boolean hasLow = nativeContainsKey(nativePoint, "low");
+        boolean hasHigh = nativeContainsKey(nativePoint, "high");
+        boolean hasOpen = nativeContainsKey(nativePoint, "open");
+        boolean hasClose = nativeContainsKey(nativePoint, "close");
+
+        if (hasX && hasOpen && hasHigh && hasLow && hasClose) {
+            return Type.X_OPEN_HIGH_LOW_CLOSE;
+        }
+        if (hasX && hasLow && hasHigh) {
+            return Type.X_LOW_HIGH;
+        }
+        if (hasX && hasY) {
+            return Type.X_Y;
+        }
+        if (hasY) {
+            return Type.Y;
+        }
+
+        // Fall back on determining based on data array length
+        int dataLength = nativeGetDataLength(nativePoint);
+        switch (dataLength) {
+            case 1:
+                return Type.Y;
+            case 2:
+                return Type.X_Y;
+            case 3:
+                return Type.X_LOW_HIGH;
+            case 5:
+                return Type.X_OPEN_HIGH_LOW_CLOSE;
+            default:
+                // Assuming the most basic case if the value is null
+                return Type.Y;
+        }
+    }
+
     /**
-     * For advanced use-cases only.  Returns a pointer to the native Highchart's JS point instance
+     * Returns a pointer to the native Highchart's JS point instance
      * that this GWT Point instance is associated with.  Note that this method will only return
      * a non-null value if it is called on a Point instance that was retrieved from the chart
      * after the chart has been rendered, such as via a {@link org.moxieapps.gwt.highcharts.client.events.PointEvent}
-     * or {@link org.moxieapps.gwt.highcharts.client.Series#getPoints()}.
+     * or {@link org.moxieapps.gwt.highcharts.client.Series#getPoints()}. For advanced use-cases only.
      *
      * @return The native Highcharts JS point instance that this point is associated with, or
      *         null if the Point instance was not retrieved dynamically from a rendered chart.
@@ -776,7 +910,19 @@ public class Point extends Configurable<Point> {
     }
 
     private static native boolean nativeContainsKey(JavaScriptObject point, String key) /*-{
-        return point[key] != undefined;
+        return (typeof key !== "undefined" && point != null && point[key] != null);
+    }-*/;
+
+    private static native int nativeGetDataLength(JavaScriptObject point) /*-{
+        if(point == null){
+            return -1;
+        }
+
+        if (typeof point.data === "undefined" || typeof point.data.length === "undefined") {
+            return -1;
+        } else {
+            return point.data.length;
+        }
     }-*/;
 
     private static native double nativeGetNumber(JavaScriptObject point, String key) /*-{

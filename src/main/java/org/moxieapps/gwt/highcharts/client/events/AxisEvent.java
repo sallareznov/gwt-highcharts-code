@@ -35,5 +35,17 @@ public abstract class AxisEvent {
      */
     public Axis<?> getAxis() {
         return axis;
-    }    
+    }
+
+    /**
+     * Returns a pointer to the native Highchart's instance data object that this GWT
+     * instance is wrapping.  For advanced JSNI use-cases only.
+     *
+     * @return The native Highcharts object instance that this GWT instance is associated with.
+     * @since 1.5.0
+     */
+    public JavaScriptObject getNativeEvent() {
+        return this.event;
+    }
+
 }

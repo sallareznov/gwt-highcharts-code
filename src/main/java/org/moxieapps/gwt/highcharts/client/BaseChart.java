@@ -42,7 +42,7 @@ import java.util.Iterator;
  * @see Chart
  * @see StockChart
  * @since 1.0.0
- */
+*/
 public abstract class BaseChart<T> extends Widget {
 
     /**
@@ -1145,9 +1145,12 @@ public abstract class BaseChart<T> extends Widget {
 
     // We need to maintain a local reference to the plot options in order to handle the potential callback formatter functions
     private AreaPlotOptions areaPlotOptions;
+    private AreaRangePlotOptions areaRangePlotOptions;
     private AreaSplinePlotOptions areaSplinePlotOptions;
+    private AreaSplineRangePlotOptions areaSplineRangePlotOptions;
     private BarPlotOptions barPlotOptions;
     private ColumnPlotOptions columnPlotOptions;
+    private ColumnRangePlotOptions columnRangePlotOptions;
     private LinePlotOptions linePlotOptions;
     private PiePlotOptions piePlotOptions;
     private SeriesPlotOptions seriesPlotOptions;
@@ -1175,7 +1178,27 @@ public abstract class BaseChart<T> extends Widget {
             this.setOption("/plotOptions/area", areaPlotOptions.getOptions()) :
             returnThis();
     }
-
+    
+    /**
+     * Updates the options that all area range type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     * <p/>
+     * Note that the highcharts-more.js script must be included in your GWT module to use AreaRange charts.
+     *
+     * @param areaRangePlotOptions The options to set on the chart as the default settings for all area range type series
+     *                        that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setAreaRangePlotOptions(AreaRangePlotOptions areaRangePlotOptions) {
+        this.areaRangePlotOptions = areaRangePlotOptions;
+        return areaRangePlotOptions != null && areaRangePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/arearange", areaRangePlotOptions.getOptions()) :
+            returnThis();
+    }
 
     /**
      * Updates the options that all area spline type series within the chart will use by default.  The settings can then
@@ -1193,6 +1216,27 @@ public abstract class BaseChart<T> extends Widget {
         this.areaSplinePlotOptions = areaSplinePlotOptions;
         return areaSplinePlotOptions != null && areaSplinePlotOptions.getOptions() != null ?
             this.setOption("/plotOptions/areaspline", areaSplinePlotOptions.getOptions()) :
+            returnThis();
+    }
+    
+    /**
+     * Updates the options that all area spline range type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     * <p/>
+     * Note that the highcharts-more.js script must be included in your GWT module to use AreaSplineRange charts.
+     *
+     * @param areaSplineRangePlotOptions The options to set on the chart as the default settings for all area spline range type series
+     *                              that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setAreaSplineRangePlotOptions(AreaSplineRangePlotOptions areaSplineRangePlotOptions) {
+        this.areaSplineRangePlotOptions = areaSplineRangePlotOptions;
+        return areaSplineRangePlotOptions != null && areaSplineRangePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/areasplinerange", areaSplineRangePlotOptions.getOptions()) :
             returnThis();
     }
 
@@ -1234,6 +1278,25 @@ public abstract class BaseChart<T> extends Widget {
             returnThis();
     }
 
+    /**
+     * Updates the options that all column range type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param columnRangePlotOptions The options to set on the chart as the default settings for all column type series
+     *                          that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setColumnRangePlotOptions(ColumnRangePlotOptions columnRangePlotOptions) {
+        this.columnRangePlotOptions = columnRangePlotOptions;
+        return columnRangePlotOptions != null && columnRangePlotOptions.getOptions() != null ?
+            this.setOption("/plotOptions/columnrange", columnRangePlotOptions.getOptions()) :
+            returnThis();
+    }
+    
     /**
      * Updates the options that all line type series within the chart will use by default.  The settings can then
      * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
@@ -1804,9 +1867,9 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
-     * For advanced use-cases only.  Returns a pointer to the native Highcharts or Highstock chart instance
-     * that this GWT BaseChart instance is associated with.  Note that this method will only return
-     * a non-null value if it is called after the chart has been rendered
+     * Returns a pointer to the native Highcharts or Highstock chart instance that this GWT BaseChart
+     * instance is associated with.  Note that this method will only return a non-null value if it
+     * is called after the chart has been rendered.  For advanced use-cases only.
      *
      * @return The native Highcharts or Highstock JS chart instance that this BaseChart is associated with, or
      *         null if the chart has not yet been rendered.
@@ -1879,9 +1942,12 @@ public abstract class BaseChart<T> extends Widget {
         // Build a similar object for dealing with all of the data label formatters that may be set on the plot options
         JSONObject plotOptionsLabelFormatters = new JSONObject();
         plotOptionsLabelFormatters.put("area", hasDataLabelsFormatter(areaPlotOptions));
+        plotOptionsLabelFormatters.put("arearange", hasDataLabelsFormatter(areaRangePlotOptions));
         plotOptionsLabelFormatters.put("areaspline", hasDataLabelsFormatter(areaSplinePlotOptions));
+        plotOptionsLabelFormatters.put("areasplinerange", hasDataLabelsFormatter(areaSplineRangePlotOptions));
         plotOptionsLabelFormatters.put("bar", hasDataLabelsFormatter(barPlotOptions));
         plotOptionsLabelFormatters.put("column", hasDataLabelsFormatter(columnPlotOptions));
+        plotOptionsLabelFormatters.put("columnrange", hasDataLabelsFormatter(columnRangePlotOptions));
         plotOptionsLabelFormatters.put("line", hasDataLabelsFormatter(linePlotOptions));
         plotOptionsLabelFormatters.put("pie", hasDataLabelsFormatter(piePlotOptions));
         plotOptionsLabelFormatters.put("ohlc", hasDataLabelsFormatter(ohlcPlotOptions));
@@ -2028,7 +2094,7 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     private JavaScriptObject createNativeOptions() {
-        JSONObject options = configurable.getOptions();
+        JSONObject options = getOptions();
         if (options == null) {
             options = new JSONObject();
         }
@@ -2128,26 +2194,30 @@ public abstract class BaseChart<T> extends Widget {
             options = new JSONObject();
             addPointScalarValues(point, options);
             return addPointId(point, options);
-        } else if (point.getX() != null) {
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.set(0, new JSONNumber(point.getX().doubleValue()));
-            if (point.getY() != null) {
-                jsonArray.set(1, new JSONNumber(point.getY().doubleValue()));
-            } else {
-                if (point.getOpen() != null && point.getHigh() != null && point.getLow() != null && point.getClose() != null) {
-                    jsonArray.set(1, new JSONNumber(point.getOpen().doubleValue()));
-                    jsonArray.set(2, new JSONNumber(point.getHigh().doubleValue()));
-                    jsonArray.set(3, new JSONNumber(point.getLow().doubleValue()));
-                    jsonArray.set(4, new JSONNumber(point.getClose().doubleValue()));
-                } else {
-                    jsonArray.set(1, JSONNull.getInstance());
-                }
-            }
-            return jsonArray;
-        } else if (point.getY() != null) {
-            return new JSONNumber(point.getY().doubleValue());
-        } else {
-            return JSONNull.getInstance();
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        switch (point.getType()) {
+        	case Y: return convertNumberToJSONValue(point.getY());
+        	case X_Y :
+        		jsonArray.set(0, convertNumberToJSONValue(point.getX()));
+        		jsonArray.set(1, convertNumberToJSONValue(point.getY()));
+        		return jsonArray;
+        	case X_LOW_HIGH :
+        		jsonArray.set(0, convertNumberToJSONValue(point.getX()));
+        		jsonArray.set(1, convertNumberToJSONValue(point.getLow()));
+        		jsonArray.set(2, convertNumberToJSONValue(point.getHigh()));
+        		return jsonArray;
+        	case X_OPEN_HIGH_LOW_CLOSE :
+        		jsonArray.set(0, convertNumberToJSONValue(point.getX()));
+        		jsonArray.set(1, convertNumberToJSONValue(point.getOpen()));
+        		jsonArray.set(2, convertNumberToJSONValue(point.getHigh()));
+        		jsonArray.set(3, convertNumberToJSONValue(point.getLow()));
+        		jsonArray.set(4, convertNumberToJSONValue(point.getClose()));
+        		return jsonArray;
+            default:
+                // Should not reach this statement based on the structure of the Point class constructors
+                throw new IllegalArgumentException("Unable to convert point to JSON due to an invalid type");
         }
     }
 
@@ -2166,27 +2236,36 @@ public abstract class BaseChart<T> extends Widget {
 
     // Purposefully package scope
     static JSONValue addPointScalarValues(Point point, JSONObject options) {
-        if (point.getX() != null) {
-            options.put("x", new JSONNumber(point.getX().doubleValue()));
-        }
-        if (point.getY() != null) {
-            options.put("y", new JSONNumber(point.getY().doubleValue()));
-        } else {
-            options.put("y", JSONNull.getInstance());
-        }
-        if (point.getOpen() != null) {
-            options.put("open", new JSONNumber(point.getOpen().doubleValue()));
-        }
-        if (point.getHigh() != null) {
-            options.put("high", new JSONNumber(point.getHigh().doubleValue()));
-        }
-        if (point.getLow() != null) {
-            options.put("low", new JSONNumber(point.getLow().doubleValue()));
-        }
-        if (point.getClose() != null) {
-            options.put("close", new JSONNumber(point.getClose().doubleValue()));
-        }
+    	Point.Type type = point.getType();
+
+    	if (type != Point.Type.Y) {
+    		options.put("x", convertNumberToJSONValue(point.getX()));
+    	}
+
+    	if (type == Point.Type.Y || type == Point.Type.X_Y) {
+    		options.put("y", convertNumberToJSONValue(point.getY()));
+    	}
+
+    	if (type == Point.Type.X_LOW_HIGH || type == Point.Type.X_OPEN_HIGH_LOW_CLOSE) {
+    		options.put("high", convertNumberToJSONValue(point.getHigh()));
+    		options.put("low", convertNumberToJSONValue(point.getLow()));
+
+            if (type == Point.Type.X_OPEN_HIGH_LOW_CLOSE) {
+                options.put("open", convertNumberToJSONValue(point.getOpen()));
+                options.put("close", convertNumberToJSONValue(point.getClose()));
+            }
+    	}
+
         return options;
+    }
+
+    // Purposefully package scope
+    static JSONValue convertNumberToJSONValue(Number number) {
+        if (number != null) {
+            return new JSONNumber(number.doubleValue());
+        } else {
+            return JSONNull.getInstance();
+        }
     }
 
     // Purposefully constrained to package scope
@@ -2476,9 +2555,12 @@ public abstract class BaseChart<T> extends Widget {
     private String plotOptionsLabelsFormatterCallback(JavaScriptObject nativeData, String type) {
         PlotOptions plotOptions = null;
         if ("area".equals(type)) plotOptions = areaPlotOptions;
+        if ("arearange".equals(type)) plotOptions = areaRangePlotOptions;
         if ("areaspline".equals(type)) plotOptions = areaSplinePlotOptions;
+        if ("areasplinerange".equals(type)) plotOptions = areaSplineRangePlotOptions;
         if ("bar".equals(type)) plotOptions = barPlotOptions;
         if ("column".equals(type)) plotOptions = columnPlotOptions;
+        if ("columnrange".equals(type)) plotOptions = columnRangePlotOptions;
         if ("line".equals(type)) plotOptions = linePlotOptions;
         if ("ohlc".equals(type)) plotOptions = ohlcPlotOptions;
         if ("pie".equals(type)) plotOptions = piePlotOptions;

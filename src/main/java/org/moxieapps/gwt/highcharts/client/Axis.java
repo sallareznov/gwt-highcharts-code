@@ -391,9 +391,9 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     }
 
     /**
-     * For advanced use-cases only.  Returns a pointer to the native Highchart's Axis instance
-     * that this GWT Axis instance is associated with.  Note that this method will only return
-     * a non-null value if it is called after the chart has been rendered
+     * Returns a pointer to the native Highchart's Axis instance that this GWT Axis instance
+     * is associated with.  Note that this method will only return a non-null value if it
+     * is called after the chart has been rendered.  For advanced use-cases only.
      *
      * @return The native Highcharts axis instance that this Axis is associated with, or
      *         null if the chart has not yet been rendered.
@@ -413,7 +413,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     // Save some typing in the getExtremes() method
     private Number getNumberFromJSONObject(JSONObject jsonObject, String key) {
         JSONValue jsonValue = jsonObject.get(key);
-        if (jsonValue.isNumber() != null) {
+        if (jsonValue != null && jsonValue.isNumber() != null) {
             return jsonValue.isNumber().doubleValue();
         }
         return null;

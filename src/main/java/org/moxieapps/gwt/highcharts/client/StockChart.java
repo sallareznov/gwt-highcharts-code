@@ -61,6 +61,8 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.OHLCPlotOptions;
  * @since 1.0.0
  */
 public class StockChart extends BaseChart<StockChart> {
+    
+    private final Navigator navigator;
 
     /**
      * Create a new Highstock chart instance as a GWT Widget that can then be added to
@@ -77,11 +79,23 @@ public class StockChart extends BaseChart<StockChart> {
      */
     public StockChart() {
         super();
+        Series navigatorSeries = createSeries();
+        this.navigator = new Navigator(this, navigatorSeries);
+        this.setOption("/navigator", this.navigator);
     }
 
     @Override
     protected String getChartTypeName() {
         return "StockChart";
+    }
+    
+    /**
+     * Access the StockChart's {@link Navigator}, for customization.
+     * @return A reference to the stock chart's {@link Navigator}
+     * @since 1.5.0
+     */
+    public Navigator getNavigator() {
+        return navigator;
     }
 
     /**
