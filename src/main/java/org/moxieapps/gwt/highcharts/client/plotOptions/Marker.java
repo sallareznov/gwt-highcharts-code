@@ -264,4 +264,29 @@ public class Marker extends Configurable<Marker> {
         return this.setOption("symbol", symbol != null ? symbol.toString() : null);
     }
 
+    /**
+     * Convenience method for setting the 'symbol' option for markers to a URL.  Equivalent to:
+     * <pre><code>
+     *     marker.setOption("symbol", "url('http://highcharts.com/demo/gfx/sun.png')");
+     * </code></pre>
+     * Sets the marker to use a custom symbol from a url. Note that only the url itself
+     * is needed to be passed as a parameter. Sample usage:
+     * <pre><code>
+     *     chart.addSeries(
+     *         chart.createSeries()
+     *              .addPoint(
+     *                  new Point(216.4)
+     *                      .setMarker(
+     *                          new Marker()
+     *                              .setSymbol("http://highcharts.com/demo/gfx/sun.png")
+     *     );
+     * </code></pre>
+     * @param symbolURL the url of the symbol to use for the marker.
+     * @return A reference to this {@link Marker} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Marker setSymbol(String symbolURL) {
+        return this.setOption("symbol", "url(" + symbolURL + ")");
+    }
+
 }

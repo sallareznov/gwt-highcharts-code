@@ -35,6 +35,62 @@ import org.moxieapps.gwt.highcharts.client.Series;
  */
 public class LinePlotOptions extends PlotOptions<LinePlotOptions> {
 
-    // TODO:
+    public enum Compare {
+
+        /**
+         * Compare the lines based on the percentage difference in the two series
+         */
+        PERCENT("percent"),
+
+        /**
+         * Compare the lines based on the absolute difference in the two series
+         */
+        VALUE("value");
+
+        private Compare(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+    }
+
+    /**
+     * Convenience method for setting the 'compare' option of the chart.  Equivalent to:
+     * <pre><code>
+     *     linePlotOptions.setOption("compare", "percent");
+     * </code></pre>
+     * Compare the values of the series against the first value in the visible range.
+     * The y axis will show percentage or absolute change depending on whether compare is set to
+     * "percent" or "value". When this is applied to multiple series, it allows comparing the development
+     * of the series against each other. Defaults to undefined.
+     *
+     * @param compare The type of comparison between data sets.  Can be Compare.PERCENT, or Compare.Value
+     * @return A reference to {@link LinePlotOptions} for convenient method chaining.
+     */
+    public LinePlotOptions setCompare(Compare compare) {
+        return this.setOption("compare", compare != null ? compare.toString() : null);
+    }
+
+    /**
+     * Convenience Method for setting the "gapSize" option of the plot options.  Equivalent to:
+     * <pre><code>
+     *     linePlotOptions.setOption("gapSize", 5);
+     * </code></pre>
+     * Defines when to display a gap in the graph. A gap size of 5 means that if the distance between two points is
+     * greater than five times that of the two closest points, the graph will be broken.In practice, this option is
+     * most often used to visualize gaps in time series. In a stock chart, intraday data is available for daytime hours,
+     * while gaps will appear in nights and weekends.. Defaults to 0.
+     *
+     * @param gapSize The distance between points needed to display a gap in the series.
+     * @return A reference to this {@link LinePlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public LinePlotOptions setGapSize(Number gapSize) {
+        return this.setOption("gapSize", gapSize);
+    }
 
 }

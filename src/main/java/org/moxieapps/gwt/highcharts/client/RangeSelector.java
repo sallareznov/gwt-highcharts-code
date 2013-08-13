@@ -45,7 +45,73 @@ package org.moxieapps.gwt.highcharts.client;
  * @since 1.5.0
  */
 public class RangeSelector extends Configurable<RangeSelector> {
-    
+
+    /**
+     * An enumeration of supported range selector horizontal alignment types, which can be passed to methods
+     * like {@link RangeSelector#setInputPositionAlign(org.moxieapps.gwt.highcharts.client.RangeSelector.Align)} method.
+     */
+    public enum Align {
+
+        /**
+         * Left align the range selector input box
+         */
+        LEFT("left"),
+
+        /**
+         * Center the range selector input box
+         */
+        CENTER("center"),
+
+        /**
+         * Right align the range selector input box
+         */
+        RIGHT("right");
+
+        private Align(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
+     * An enumeration of supported range selector vertical alignment types, which can be passed to methods
+     * like {@link Credits#setVerticalAlign(Credits.VerticalAlign)} method.
+     */
+    public enum VerticalAlign {
+
+        /**
+         * Show the range selector input box at the top of the chart
+         */
+        TOP("top"),
+
+        /**
+         * Show the range selector input box in the middle of the chart
+         */
+        MIDDLE("middle"),
+
+        /**
+         * Show the range selector input box at the bottom of the chart
+         */
+        BOTTOM("bottom");
+
+        private VerticalAlign(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
     /**
      * An enumeration of supported range selector button types, which can be used with the {@link RangeSelector.Button#setType(RangeSelector.ButtonType)} method.
      */
@@ -168,6 +234,109 @@ public class RangeSelector extends Configurable<RangeSelector> {
      */
     public RangeSelector setInputEnabled(boolean inputEnabled) {
         return this.setOption("inputEnabled", inputEnabled);
+    }
+
+
+    /**
+     * Convenience method for setting the 'inputPosition' option for the rangeSelector.  Equivalent to:
+     * <pre><code>
+     *     stockChart.setOption("/inputPosition/VerticalAlign", center);
+     * </code></pre>
+     * Sample usage:
+     * <pre><code>
+     *     stockChart.setRangeSelector(
+     *         new RangeSelector()
+     *              .setInputPositionAlign(Align.LEFT)
+     *     );
+     * </code></pre>
+     * Can be one of either 'left, 'center', or right'
+     * @param align The horizontal alignment for the input box.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setInputPositionAlign(Align align) {
+        return this.setOption("/inputPosition/VerticalAlign", align != null ? align.toString() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'inputPosition' option for the rangeSelector.  Equivalent to:
+     * <pre><code>
+     *     stockChart.setOption("/inputPosition/verticalAlign", top);
+     * </code></pre>
+     * Sample usage:
+     * <pre><code>
+     *     stockChart.setRangeSelector(
+     *         new RangeSelector()
+     *              .setInputPositionAlign(VerticalAlign.TOP)
+     *     );
+     * </code></pre>
+     * Can be one of either 'top, 'middle', or 'bottom'
+     * @param verticalAlign The vertical position for the input box.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setInputPositionVerticalAlign(VerticalAlign verticalAlign) {
+        return this.setOption("/inputPosition/verticalAlign", verticalAlign != null ? verticalAlign.toString() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'inputPosition' option for the rangeSelector.  Equivalent to:
+     * <pre><code>
+     *     stockChart.setOption("/inputPosition/x", 15);
+     * </code></pre>
+     * Sample usage:
+     * <pre><code>
+     *     stockChart.setRangeSelector(
+     *         new RangeSelector()
+     *              .setInputPositionX(15)
+     *     );
+     * </code></pre>
+     * @param x the x offset for the input box.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setInputPositionX(Number x) {
+        return this.setOption("/inputPosition/x", x);
+    }
+
+    /**
+     * Convenience method for setting the 'inputPosition' option for the rangeSelector.  Equivalent to:
+     * <pre><code>
+     *     stockChart.setOption("/inputPosition/y", 10);
+     * </code></pre>
+     * Sample usage:
+     * <pre><code>
+     *     stockChart.setRangeSelector(
+     *         new RangeSelector()
+     *              .setInputPositionY(10)
+     *     );
+     * </code></pre>
+     * @param y The y offset for the input box.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setInputPositionY(Number y) {
+        return this.setOption("/inputPosition/y", y);
+    }
+
+    /**
+     * CSS for the HTML inputs in the range selector.
+     * @param inputStyle The CSS style object containing the style for the range selector inputs.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setInputStyle(Style inputStyle) {
+        return this.setOption("inputStyle", inputStyle != null ? inputStyle.getOptions() : null);
+    }
+
+    /**
+     * CSS styles for the labels - the Zoom, From and To texts.
+     * @param labelStyle The CSS style object containing the style for the range selector label.
+     * @return A reference to this {@link RangeSelector} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public RangeSelector setLabelStyle(Style labelStyle) {
+        return this.setOption("labelStyle", labelStyle != null ? labelStyle.getOptions() : null);
     }
 
     /**

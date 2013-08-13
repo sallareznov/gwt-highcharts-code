@@ -91,6 +91,7 @@ public class Chart extends BaseChart<Chart> {
 
     }
 
+
     /**
      * Create a new Highcharts chart instance as a GWT Widget that can then be added to
      * a GWT layout like any other widget. Note that the various methods that support
@@ -113,7 +114,7 @@ public class Chart extends BaseChart<Chart> {
      * Convenience method for setting the 'pane' options of the chart, which represents
      * a collection of options that apply only to polar charts and angular gauges.
      * <p/>
-     * Note: mane of the pane options are only available if the highcharts-more.js script is included in your GWT module. E.g.:
+     * Note: many of the pane options are only available if the highcharts-more.js script is included in your GWT module. E.g.:
      * </p>
      * &lt;script type="text/javascript" src="js/highcharts-more.js"&gt;&lt;/script&gt;
      *
@@ -124,6 +125,8 @@ public class Chart extends BaseChart<Chart> {
     public Chart setPane(Pane pane) {
         return this.setOption("/pane", pane != null ? pane.getOptions() : null);
     }
+
+
 
     /**
      * Convenience method for setting the 'polar' option of the chart.  Equivalent to:
@@ -138,7 +141,7 @@ public class Chart extends BaseChart<Chart> {
      *
      * @param polar The value to set as the 'polar' option on the chart.
      * @return A reference to this {@link Chart} instance for convenient method chaining.
-     * @since 1.5.0
+     * @since 1.6.0
      */
     public Chart setPolar(boolean polar) {
         return this.setOption("/chart/polar", polar);
@@ -155,10 +158,13 @@ public class Chart extends BaseChart<Chart> {
      *
      * @param zoomType One of the allowed zoom types.
      * @return A reference to this {@link Chart} instance for convenient method chaining.
+     * @deprecated Use {@link BaseChart#setZoomType(BaseChart.ZoomType)}
      */
     public Chart setZoomType(Chart.ZoomType zoomType) {
         return this.setOption("/chart/zoomType", zoomType != null ? zoomType.toString() : null);
     }
+
+
 
     @Override
     protected String getChartTypeName() {

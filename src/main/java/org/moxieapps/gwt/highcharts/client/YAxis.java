@@ -45,6 +45,36 @@ public class YAxis extends Axis<YAxis> {
         super(chart);
     }
 
+    /**
+     * Convenience method for setting the 'top' option of the axis.  Equivalent to:
+     * <pre><code>
+     *     axis.setOption("top", 300);
+     * </code></pre>
+     * The maximum value of the axis
+     * @param height The height of the axis.
+     * @return A reference to this {@link YAxis} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public YAxis setHeight(Number height) {
+        return this.setOption("height", height);
+    }
+
+    /**
+     * Convenience method for setting the 'top' option of the axis. Equivalent to:
+     * <pre><code>
+     *     axis.setOption("top", 300);
+     * </code></pre>
+     * The top pixel position of the Y axis relative to the chart. Defaults to null.
+     * Note that this option is a fixed value and does not support setting the top of the
+     * axis as a percentage of the pane.
+     * @param top The top value of the axis.
+     * @return A reference to this {@link YAxis} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public YAxis setTop(Number top) {
+        return this.setOption("top", top);
+    }
+
     private YAxisLabels yAxisLabels;
 
     /**

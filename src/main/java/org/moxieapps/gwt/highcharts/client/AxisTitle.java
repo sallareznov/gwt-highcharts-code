@@ -81,6 +81,8 @@ public class AxisTitle extends Configurable<AxisTitle> {
         return this.setOption("align", align != null ? align.toString() : null);
     }
 
+
+
     /**
      * Convenience method for setting the 'margin' option of the title.  Equivalent to:
      * <pre><code>

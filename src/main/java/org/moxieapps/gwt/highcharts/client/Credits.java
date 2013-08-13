@@ -100,6 +100,7 @@ public class Credits extends Configurable<Credits> {
 
     }
 
+
     /**
      * Convenience method for setting the 'align' option of the credits.  Equivalent to:
      * <pre><code>
@@ -178,6 +179,7 @@ public class Credits extends Configurable<Credits> {
         return this.setOption("text", text);
     }
 
+
     /**
      * Convenience method for setting the 'verticalAlign' option of the credits.  Equivalent to:
      * <pre><code>
@@ -189,6 +191,7 @@ public class Credits extends Configurable<Credits> {
      *
      * @param verticalAlign The vertical alignment of the credits.
      * @return A reference to this {@link Credits} instance for convenient method chaining.
+     * @since 1.6.0
      */
     public Credits setVerticalAlign(VerticalAlign verticalAlign) {
         return this.setOption("/position/verticalAlign", verticalAlign != null ? verticalAlign.toString() : null);

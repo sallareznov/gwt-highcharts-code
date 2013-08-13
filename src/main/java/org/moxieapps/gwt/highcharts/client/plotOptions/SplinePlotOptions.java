@@ -35,7 +35,36 @@ import org.moxieapps.gwt.highcharts.client.Series;
  */
 public class SplinePlotOptions extends PlotOptions<SplinePlotOptions> {
 
-    // TODO:
+    /**
+     * Convenience Method for setting the "gapSize" option of the plot options.  Equivalent to:
+     * <pre><code>
+     *     splinePlotOptions.setOption("gapSize", 5);
+     * </code></pre>
+     * Defines when to display a gap in the graph. A gap size of 5 means that if the distance between two points is
+     * greater than five times that of the two closest points, the graph will be broken.In practice, this option is
+     * most often used to visualize gaps in time series. In a stock chart, intraday data is available for daytime hours,
+     * while gaps will appear in nights and weekends.. Defaults to 0.
+     * @param gapSize The distance between points needed to display a gap in the series.
+     * @return A reference to this {@link SplinePlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public SplinePlotOptions setGapSize(Number gapSize) {
+        return this.setOption("gapSize", gapSize);
+    }
+
+    /**
+     * Convenience method for setting the 'connectNulls' option for the chart.  Equivalent to:
+     * <pre><code>
+     *     splinePlotOptions.setOption("connectNulls", true);
+     * </code></pre>
+     * Whether to draw a line between points on either side of a null point, or render a gap between them.
+     * @param connectNulls 'true' to connect points on either side of a null point
+     * @return A reference to this {@link SplinePlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public SplinePlotOptions setConnectNulls(boolean connectNulls) {
+        return this.setOption("connectNulls", connectNulls);
+    }
 
 }
 

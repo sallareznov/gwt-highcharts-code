@@ -81,6 +81,23 @@ public class Navigation extends Configurable<Navigation> {
         return this.setOption("menuItemHoverStyle", menuItemHoverStyle != null ? menuItemHoverStyle.getOptions() : null);
     }
 
-    // TODO: Add buttonOptions configuration methods
-
+    /**
+     * Convenience method for setting the "buttonOptions" for the export button.  Sample usage:
+     * <pre><code>
+     *     chart.setNavigation(
+     *         new Navigation()
+     *             .setButtonOptions(
+     *                 new Button()
+     *                     .setAlign(Button.Align.RIGHT)
+     *                     .setSymbolFill("#E0E0E0")
+     *             )
+     *     );
+     * </code></pre>
+     * @param button The export button with options set using methods in {@link Button}.
+     * @return A reference to this {@link Navigation} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Navigation setButtonOptions(Button button) {
+        return this.setOption("/buttonOptions", button);
+    }
 }

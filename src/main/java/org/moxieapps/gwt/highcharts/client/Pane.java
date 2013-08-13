@@ -1,5 +1,9 @@
 package org.moxieapps.gwt.highcharts.client;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONString;
+
 /**
  * A configurable class that will allow you to control the pane options of the charts, which
  * applies only to polar charts and angular gauges.  This configuration object holds general
@@ -7,7 +11,7 @@ package org.moxieapps.gwt.highcharts.client;
  * An instance of this class can be constructed and then
  * set on the chart via the {@link org.moxieapps.gwt.highcharts.client.Chart#setPane(Pane)} method.
  * <p/>
- * Note: mane of the pane options are only available if the highcharts-more.js script is included in your GWT module. E.g.:
+ * Note: many of the pane options are only available if the highcharts-more.js script is included in your GWT module. E.g.:
  * </p>
  * &lt;script type="text/javascript" src="js/highcharts-more.js"&gt;&lt;/script&gt;
  *
@@ -15,6 +19,66 @@ package org.moxieapps.gwt.highcharts.client;
  * @since 1.5.0
  */
 public class Pane extends Configurable<Pane> {
+    /**
+     * Convenience method for setting the "background" option of the pane.  Sample usage:
+     * <pre><code>
+     *     chart.setPane(
+     *          newPane()
+     *              .setBackground(
+     *                  new PaneBackground()
+     *                      .setBackgroundColor(#333)
+     *              )
+     *      );
+     * </code></pre>
+     * @param paneBackgrounds An Instance of the PaneBackground class that has been set using its supplied methods.
+     * @return A reference to this {@link Pane} instance for convenient method chaining.
+     */
+    public Pane setBackground(PaneBackground... paneBackgrounds) {
+        return this.setOption("background", paneBackgrounds);
+    }
+
+    /**
+     * Convenience method for setting the "center" option of the pane.  Equivalent to:
+     * <pre><code>
+     *     pane.setOption("center", [50, 50]);
+     * </code></pre>
+     * The center of a polar chart or angular gauge, given as an array of [x, y] positions.
+     * Positions is given as integers that transform to pixels. Defaults to ['50%', '50%'].
+     * Note: This method is for denoting the center of the pane as a pair of (x, y) coordinates.
+     * If you instead want to represent the center as a percentage of the plot area size,
+     * use this {@link #setCenter(String, String)}.
+     * @param centerX The x value of the center of the pane in pixels.
+     * @param centerY The y value of the center of the pane in pixels.
+     * @return A reference to this {@link Pane} instance for convenient method chaining.
+     */
+    public Pane setCenter(Number centerX, Number centerY) {
+        JSONArray center = new JSONArray();
+        center.set(0, new JSONNumber(centerX.doubleValue()));
+        center.set(1, new JSONNumber(centerY.doubleValue()));
+        return this.setOption("center", center);
+
+    }
+
+    /**
+     * Convenience method for setting the "center" option of the pane.  Equivalent to:
+     * <pre><code>
+     *     pane.setOption("center", ['50%', '50%']);
+     * </code></pre>
+     * The center of a polar chart or angular gauge, given as an array of [x, y] positions.
+     * Positions are given as percentages of the plot area size.  Defaults to ['50%', '50%'].
+     * Note: this method is for denoting the location of the center as a string.  If you instead
+     * want to represent the center as a pair of (x, y) coordinates, use this {@link #setCenter(Number, Number)}.
+     * @param centerX The x coordinate of the center of the pane a percentage of the plot size area.
+     * @param centerY The x coordinate of the center of the pane a percentage of the plot size area.
+     * @return A reference to this {@link Pane} instance for convenient method chaining.
+     */
+    public Pane setCenter(String centerX, String centerY) {
+        JSONArray center = new JSONArray();
+        center.set(0, new JSONString(centerX));
+        center.set(1, new JSONString(centerY));
+        return this.setOption("center", center);
+    }
+
 
     /**
      * Convenience method for setting the 'startAngle' option of the pane.  Equivalent to:
@@ -43,7 +107,5 @@ public class Pane extends Configurable<Pane> {
     public Pane setEndAngle(Number endAngle) {
         return this.setOption("endAngle", endAngle);
     }
-
-    // TODO: Add 'background' and 'center' configuration methods
 
 }

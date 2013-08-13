@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.moxieapps.gwt</groupId>
     <artifactId>org.moxieapps.gwt.highcharts</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
     <packaging>bundle</packaging>
 
 
@@ -26,7 +25,7 @@
 
 
     <build>
-        <finalName>org.moxieapps.gwt.highcharts-1.5.0</finalName>
+        <finalName>org.moxieapps.gwt.highcharts-${project.version}</finalName>
 
         <!-- GWT needs the source code in the output bundle -->
         <resources>
@@ -52,6 +51,15 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>org.moxieapps.gwt.highcharts.*</Export-Package>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
             <!-- Generate the javadoc with the command: mvn javadoc:javadoc -->

@@ -130,6 +130,7 @@ public class Legend extends Configurable<Legend> {
 
     }
 
+
     /**
      * Convenience method for setting the 'align' option of the legend.  Equivalent to:
      * <pre><code>
@@ -270,21 +271,47 @@ public class Legend extends Configurable<Legend> {
     }
 
     /**
-     * Convenience method for setting the 'itemStyle' options of the legend.  Equivalent to:
+     * Convenience method for setting the 'itemMarginBottom' options of the legend. Equivalent to:
      * <pre><code>
-     *     legend.setOption("/itemStyle/fontWeight", "bold");
-     *     legend.setOption("/itemStyle/fontFamily", "serif");
-     *     etc.
+     *     legend.setOption("itemMarginBottom", 0);
      * </code></pre>
-     * CSS styles for each legend item. Defaults to:
-     * <ul>
-     * <li>cursor: 'pointer'</li>
-     * <li>color: '#3E576F'</li>
-     * </ul>
-     *
-     * @param itemStyle CSS styles for each legend item.
+     * The pixel bottom margin for each legend item. Defaults to 0.
+     * @param itemMarginBottom The distance in pixels from the last legend item to the bottom border of the legend.
      * @return A reference to this {@link Legend} instance for convenient method chaining.
      */
+    public Legend setItemMarginBottom(Number itemMarginBottom) {
+        return this.setOption("itemMarginBottom", itemMarginBottom);
+    }
+
+    /**
+     * Convenience method for setting the 'itemMarginTop' options of the legend. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("itemMarginTop", 0);
+     * </code></pre>
+     * The pixel top margin for each legend item. Defaults to 0.
+     * @param itemMarginTop The distance in pixels from the top border of the legend to the first legend item.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setItemMarginTop(Number itemMarginTop) {
+        return this.setOption("itemMarginTop", itemMarginTop);
+    }
+
+        /**
+         * Convenience method for setting the 'itemStyle' options of the legend.  Equivalent to:
+         * <pre><code>
+         *     legend.setOption("/itemStyle/fontWeight", "bold");
+         *     legend.setOption("/itemStyle/fontFamily", "serif");
+         *     etc.
+         * </code></pre>
+         * CSS styles for each legend item. Defaults to:
+         * <ul>
+         * <li>cursor: 'pointer'</li>
+         * <li>color: '#3E576F'</li>
+         * </ul>
+         *
+         * @param itemStyle CSS styles for each legend item.
+         * @return A reference to this {@link Legend} instance for convenient method chaining.
+         */
     public Legend setItemStyle(Style itemStyle) {
         return this.setOption("itemStyle", itemStyle != null ? itemStyle.getOptions() : null);
     }
@@ -367,6 +394,137 @@ public class Legend extends Configurable<Legend> {
     /**
      * Convenience method for setting the 'reversed' option of the legend.  Equivalent to:
      * <pre><code>
+     *     legend.setOption("maxHeight", 60);
+     * </code></pre>
+     * Maximum pixel height for the legend. When the maximum height is extended, navigation will show.
+     * @param maxHeight The Maximum height of the Legend
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setMaxHeight(Number maxHeight) {
+        return this.setOption("maxHeight", maxHeight);
+    }
+
+    /**
+     * Convenience method for setting the "activeColor" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/activeColor", #3E576F);
+     * </code></pre>
+     * The color for the active up or down arrow in the legend page navigation. Defaults to #3E576F
+     * @param activeColor
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationActiveColor(Color activeColor) {
+        return this.setOption("/navigation/activeColor", activeColor);
+    }
+
+    /**
+     * Convenience method for setting the "activeColor" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/activeColor", );
+     * </code></pre>
+     * The color for the active up or down arrow in the legend page navigation. Defaults to #3E576F
+     * @param color
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationActiveColor(Number color) {
+        return this.setOption("/navigation/activeColor", color);
+    }
+
+    /**
+     * Convenience method for setting the "animation" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption(("/navigation/animation", true);
+     * </code></pre>
+     * How to animate the pages when navigating up or down. A value of true applies the default navigation given in the chart.
+     * animation option. Additional options can be given as an object containing values for easing and duration. Defaults to true.
+     * @param animation
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationAnimation(boolean animation) {
+        return this.setOption("/navigation/animation", animation);
+    }
+
+    /**
+     * Convenience method for setting the "animation" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/animation", );
+     * </code></pre>
+     * How to animate the pages when navigating up or down. A value of true applies the default navigation given in the chart.
+     * animation option. Additional options can be given as an object containing values for easing and duration. Defaults to true.
+     * @param animation
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationAnimation(Animation animation) {
+        return this.setOption("/navigation/animation", animation);
+    }
+
+    /**
+     * Convenience method for setting the "arrowSize" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/arrowSize", 12);
+     * </code></pre>
+     * The pixel size of the up and down arrows in the legend paging navigation. . Defaults to 12.
+     * @param arrowSize
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationArrowSize(Number arrowSize) {
+        return this.setOption("/navigation/arrowSize", arrowSize);
+    }
+
+    /**
+     * Convenience method for setting the "inactiveColor" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/inactiveColor", #CCC);
+     * </code></pre>
+     * The color of the inactive up or down arrow in the legend page navigation. . Defaults to #CCC.
+     * @param inactiveColor
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationInactiveColor(Color inactiveColor) {
+        return this.setOption("/navigation/inactiveColor", inactiveColor);
+    }
+
+    /**
+     * Convenience method for setting the "inactiveColor" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/inactiveColor", );
+     * </code></pre>
+     * The color of the inactive up or down arrow in the legend page navigation. . Defaults to #CCC.
+     * @param inactiveColor
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationInactiveColor(Number inactiveColor) {
+        return this.setOption("/navigation/inactiveColor", inactiveColor);
+    }
+
+    /**
+     * Convenience method for setting the "style" option for the legend navigation. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/navigation/style", null);
+     * </code></pre>
+     * Text styles for the legend page navigation.
+     * @param style
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setNavigationStyle(Style style) {
+        return this.setOption("/navigation/style", style);
+    }
+
+    /**
+     * Convenience method for setting the 'reversed' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("padding", 8);
+     * </code></pre>
+     * The inner padding of the legend box. Defaults to 8.
+     * @param padding the distance in pixels of legend items to the legend border.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setPadding(Number padding) {
+        return this.setOption("padding", padding);
+    }
+    /**
+     * Convenience method for setting the 'reversed' option of the legend.  Equivalent to:
+     * <pre><code>
      *     legend.setOption("reversed", true);
      * </code></pre>
      * Whether to reverse the order of the legend items compared to the order of the series
@@ -377,6 +535,19 @@ public class Legend extends Configurable<Legend> {
      */
     public Legend setReversed(boolean reversed) {
         return this.setOption("reversed", reversed);
+    }
+
+    /**
+     * Convenience method for setting the 'reversed' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("rtl", true);
+     * </code></pre>
+     * Whether to show the symbol on the right side of the text rather than the left side. This is common in Arabic and Hebraic. Defaults to false
+     * @param rtl 'true' to show the symbol to the right of the text of the legend item.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setRtl(boolean rtl) {
+        return this.setOption("rtl", rtl);
     }
 
     /**
@@ -441,6 +612,54 @@ public class Legend extends Configurable<Legend> {
     public Legend setSymbolWidth(Number symbolWidth) {
         return this.setOption("symbolWidth", symbolWidth);
     }
+
+    /**
+     * Convenience method for setting the "style" option for the legend title. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/title/style", "fontWeight: 'bold'");
+     * </code></pre>
+     * Generic CSS styles for the legend title. Defaults to:
+     * <pre><code>
+     * style: {
+     *     fontWeight: 'bold'
+     * }
+     * </code></pre>
+     * @param style
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setTitleStyle(Style style) {
+        return this.setOption("/title/style", style);
+    }
+
+    /**
+     * Convenience method for setting the "text" option for the legend title. Equivalent to:
+     * <pre><code>
+     *     legend.setOption("/title/text", null);
+     * </code></pre>
+     * A text or HTML string for the title. Defaults to null.
+     * @param text
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setTitleText(String text) {
+        return this.setOption("/title/text", text);
+    }
+
+    /**
+     * Convenience method for setting the 'useHTML' option of the legend.  Equivalent to:
+     * <pre><code>
+     *     legend.setOption("useHTML", false);
+     * </code></pre>
+     * Whether to use HTML to render the legend item texts.
+     * Using HTML allows for advanced formatting, images and reliable bi-directional text rendering.
+     * Note that exported images won't respect the HTML, and that HTML won't respect Z-index settings.
+     * When using HTML, legend.navigation is disabled.
+     * @param useHTML 'true' to use HTML to render Legend texts.
+     * @return A reference to this {@link Legend} instance for convenient method chaining.
+     */
+    public Legend setUseHTML(boolean useHTML) {
+        return this.setOption("useHTML", useHTML);
+    }
+
 
     /**
      * Convenience method for setting the 'verticalAlign' option of the legend.  Equivalent to:

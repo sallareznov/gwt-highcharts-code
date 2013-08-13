@@ -38,6 +38,20 @@ import com.google.gwt.json.client.JSONBoolean;
 public class ToolTip extends Configurable<ToolTip> {
 
     /**
+     * Convenience method for setting the 'animation' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("animation", "true");
+     * </code></pre>
+     * Enable or disable animation of the tooltip. In slow legacy IE browsers the animation is disabled by default.
+     * Defaults to true.
+     * @param animation Whether to enable or disable animation of the tooltip.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setAnimation(boolean animation) {
+        return this.setOption("animation", animation);
+    }
+
+    /**
      * Convenience method for setting the 'backgroundColor' option for the tool tips.  Equivalent to:
      * <pre><code>
      *     toolTip.setOption("backgroundColor", "#CCCCCC");
@@ -151,6 +165,20 @@ public class ToolTip extends Configurable<ToolTip> {
     }
 
     /**
+     * convenience method for setting the 'changeDecimal' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("changeDecimal", 5);
+     * </code></pre>
+     * How many decimals to show for the point.change value when the series.compare option is set.
+     * This is overridable in each series' tooltip options object. The default is to preserve all decimals.
+     * @param changeDecimal The number of decimals to show.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setChangeDecimal(Number changeDecimal) {
+        return this.setOption("changeDecimal", changeDecimal);
+    }
+
+    /**
      * Convenience method for setting the 'crosshairs' option for the tool tips for both axis.  Equivalent to:
      * <pre><code>
      *     toolTip.setOption("crosshairs", true);
@@ -184,9 +212,10 @@ public class ToolTip extends Configurable<ToolTip> {
     public ToolTip setCrosshairs(boolean xCrosshairs, boolean yCrosshairs) {
         JSONArray jsonArray = new JSONArray();
         jsonArray.set(0, JSONBoolean.getInstance(xCrosshairs));
-        jsonArray.set(0, JSONBoolean.getInstance(yCrosshairs));
+        jsonArray.set(1, JSONBoolean.getInstance(yCrosshairs));
         return this.setOption("crosshairs", jsonArray);
     }
+
 
     // TODO: Add crosshairs options for taking an array of objects
 
@@ -202,6 +231,38 @@ public class ToolTip extends Configurable<ToolTip> {
      */
     public ToolTip setEnabled(boolean enabled) {
         return this.setOption("enabled", enabled);
+    }
+
+    /**
+     * Convenience method for setting the 'followPointer' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("followPointer", true);
+     * </code></pre>
+     * Whether the tooltip should follow the mouse as it moves across columns, pie slices and other
+     * point types with an extent. By default it behaves this way for scatter, bubble and pie series
+     * by override in the plotOptions for those series types.
+     * For touch moves to behave the same way, {@link #setFollowTouchMove(boolean)} must be true also.
+     * @param followPointer 'true' to make the tooltip follow the mouse pointer.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setFollowPointer(boolean followPointer) {
+        return this.setOption("followPointer", followPointer);
+    }
+
+    /**
+     * Convenience method for setting the 'enabled' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("followTouchMove", true);
+     * </code></pre>
+     * Whether the tooltip should follow the finger as it moves on a touch device.
+     * The default value of false causes a touch move to scroll the web page, as is default behaviour
+     * on touch devices. Setting it to true may cause the user to be trapped inside the chart and
+     * unable to scroll away, so it should be used with care. Defaults to false.
+     * @param followTouchMove 'true' to make the tooltip follow a finger on a touch device.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setFollowTouchMove(boolean followTouchMove) {
+        return this.setOption("followTouchMove", followTouchMove);
     }
 
     private ToolTipFormatter toolTipFormatter;
@@ -223,6 +284,36 @@ public class ToolTip extends Configurable<ToolTip> {
     public ToolTip setFormatter(ToolTipFormatter toolTipFormatter) {
         this.toolTipFormatter = toolTipFormatter;
         return this;
+    }
+
+    /**
+     * Convenience method for setting the 'headerFormat' option for the tool tips.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("headerFormat", "&lt;span style=\"font-size: 10px\"&gt;{point.key}&lt;/span&gt;&lt;br/&gt;")
+     * </code></pre>
+     * The HTML of the tooltip header line. Variables are enclosed by curly brackets.
+     * Available variables are point.key, series.name, series.color and other members from the point and series objects.
+     * The point.key variable contains the category name, x value or datetime string depending on the type of axis.
+     * For datetime axes, the point.key date format can be set using {@link #setXDateFormat(String)}.
+     * Defaults to &lt;span style="font-size: 10px"&gt;{point.key}&lt;/span&gt;&lt;br/&gt;
+     * @param headerFormat The HTML of the tool tip header
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setHeaderFormat(String headerFormat) {
+        return this.setOption("headerFormat", headerFormat);
+    }
+
+    /**
+     * Convenience method for setting the 'hideDelay' option of the tool tip.  Equivalent to:
+     * <pre><code>
+     *     toolTip.setOption("hideDelay", 500)
+     * </code></pre>
+     * The number of milliseconds to wait until the tooltip is hidden when mouse out from a point or chart. Defaults to 500.
+     * @param hideDelay the number of miliseconds to wait before hiding the tooltip.
+     * @return A reference to this {@link ToolTip} instance for convenient method chaining.
+     */
+    public ToolTip setHideDelay(Number hideDelay) {
+        return this.setOption("hideDelay", hideDelay);
     }
 
     // Purposefully restricted to package scope

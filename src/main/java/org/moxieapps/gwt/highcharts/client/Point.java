@@ -69,6 +69,12 @@ public class Point extends Configurable<Point> {
      * Highcharts API, but exposing this enum could be reconsidered if a use case was identified.)
      */
 	static enum Type {
+
+        /**
+         * Indicates that the point is a Flag
+         */
+        FLAG,
+
 		/**
 		 * Indicates the point contains only a Y value
 		 */
@@ -170,6 +176,32 @@ public class Point extends Configurable<Point> {
         setName(name);
         this.y = y;
         this.type = Type.Y;
+    }
+
+    /**
+     * Creates a new point with only a 'name' field.  Only used in waterfall charts when the value is computed by
+     * {@link #setIsIntermediateSum(boolean)} or (@link #setIsSum(boolean)}
+     * @param name The name of the point
+     * @since 1.6.0
+     */
+    public Point(String name) {
+        setName(name);
+        this.type = Type.Y;
+    }
+
+    /**
+     * Creates a new point of type "flag" at a given value with a title and text.  Intended to be
+     * added to series whose type has been set to {@link Series.Type#FLAGS};
+     * 
+     * @param x Point where the flag appears
+     * @param title Title of flag displayed on the chart
+     * @param text Text displayed when the flag are highlighted.
+     */
+    public Point(Number x, String title, String text) {
+        this.x = x;
+        setTitle(title);
+        setText(text);
+        this.type = Type.FLAG;
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
@@ -293,6 +325,36 @@ public class Point extends Configurable<Point> {
      */
     public Point setColor(String color) {
         return this.setOption("color", color);
+    }
+
+    /**
+     * Convenience method for setting the 'isIntermediateSum' option for a point.  Equivalent to:
+     * <pre><code>
+     *     point.setOption("setIntermediateSum", true)
+     * </code></pre>
+     * Used in Waterfall Charts.  When this option is set to true, the point will be assigned a value that is calculated
+     * by summing all points since the last 'intermediate sum' Defaults to false.
+     * @param isIntermediateSum Whether the point is an intermediate sum.
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Point setIsIntermediateSum(boolean isIntermediateSum) {
+        return this.setOption("isIntermediateSum", isIntermediateSum);
+    }
+
+    /**
+     * Convenience mwthod for setting the 'isSum' option for the point.  Equivalent to:
+     * <pre><code>
+     *     point.setOption("isSum", true);
+     * </code></pre>
+     * Used in Waterfall charts.  When this option is set to true, the point will ba assigned a value that is
+     * calculated by summing all of the points.  Defaults to false.
+     * @param isSum Whether the point is the sum of all points
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Point setIsSum(boolean isSum) {
+        return this.setOption("isSum", isSum);
     }
 
     /**
@@ -639,6 +701,73 @@ public class Point extends Configurable<Point> {
         }
         return this;
     }
+
+    private String text;
+
+    /**
+     * Convenience method for setting the 'text' option of the point.  Equivalent to:
+     * <pre><code>
+     *     point.setOption("text", "Green Bears");
+     * </code></pre>
+     * The text of the point as shown in the tooltip, defaults to "".
+     *
+     * @param text The value to set as the point's text.
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Point setText(String text) {
+        this.text = text;
+        return this.setOption("text", text);
+    }
+
+    /**
+     * Return the text property that was set on this point, or null if no text was set.
+     *
+     * @return The 'text' property that was set on this point (likely via {@link #setText(String)},
+     *         or null if no text was set.
+     * @since 1.6.0
+     */
+    public String getText() {
+        if (this.nativePoint != null) {
+            return nativeGetString(this.nativePoint, "text");
+        } else {
+            return this.text;
+        }
+    }
+
+    private String title;
+
+    /**
+     * Convenience method for setting the 'title' option of the point.  Equivalent to:
+     * <pre><code>
+     *     point.setOption("title", "Green Bears");
+     * </code></pre>
+     * The title of the point as shown in the  tooltip.  Defaults to "".
+     *
+     * @param title The value to set as the point's title.
+     * @return A reference to this {@link Point} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Point setTitle(String title) {
+        this.title = title;
+        return this.setOption("title", title);
+    }
+
+    /**
+     * Return the title property that was set on this point, or null if no name was set.
+     *
+     * @return The 'name' property that was set on this point (likely via {@link #setTitle(String)},
+     *         or null if no title was set.
+     * @since 1.6.0
+     */
+    public String getTitle() {
+        if (this.nativePoint != null) {
+            return nativeGetString(this.nativePoint, "title");
+        } else {
+            return this.title;
+        }
+    }
+
 
     /**
      * Update the point with the new values, automatically redrawing

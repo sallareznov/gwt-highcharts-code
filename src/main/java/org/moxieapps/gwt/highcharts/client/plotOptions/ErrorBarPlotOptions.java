@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Moxie Group
+ * Copyright 2013 Moxie Group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,23 @@ import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Series;
 
 /**
- * Represents the general plot options available for all area type series, which can be set either generically
- * on the chart via the {@link Chart#setAreaPlotOptions(AreaPlotOptions)} )} method or directly on a
+ * Represents the general plot options available for all error bar type series, which can be set either generically
+ * on the chart via the {@link Chart#setErrorBarPlotOptions(ErrorBarPlotOptions)} )} method or directly on a
  * series via the {@link Series#setPlotOptions(PlotOptions)} method.
  * <p/>
  * Note that these options are only needed if you want to specifically control the general options
- * for all area type series in the entire chart.  If you instead want to control the options for all
- * series in the chart (not just those of an area type), then you can use the {@link SeriesPlotOptions}
- * class instead.  Or, if you want to control the plot options for just one series (and not all area type
+ * for all error bar type series in the entire chart.  If you instead want to control the options for all
+ * series in the chart (not just those of an error bar type), then you can use the {@link SeriesPlotOptions}
+ * class instead.  Or, if you want to control the plot options for just one series (and not all error bar type
  * series in the chart), use the {@link org.moxieapps.gwt.highcharts.client.Series#setPlotOptions(PlotOptions)} method.
  *
- * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0.0
+ * @author cskowron@moxiegroup.com (Cory Skowronek)
+ * @since 1.6.0
  */
-public class AreaPlotOptions extends BaseAreaPlotOptions<AreaPlotOptions> {
 
-    // All needed methods are inherited from {@link BaseAreaPlotOptions}
+public class ErrorBarPlotOptions extends BaseStatisticalPlotOptions<ErrorBarPlotOptions> {
+
+    // Everything we need is inherited from our base class, so this class is really only needed to
+    // handle setting the correct generic type (so the user doesn't need to deal with the type manually)
 
 }

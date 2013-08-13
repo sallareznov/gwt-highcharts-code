@@ -46,6 +46,75 @@ import java.util.Iterator;
 public abstract class BaseChart<T> extends Widget {
 
     /**
+     * An enumeration of supported chart zoom types, which can be passed to the
+     * {@link Chart#setZoomType(ZoomType)} method.  The zoom type controls in what
+     * dimensions the user can zoom by dragging the mouse
+     */
+    public enum ZoomType {
+
+        /**
+         * Allow zoom horizontally on the X axis only.
+         */
+        X("x"),
+
+        /**
+         * Allow zoom vertically on the Y axis only.
+         */
+        Y("y"),
+
+        /**
+         * Allow zooming both horizontally and vertically (both axes).
+         */
+        X_AND_Y("xy");
+
+        private ZoomType(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
+     * An enumeration of supported chart pinch types, which can be passed to the
+     * {@link Chart#setPinchType(PinchType)} method.  The pinch type controls in what
+     * dimensions the user can zoom by pinching, if pinching is enabled.
+     * @since 1.6.0
+     */
+    public enum PinchType {
+
+        /**
+         * Allow zoom horizontally on the X axis only.
+         */
+        X("x"),
+
+        /**
+         * Allow zoom vertically on the Y axis only.
+         */
+        Y("y"),
+
+        /**
+         * Allow zooming both horizontally and vertically (both axes).
+         */
+        X_AND_Y("xy");
+
+        private PinchType(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+
+    }
+
+    /**
      * This class can not be created directly, but instead create an instance of one of the
      * sub types such as {@link Chart} or {@link StockChart}.
      */
@@ -360,8 +429,9 @@ public abstract class BaseChart<T> extends Widget {
      * Sets the default colors for the chart's series. When all colors are used, new colors are pulled from the start again.
      * Note that the colors for each series can be overridden via the {@link org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions#setColor(String)} mechanism.
      * <p/>
-     * Default colors are:  "#4572A7", "#AA4643", "#89A54E", "#80699B", "#3D96AE", "#DB843D", "#92A8CD", "#A47D7C", "#B5CA92"
-     *
+     * Default colors are:  "#2f7ed8", "#0d233a", "#8bbc21", "#910000", "#1aadce", "#492970", "#f28f43", "#77a1e5", "#c42525", "#a6c96a"
+     * <p/>
+     * Note: in Highcharts 2.x, default colors were: "#4572A7", "#AA4643", "#89A54E", "#80699B", "#3D96AE", "#DB843D", "#92A8CD", "#A47D7C", "#B5CA92"
      * @param colors An array of colors to use as the defaults for each series.
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
@@ -639,6 +709,25 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * Sets which dimensions the user can zoom using multi-touch gestures.
+     * Can be one of {@link BaseChart.PinchType#X}, {@link BaseChart.PinchType#Y} or
+     * {@link BaseChart.PinchType#X_AND_Y}. Defaults to null. Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/pinchType", Chart.PinchType.X);
+     * </code></pre>
+     * Equivalent to zoomType, but for multitouch gestures only.
+     * By default, the pinchType is the same as the zoomType setting.
+     * However, pinching can be enabled separately in some cases, for example
+     * in stock charts where a mouse drag pans the chart, while pinching is enabled. Defaults to null.
+     * @param pinchType One of the allowed pinch types
+     * @return A reference to this {@link Chart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setPinchType(BaseChart.PinchType pinchType) {
+        return this.setOption("/chart/pinchType", pinchType != null ? pinchType.toString() : null);
+    }
+
+    /**
      * Convenience method for setting the 'plotBackgroundColor' option of the chart to an RGB hex value.  Equivalent to:
      * <pre><code>
      *     chart.setOption("/chart/plotBackgroundColor", "#CCCCCC");
@@ -677,6 +766,21 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setPlotBackgroundColor(Color plotBackgroundColor) {
         return this.setOption("/chart/plotBackgroundColor", plotBackgroundColor != null ? plotBackgroundColor.getOptionValue() : null);
+    }
+
+    /**
+     * Convenience method for setting the 'plotBackgroundImage option of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/plotBackgroundImage", null)
+     * </code></pre>
+     * To set an image as the background for the entire chart, set a CSS background image to the container element.
+     * Defaults to null.
+     * @param plotBackgroundImage The URL for an image to use as the plot background.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setPlotBackgroundImage(String plotBackgroundImage) {
+        return this.setOption("/chart/plotBackgroundImage", plotBackgroundImage);
     }
 
     /**
@@ -735,6 +839,21 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * Convenience method to set the 'polar' option of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/polar", true);
+     * </code></pre>
+     * When true, cartesian charts like line, spline, area and column are transformed into the polar coordinate system.
+     * Requires highcharts-more.js. Defaults to false.
+     * @param polar Whether to render the the chart using a polar coordinate system.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setPolar(boolean polar) {
+        return this.setOption("/chart/polar", polar);
+    }
+
+    /**
      * Convenience method for setting the 'plotShadow' option of the chart.  Equivalent to:
      * <pre><code>
      *     chart.setOption("/chart/plotShadow", false);
@@ -762,6 +881,53 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T setReflow(boolean reflow) {
         return this.setOption("/chart/reflow", reflow);
+    }
+
+    /**
+     * Convenience method for adding the reset zoom button to the chart. Equivalent to:
+     * <pre><>code>
+     *     chart.setOption("/resetZoomButton"
+     * </code></pre>
+     * @param resetZoomButton The button that appears after a selection zoom, allowing the user to reset zoom.
+     * @return A reference to this {@link Chart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setResetZoomButton(ResetZoomButton resetZoomButton) {
+        return this.setOption("/chart/resetZoomButton", resetZoomButton);
+    }
+
+    /**
+     * Convenience method for setting the 'selectionMarkerFill' option of the chart to an RGB hex value.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/selectionMarkerFill", "#4572a7");
+     * </code></pre>
+     * The RGB color of the selection marker. Defaults to "#4572a7".
+     * Note that this method is intended for setting the color to a simple RBG hex value.  If you instead
+     * want to set a color to include an alpha channel or a gradient, use the {@link #setSelectionMarkerFill(Color)}
+     * version instead.
+     * @param selectionMarkerFill The background color of the marker square when selecting (zooming in on) an area of the chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setSelectionMarkerFill(String selectionMarkerFill) {
+        return this.setOption("/chart/selectionMarkerFill", selectionMarkerFill);
+    }
+
+    /**
+     * Convenience method for setting the 'plotBackgroundColor' option of the chart, allowing for
+     * colors with opacity.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/selectionMarkerFill", rgba(69,114,167,0.25));
+     * </code></pre>
+     * Note that this method is intended for setting the color to one that includes
+     * an alpha channel.  If you instead just want to set the color to a normal RGB hex value
+     * you can use the {@link #setSelectionMarkerFill(String)} version instead.
+     * @param selectionMarkerFill The color with an alpha channel to fil the marker square when selecting (zooming in on) an area of the chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setSelectionMarkerFill(Color selectionMarkerFill) {
+        return this.setOption("/chart/selectionMarkerFill", selectionMarkerFill != null ? selectionMarkerFill.getOptionValue() : null);
     }
 
     /**
@@ -962,7 +1128,7 @@ public abstract class BaseChart<T> extends Widget {
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
     public T setType(Series.Type type) {
-        return this.setOption("/chart/type", type.toString());
+        return this.setOption("/chart/type", type != null ? type.toString() : null);
     }
 
     /**
@@ -1149,15 +1315,22 @@ public abstract class BaseChart<T> extends Widget {
     private AreaSplinePlotOptions areaSplinePlotOptions;
     private AreaSplineRangePlotOptions areaSplineRangePlotOptions;
     private BarPlotOptions barPlotOptions;
+    private BoxPlotOptions boxPlotOptions;
+    private BubblePlotOptions bubblePlotOptions;
     private ColumnPlotOptions columnPlotOptions;
     private ColumnRangePlotOptions columnRangePlotOptions;
+    private ErrorBarPlotOptions errorBarPlotOptions;
+    private FunnelPlotOptions funnelPlotOptions;
+    private GaugePlotOptions gaugePlotOptions;
     private LinePlotOptions linePlotOptions;
     private PiePlotOptions piePlotOptions;
     private SeriesPlotOptions seriesPlotOptions;
     private ScatterPlotOptions scatterPlotOptions;
     private SplinePlotOptions splinePlotOptions;
+    private WaterfallPlotOptions waterfallPlotOptions;
 
-    // The OHLC plot options are managed by the StockChart sub class, but the reference is managed here for rendering
+    // The candlestick OHLC and plot options are managed by the StockChart sub class, but the reference is managed here for rendering
+    protected CandlestickPlotOptions candlestickPlotOptions;
     protected OHLCPlotOptions ohlcPlotOptions;
 
     /**
@@ -1260,6 +1433,43 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     /**
+     * Updates the options that all box type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param boxPlotOptions The options to set on the chart as the default settings for all box type series
+     *                       that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setBoxPlotOptions(BoxPlotOptions boxPlotOptions) {
+        this.boxPlotOptions = boxPlotOptions;
+        return boxPlotOptions != null && boxPlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/box", boxPlotOptions.getOptions()) :
+                returnThis();
+    }
+
+    /**
+     * Updates the options that all bubble type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     * @param bubblePlotOptions The options set on the chart as the default settings for all bar type series
+     *                          that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setBubblePlotOptions(BubblePlotOptions bubblePlotOptions) {
+        this.bubblePlotOptions = bubblePlotOptions;
+        return bubblePlotOptions != null && bubblePlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/bubble", bubblePlotOptions.getOptions()) :
+                returnThis();
+    }
+
+    /**
      * Updates the options that all column type series within the chart will use by default.  The settings can then
      * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
      * <p/>
@@ -1296,7 +1506,64 @@ public abstract class BaseChart<T> extends Widget {
             this.setOption("/plotOptions/columnrange", columnRangePlotOptions.getOptions()) :
             returnThis();
     }
-    
+
+    /**
+     * Updates the options that all errorBar type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param errorBarPlotOptions The options to set on the chart as the default settings for all box type series
+     *                       that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setErrorBarPlotOptions(ErrorBarPlotOptions errorBarPlotOptions) {
+        this.errorBarPlotOptions = errorBarPlotOptions;
+        return errorBarPlotOptions != null && errorBarPlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/errorbar", errorBarPlotOptions.getOptions()) :
+                returnThis();
+    }
+
+    /**
+     * Updates the options that all funnel type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param funnelPlotOptions The options to set on the chart as the default settings for all funnel type series
+     *                       that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setFunnelPlotOptions(FunnelPlotOptions funnelPlotOptions) {
+        this.funnelPlotOptions = funnelPlotOptions;
+        return funnelPlotOptions != null && funnelPlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/funnel", funnelPlotOptions.getOptions()) :
+                returnThis();
+    }
+
+    /**
+     * Updates the options that all funnel type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param gaugePlotOptions The options to set on the chart as the default settings for all funnel type series
+     *                       that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setGaugePlotOptions(GaugePlotOptions gaugePlotOptions) {
+        this.gaugePlotOptions = gaugePlotOptions;
+        return gaugePlotOptions != null && gaugePlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/gauge", gaugePlotOptions.getOptions()) :
+                returnThis();
+    }
+
     /**
      * Updates the options that all line type series within the chart will use by default.  The settings can then
      * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
@@ -1377,6 +1644,25 @@ public abstract class BaseChart<T> extends Widget {
             returnThis();
     }
 
+    /**
+     * Updates the options that all waterfall type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param waterfallPlotOptions The options to set on the chart as the default settings for all scatter type series
+     *                           that are part of this chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public T setWaterfallPlotOptions(WaterfallPlotOptions waterfallPlotOptions) {
+        this.waterfallPlotOptions = waterfallPlotOptions;
+        return waterfallPlotOptions != null && waterfallPlotOptions.getOptions() != null ?
+                this.setOption("/plotOptions/waterfall", waterfallPlotOptions.getOptions()) :
+                returnThis();
+    }
+
     private ChartClickEventHandler chartClickEventHandler;
 
     /**
@@ -1450,6 +1736,22 @@ public abstract class BaseChart<T> extends Widget {
     public T setSplinePlotOptions(SplinePlotOptions splinePlotOptions) {
         this.splinePlotOptions = splinePlotOptions;
         return this.setOption("/plotOptions/spline", splinePlotOptions.getOptions());
+    }
+
+    /**
+     * Sets which dimensions the user can zoom by dragging the mouse.
+     * Can be one of {@link Chart.ZoomType#X}, {@link Chart.ZoomType#Y} or
+     * {@link Chart.ZoomType#X_AND_Y}. Defaults to null.
+     * This is equivalent to setting the option manually with code like:
+     * <pre><code>
+     *     chart.setOption("/chart/zoomType", Chart.ZoomType.X);
+     * </code></pre>
+     *
+     * @param zoomType One of the allowed zoom types.
+     * @return A reference to this {@link Chart} instance for convenient method chaining.
+     */
+    public T setZoomType(BaseChart.ZoomType zoomType) {
+        return this.setOption("/chart/zoomType", zoomType != null ? zoomType.toString() : null);
     }
 
     // Whether or not to retain the data points associated with each series in local GWT arrays (as
@@ -1946,14 +2248,21 @@ public abstract class BaseChart<T> extends Widget {
         plotOptionsLabelFormatters.put("areaspline", hasDataLabelsFormatter(areaSplinePlotOptions));
         plotOptionsLabelFormatters.put("areasplinerange", hasDataLabelsFormatter(areaSplineRangePlotOptions));
         plotOptionsLabelFormatters.put("bar", hasDataLabelsFormatter(barPlotOptions));
+        plotOptionsLabelFormatters.put("box", hasDataLabelsFormatter(boxPlotOptions));
+        plotOptionsLabelFormatters.put("bubble", hasDataLabelsFormatter(bubblePlotOptions));
+        plotOptionsLabelFormatters.put("candlestick", hasDataLabelsFormatter(candlestickPlotOptions));
         plotOptionsLabelFormatters.put("column", hasDataLabelsFormatter(columnPlotOptions));
         plotOptionsLabelFormatters.put("columnrange", hasDataLabelsFormatter(columnRangePlotOptions));
+        plotOptionsLabelFormatters.put("errorbar", hasDataLabelsFormatter(errorBarPlotOptions));
+        plotOptionsLabelFormatters.put("funnel", hasDataLabelsFormatter(funnelPlotOptions));
+        plotOptionsLabelFormatters.put("gauge", hasDataLabelsFormatter(gaugePlotOptions));
         plotOptionsLabelFormatters.put("line", hasDataLabelsFormatter(linePlotOptions));
         plotOptionsLabelFormatters.put("pie", hasDataLabelsFormatter(piePlotOptions));
         plotOptionsLabelFormatters.put("ohlc", hasDataLabelsFormatter(ohlcPlotOptions));
         plotOptionsLabelFormatters.put("series", hasDataLabelsFormatter(seriesPlotOptions));
         plotOptionsLabelFormatters.put("scatter", hasDataLabelsFormatter(scatterPlotOptions));
         plotOptionsLabelFormatters.put("spline", hasDataLabelsFormatter(splinePlotOptions));
+        plotOptionsLabelFormatters.put("waterfall", hasDataLabelsFormatter(waterfallPlotOptions));
 
         // And one more for dealing with any data label formatters that have been applied directly to a series
         JSONArray seriesLabelFormatters = new JSONArray();
@@ -2198,6 +2507,7 @@ public abstract class BaseChart<T> extends Widget {
 
         JSONArray jsonArray = new JSONArray();
         switch (point.getType()) {
+            case FLAG: return convertNumberToJSONValue(point.getX());
         	case Y: return convertNumberToJSONValue(point.getY());
         	case X_Y :
         		jsonArray.set(0, convertNumberToJSONValue(point.getX()));
@@ -2255,6 +2565,7 @@ public abstract class BaseChart<T> extends Widget {
                 options.put("close", convertNumberToJSONValue(point.getClose()));
             }
     	}
+
 
         return options;
     }
@@ -2559,14 +2870,21 @@ public abstract class BaseChart<T> extends Widget {
         if ("areaspline".equals(type)) plotOptions = areaSplinePlotOptions;
         if ("areasplinerange".equals(type)) plotOptions = areaSplineRangePlotOptions;
         if ("bar".equals(type)) plotOptions = barPlotOptions;
+        if ("box".equals(type)) plotOptions = boxPlotOptions;
+        if ("bubble".equals(type)) plotOptions = bubblePlotOptions;
+        if ("candlestick".equals(type)) plotOptions = candlestickPlotOptions;
         if ("column".equals(type)) plotOptions = columnPlotOptions;
         if ("columnrange".equals(type)) plotOptions = columnRangePlotOptions;
+        if ("errorbar".equals(type)) plotOptions = errorBarPlotOptions;
+        if ("funnel".equals(type)) plotOptions = funnelPlotOptions;
+        if ("gauge".equals(type)) plotOptions = gaugePlotOptions;
         if ("line".equals(type)) plotOptions = linePlotOptions;
         if ("ohlc".equals(type)) plotOptions = ohlcPlotOptions;
         if ("pie".equals(type)) plotOptions = piePlotOptions;
         if ("scatter".equals(type)) plotOptions = scatterPlotOptions;
         if ("series".equals(type)) plotOptions = seriesPlotOptions;
         if ("spline".equals(type)) plotOptions = splinePlotOptions;
+        if ("waterfall".equals(type)) plotOptions = waterfallPlotOptions;
 
         if (plotOptions == null || plotOptions.getDataLabels() == null || plotOptions.getDataLabels().getFormatter() == null) {
             return null;

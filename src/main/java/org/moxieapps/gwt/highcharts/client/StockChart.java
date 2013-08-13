@@ -16,6 +16,7 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import org.moxieapps.gwt.highcharts.client.plotOptions.CandlestickPlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.OHLCPlotOptions;
 
 /**
@@ -113,6 +114,20 @@ public class StockChart extends BaseChart<StockChart> {
         return this.setOption("/rangeSelector", rangeSelector != null ? rangeSelector.getOptions() : null);
     }
 
+    /**
+     * Convenience method for setting the 'scrollbar' chart options.  Equivalent to:
+     * <pre><code>
+     *     stockChart.setOption("/scrollbar/enabled", false);
+     *     stockChart.setOption("/scrollbar/height", 2);
+     *     etc...
+     * </code></pre>
+     * @param scrollbar Sets the scrollbar options
+     * @return A reference to this {@link StockChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public StockChart setScrollbar(Scrollbar scrollbar) {
+        return this.setOption("/scrollbar", scrollbar != null ? scrollbar.getOptions() : null);
+    }
 
     /**
      * Updates the options that all OHLC type series within the chart will use by default.  The settings can then
@@ -135,5 +150,24 @@ public class StockChart extends BaseChart<StockChart> {
         return this;
     }
 
-
+    /**
+     * Updates the options that all candlestick type series within the chart will use by default.  The settings can then
+     * be overridden for each individual series via the {@link Series#setPlotOptions(org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions)} method.
+     * <p/>
+     * Note that changing the plot options on a chart that has already been rendered will only affect
+     * series that are subsequently added to the chart (and will not impact any of the series that are already
+     * rendered in the chart.)
+     *
+     * @param candlestickPlotOptions The options to set on the chart as the default settings for all candlestick type series
+     *                        that are part of this chart.
+     * @return A reference to this {@link StockChart} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public StockChart setCandlestickPlotOptions(CandlestickPlotOptions candlestickPlotOptions) {
+        this.candlestickPlotOptions = candlestickPlotOptions;
+        if (candlestickPlotOptions != null) {
+            this.setOption("/plotOptions/candlestick", candlestickPlotOptions.getOptions());
+        }
+        return this;
+    }
 }

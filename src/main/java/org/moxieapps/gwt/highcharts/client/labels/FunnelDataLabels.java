@@ -17,27 +17,27 @@
 package org.moxieapps.gwt.highcharts.client.labels;
 
 /**
- * A configurable class that can be used to represent custom data label display options for pie charts, which
- * can then be set as the default data label display approach and applied to the PiePlotOptions
- * (via the {@link org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions#setPieDataLabels(PieDataLabels)} method).
+ * A configurable class that can be used to represent custom data label display options for funnel charts, which
+ * can then be set as the default data label display approach and applied to the FunnelPlotOptions
+ * (via the {@link org.moxieapps.gwt.highcharts.client.plotOptions.FunnelPlotOptions#setFunnelDataLabels(FunnelDataLabels)} method).
  * <p/>
  * Example usage:
  * <code><pre>
  * chart.setPiePlotOptions(
- *      new PiePlotOptions()
- *          .setPieDataLabels(
- *              new PieDataLabels()
- *                  .setEnabled(true)
- *                  .setConnectorColor("#FF0000)
- *                  .setConnectorWidth(4.0)
- *          )
+ * new PiePlotOptions()
+ * .setPieDataLabels(
+ * new PieDataLabels()
+ * .setEnabled(true)
+ * .setConnectorColor("#FF0000)
+ * .setConnectorWidth(4.0)
+ * )
  * );
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0.0
+ * @since 1.6.0
  */
-public class PieDataLabels extends ProportionalDataLabels<PieDataLabels> {
+public class FunnelDataLabels extends ProportionalDataLabels<FunnelDataLabels> {
 
     // All needed methods are inherited from {@link ProportionalDataLabels}
 

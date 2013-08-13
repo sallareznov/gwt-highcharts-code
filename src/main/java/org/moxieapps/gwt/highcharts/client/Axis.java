@@ -44,6 +44,11 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public enum Type {
 
         /**
+         * Display the point names as categories for the axis
+         */
+        CATEGORY("category"),
+
+        /**
          * Default axis type showing the values in a linear structure.
          */
         LINEAR("linear"),

@@ -73,11 +73,11 @@ public class Series extends Configurable<Series> {
          * Show the series as an area filled in beneath a non-curved line
          */
         AREA("area"),
-        
+
         /**
          * Show the series as an area filled between two non-curved lines.<p>
          * Only available if the highcharts-more.js script is included in your GWT module.
-         * 
+         *
          * @since 1.5.0
          */
         AREA_RANGE("arearange"),
@@ -86,11 +86,11 @@ public class Series extends Configurable<Series> {
          * Show the series as an area filled in beneath a curved line
          */
         AREA_SPLINE("areaspline"),
-                
+
         /**
          * Show the series as an area filled between two curved lines.<p>
          * Only available if the highcharts-more.js script is included in your GWT module.
-         * 
+         *
          * @since 1.5.0
          */
         AREA_SPLINE_RANGE("areasplinerange"),
@@ -99,6 +99,18 @@ public class Series extends Configurable<Series> {
          * Show the series as horizontal bars
          */
         BAR("bar"),
+
+        /**
+         * Show the series as a box plot
+         * @since 1.6.0
+         */
+        BOXPLOT("boxplot"),
+
+        /**
+         * Show the series as bubbles
+         * @since 1.6.0
+         */
+        BUBBLE("bubble"),
 
         /**
          * Show the series as vertical bars
@@ -110,7 +122,32 @@ public class Series extends Configurable<Series> {
          * Only available if the highcharts-more.js script is included in your GWT module.
          */
         COLUMN_RANGE("columnrange"),
-        
+
+        /**
+         * Shows the Series as an Error bar
+         * @since 1.6.0
+         */
+        ERRORBAR("errorbar"),
+
+        /**
+         * Show the series as flags
+         * @since 1.6.0
+         */
+        FLAGS("flags"),
+
+        /**
+         * Show the series as a funnel</p>
+         * Only available if the highcharts-more.js script is included in your GWT module.
+         * @since 1.6.0
+         */
+        FUNNEL("funnel"),
+
+        /**
+         * @since 1.6.0
+         * Show the series as a gauge
+         */
+        GAUGE("gauge"),
+
         /**
          * Show the series as a sequence of connected straight lines
          */
@@ -130,6 +167,12 @@ public class Series extends Configurable<Series> {
          * Show the series as a sequence of lines that are rendered as a spline to appear as a smooth curve
          */
         SPLINE("spline"),
+
+        /**
+         * Show the series as a waterfall
+         * @since 1.6.0
+         */
+        WATERFALL("waterfall"),
 
         /**
          * Show the series as a sequence of bars that show the open, high, low, and close values.
@@ -178,6 +221,33 @@ public class Series extends Configurable<Series> {
     }
 
     /**
+     * Convenience method for setting the 'index' option of the series.  Equivalent to:
+     * <pre><code>
+     *     series.setOption("index", 1);
+     * </code></pre>
+     * The index of the series in the chart, affecting the internal index in the chart.series array,
+     * the visible Z index as well as the order in the legend.
+     * @param index The series' index in the internal chart.series array.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     */
+    public Series setIndex(Number index) {
+        return this.setOption("index", index);
+    }
+
+    /**
+     * Convenience method for setting the 'index' option of the series.  Equivalent to:
+     * <pre><code>
+     *     series.setOption("index", 1);
+     * </code></pre>
+     * The sequential index of the series in the legend.
+     * @param legendIndex A number representing the position of the series in the legend.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     */
+    public Series setLegendIndex(Number legendIndex) {
+        return this.setOption("legendIndex", legendIndex);
+    }
+
+    /**
      * Convenience method for setting the 'name' option of the series.  Equivalent to:
      * <pre><code>
      *     series.setOption("name", "My Chart");
@@ -188,7 +258,21 @@ public class Series extends Configurable<Series> {
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setName(String name) {
+       // ((JSONString)this.getOptions().get("name")).stringValue(); //check for null
         return this.setOption("name", name);
+    }
+
+    /**
+     * /**
+     * Convenience method for getting the 'name' of a particular series. Equivalent to:
+     * <pre><code>
+     *     series.getName()
+     * </code></pre>
+     * @return The name of a Series as a String, or null if no name is set by {@link #setName(String)}.
+     * @since 1.6.0
+     */
+    public String getName() {
+        return ((JSONString)this.getOptions().get("name")).stringValue() != null ? ((JSONString)this.getOptions().get("name")).stringValue() : null;
     }
 
     /**
@@ -221,6 +305,26 @@ public class Series extends Configurable<Series> {
         return this.setOption("stack", stack);
     }
 
+    // We need to maintain a local reference to tooltip to deal with the formatter function
+    private ToolTip toolTip;
+
+    /**
+     * Convenience method for setting the 'tooltip' option of the series.  Equivalent to:
+     * <pre><code>
+     *     series.setOption("/tooltip/borderColor", "#CCCCCC");
+     *     series.setOption("/tooltip/shadow", true);
+     *     etc..
+     * </code></pre>
+     * The tooltip appears when the user hovers over a series or point.
+     *
+     * @param toolTip The options to apply to the tooltip of the chart.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    public Series setToolTip(ToolTip toolTip) {
+        this.toolTip = toolTip;
+        return this.setOption("/tooltip", toolTip != null ? toolTip.getOptions() : null);
+    }
+
     /**
      * Sets the type of this series (which controls the way the series will be rendered), using
      * an enumeration type in order to ensure a correct value is passed.  This is equivalent to
@@ -234,7 +338,7 @@ public class Series extends Configurable<Series> {
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      */
     public Series setType(Type type) {
-        return this.setOption("type", type.toString());
+        return this.setOption("type", type != null ? type.toString() : null);
     }
 
     /**
@@ -333,6 +437,17 @@ public class Series extends Configurable<Series> {
     }
 
     /**
+     * Add a point to the series that is to be used as a flag.
+     * @param x Point where the flag appears
+     * @param title Title of flag displayed on the chart
+     * @param text Text displayed when the flag are highlighted.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     */
+    public Series addPoint(Number x, String title, String text) {
+        return this.addPoint(new Point(x, title, text));
+    }
+
+    /**
      * Add a point to the series with a specific value on the Y axis, controlling the
      * options on how the change will be drawn to the series.
      *
@@ -385,16 +500,16 @@ public class Series extends Configurable<Series> {
     public Series addPoint(Number x, Number y) {
         return this.addPoint(new Point(x, y));
     }
-    
+
     /**
      * Simple way to add a point using the default options, and setting only the X, Low, and High
      * values that the point should be rendered at within the series (for Area Range
      * charts).  See the various overloaded  versions of the <code>addPoint()</code> method for
      * more control over the way the point is rendered.
      *
-     * @param x     The value on the X axis that the point should be drawn at within the series.
-     * @param low   The "low" Y value that the point should be rendered at within the series.
-     * @param high  The "high" Y value that the point should be rendered at within the series.
+     * @param x    The value on the X axis that the point should be drawn at within the series.
+     * @param low  The "low" Y value that the point should be rendered at within the series.
+     * @param high The "high" Y value that the point should be rendered at within the series.
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.5.0
      */
@@ -538,8 +653,16 @@ public class Series extends Configurable<Series> {
         // if persistence is enabled than we need to store the point locally as well (so we have it if
         // the chart is dynamically moved to another panel).
         if (!isRendered() || chart.isPersistent()) {
+
+            // Need to manually shift the item off the list if we haven't been rendered yet (after
+            // we're rendered Highcharts handles the shift on its own)
+            if (shift && points.size() > 0) {
+                points.remove(0);
+            }
+
             // If we haven't been rendered, then just store the point in ourselves for now.
             points.add(point);
+
         }
 
         if (isRendered()) {
@@ -548,7 +671,7 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 if (animation == null || animation.getOptions() == null) {
                     final boolean animationFlag = animation != null;
-                    if(point == null || (point.isSingleValue() && point.getY() == null)) {
+                    if (point == null || (point.isSingleValue() && point.getY() == null)) {
                         nativeAddPoint(nativeSeries, null, redraw, shift, animationFlag);
                     } else if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
                         nativeAddPoint(nativeSeries, point.getY().doubleValue(), redraw, shift, animationFlag);
@@ -557,7 +680,7 @@ public class Series extends Configurable<Series> {
                     }
                 } else {
                     final JavaScriptObject animationOptions = animation.getOptions().getJavaScriptObject();
-                    if(point == null || (point.isSingleValue() && point.getY() == null)) {
+                    if (point == null || (point.isSingleValue() && point.getY() == null)) {
                         nativeAddPoint(nativeSeries, null, redraw, shift, animationOptions);
                     } else if (point.isSingleValue() && !chart.isPersistent() && !point.hasNativeProperties()) {
                         nativeAddPoint(nativeSeries, point.getY().doubleValue(), redraw, shift, animationOptions);
@@ -573,10 +696,10 @@ public class Series extends Configurable<Series> {
     private JavaScriptObject convertPointToJavaScriptObject(Point point) {
         final JSONObject options = point.getOptions() != null ? point.getOptions() : new JSONObject();
         Chart.addPointScalarValues(point, options);
-        if(point.hasNativeProperties()) {
+        if (point.hasNativeProperties()) {
             Point.addPointNativeProperties(point, options);
         }
-        if(chart != null) {
+        if (chart != null) {
             chart.addPointId(point, options);
         }
         return options.getJavaScriptObject();
@@ -621,7 +744,7 @@ public class Series extends Configurable<Series> {
             if (nativeSeries != null) {
                 JSONArray jsonArray = new JSONArray();
                 for (int i = 0, pointsLength = yValues.length; i < pointsLength; i++) {
-                    if((yValues[i] != null)) {
+                    if ((yValues[i] != null)) {
                         jsonArray.set(i, new JSONNumber(yValues[i].doubleValue()));
                     } else {
                         jsonArray.set(i, JSONNull.getInstance());
@@ -635,15 +758,15 @@ public class Series extends Configurable<Series> {
     }
 
     /**
-     * Apply a new set of data to the series and automatically redraw it. The format of the data values 
+     * Apply a new set of data to the series and automatically redraw it. The format of the data values
      * should match the chart type of the Series:
      * <ul>
      * <li>[x, y] - for standard line or area charts</li>
      * <li>[x, low, high] - for area range charts</li>
      * <li>[x, open, high, low, close] - for OHLC charts</li>
-     * </ul> 
-     * 
-     * <p>If you need more control than just simply setting the x and y values of each data point, then 
+     * </ul>
+     * <p/>
+     * <p>If you need more control than just simply setting the x and y values of each data point, then
      * use the {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[])} method instead.
      *
      * @param values A two dimensional array of values, where the main array is the list of points and
@@ -655,15 +778,15 @@ public class Series extends Configurable<Series> {
     }
 
     /**
-     * Apply a new set of data to the series and optionally redraw it. The format of the data values 
+     * Apply a new set of data to the series and optionally redraw it. The format of the data values
      * should match the chart type of the Series:
      * <ul>
      * <li>[x, y] - for standard line or area charts</li>
      * <li>[x, low, high] - for area range charts</li>
      * <li>[x, open, high, low, close] - for OHLC charts</li>
-     * </ul> 
-     * 
-     * <p>If you need more control than just simply setting the x and y values of each data point, then 
+     * </ul>
+     * <p/>
+     * <p>If you need more control than just simply setting the x and y values of each data point, then
      * use the {@link #setPoints(org.moxieapps.gwt.highcharts.client.Point[])} method instead.
      *
      * @param values A two dimensional array of values, where the main array is the list of points and
@@ -699,7 +822,7 @@ public class Series extends Configurable<Series> {
                 for (int i = 0, pointsLength = values.length; i < pointsLength; i++) {
                     Number[] point = values[i];
                     JSONValue jsonValue;
-                    if(point == null) {
+                    if (point == null) {
                         jsonValue = JSONNull.getInstance();
                     } else if (point.length == 5) {
                         // For OHLC charts
@@ -786,7 +909,7 @@ public class Series extends Configurable<Series> {
      */
     public Point[] getPoints() {
         ArrayList<Point> convertedPoints = points;
-        if (isRendered()) {
+        if (isRendered() && !chart.isPersistent()) {
             convertedPoints = new ArrayList<Point>();
             // After the series has been rendered, convert the live JS data series back into GWT objects
             final JavaScriptObject nativeSeries = chart.get(this.id);
@@ -812,8 +935,7 @@ public class Series extends Configurable<Series> {
      * If you're using non-persistent charts, you can instead simply use the
      * {@link org.moxieapps.gwt.highcharts.client.Point#remove()} method to achieve the same affect.
      *
-     * @param point     The point instance (obtained dynamically from the chart) to remove from the series.
-     *
+     * @param point The point instance (obtained dynamically from the chart) to remove from the series.
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.3.0
      */
@@ -875,10 +997,10 @@ public class Series extends Configurable<Series> {
         // Note that this logic is purposefully only functional for chart's that are using the "setPersistent()"
         // option.  Removing a point from a non-persistent chart can be achieved by simply using
         // the "Point.remove()" methods.
-        if(id != null && points != null) {
+        if (id != null && points != null) {
             for (Iterator<Point> iterator = points.iterator(); iterator.hasNext(); ) {
                 Point existingPoint = iterator.next();
-                if(id.equals(existingPoint.getId())) {
+                if (id.equals(existingPoint.getId())) {
                     iterator.remove();
                 }
             }
@@ -898,6 +1020,7 @@ public class Series extends Configurable<Series> {
 
     /**
      * Shows the series if hidden.  Only applies after the chart has been rendered.
+     * Note that if you need show many series at once consider using the {@link #setVisible(boolean, boolean)} method instead.
      *
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
@@ -915,6 +1038,7 @@ public class Series extends Configurable<Series> {
     /**
      * Hides the series if visible. If the {@link org.moxieapps.gwt.highcharts.client.BaseChart#setIgnoreHiddenSeries(boolean)} option is true,
      * the chart is automatically redrawn without this series. Only applies after the chart has been rendered.
+     * Note that if you need hide many series at once consider using the {@link #setVisible(boolean, boolean)} method instead.
      *
      * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
      * @since 1.1.0
@@ -924,6 +1048,41 @@ public class Series extends Configurable<Series> {
             final JavaScriptObject nativeSeries = chart.get(this.id);
             if (nativeSeries != null) {
                 nativeHide(nativeSeries);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Either shows or hides the series, and then automatically redraws the chart.
+     * Only applies after the chart has been rendered.  Note that if you need to show/hide many series
+     * at once consider using the {@link #setVisible(boolean, boolean)} method instead.
+     *
+     * @param visible Whether or not to show or hide the series.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Series setVisible(boolean visible) {
+        return this.setVisible(visible, true);
+    }
+
+    /**
+     * Either shows or hides the series, and then optionally redraws the chart.
+     * Only applies after the chart has been rendered.  Note that if you need
+     * to show/hide many series at once use this method passing "false" for the 'redraw' parameter, and
+     * then use the {@link org.moxieapps.gwt.highcharts.client.BaseChart#redraw()} method to update the
+     * chart once you're ready.
+     *
+     * @param visible Whether or not to show or hide the series.
+     * @param redraw Whether or not to automatically redraw the chart, or wait until the Chart.redraw() method is called.
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.Series} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Series setVisible(boolean visible, boolean redraw) {
+        if (isRendered()) {
+            final JavaScriptObject nativeSeries = chart.get(this.id);
+            if (nativeSeries != null) {
+                nativeSetVisible(nativeSeries, visible, redraw);
             }
         }
         return this;
@@ -964,9 +1123,10 @@ public class Series extends Configurable<Series> {
         }
         return this;
     }
-    
+
     /**
-     * Retrieve the series' visibility state as set by {@link #show()}, {@link #hide()}, or the initial configuration. 
+     * Retrieve the series' visibility state as set by {@link #show()}, {@link #hide()}, or the initial configuration.
+     *
      * @return true if the series is visible, false if hidden or the chart has not yet been rendered.
      */
     public boolean isVisible() {
@@ -991,11 +1151,12 @@ public class Series extends Configurable<Series> {
     }
 
     /**
-     * Internal method used to retrieve the unique id generated for this series.
+     * The internally generated unique id for this series
      *
      * @return The unique id of this series
+     * @since 1.6.0
      */
-    String getId() {
+    public String getId() {
         return id;
     }
 
@@ -1048,6 +1209,10 @@ public class Series extends Configurable<Series> {
         series.hide();
     }-*/;
 
+    private static native void nativeSetVisible(JavaScriptObject series, boolean visible, boolean redraw) /*-{
+        series.setVisible(visible, redraw);
+    }-*/;
+
     private static native void nativeSelect(JavaScriptObject series, boolean select) /*-{
         series.select(select);
     }-*/;
@@ -1059,7 +1224,7 @@ public class Series extends Configurable<Series> {
     private static native JsArray<JavaScriptObject> nativeGetData(JavaScriptObject series) /*-{
         return series.data;
     }-*/;
-    
+
     private static native boolean nativeIsVisible(JavaScriptObject series) /*-{
         return series.visible;
     }-*/;

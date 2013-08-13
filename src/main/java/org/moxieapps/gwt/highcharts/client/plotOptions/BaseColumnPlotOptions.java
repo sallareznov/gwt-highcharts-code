@@ -7,7 +7,7 @@ package org.moxieapps.gwt.highcharts.client.plotOptions;
 import org.moxieapps.gwt.highcharts.client.Color;
 
 /**
- * A common base class for both {@link ColumnPlotOptions} and {@link ColumnRangePlotOptions} to prevent code duplication
+ * A common base class for {@link BoxPlotOptions}, {@link ColumnPlotOptions} and {@link ColumnRangePlotOptions} to prevent code duplication
  * while still maintaining a cleaner way for the user to utilize the method chaining with the generics
  * in place.  You should not use this class directly, but instead use one of the base classes.
  *

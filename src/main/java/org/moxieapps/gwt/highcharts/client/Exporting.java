@@ -53,7 +53,18 @@ public class Exporting extends Configurable<Exporting> {
 
     }
 
-    // TODO: Add buttons configuration methods
+    /**
+     * Convenience method for directly setting the options for the context button. Equivalent to:
+     * <pre><code>
+     *     exporting.setOption("/buttons/contextButton/align", "right");
+     * </code></pre>
+     * @param contextButton An instance of the ContextButton class
+     * @return A reference to this {@link Exporting} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Exporting setContextButton(ContextButton contextButton) {
+        return this.setOption("/buttons/contextButton", contextButton);
+    }
 
     /**
      * Convenience method for setting the 'enabled' option for the exporting module.  Equivalent to:
@@ -74,7 +85,7 @@ public class Exporting extends Configurable<Exporting> {
     /**
      * Convenience method for setting the 'filename' option for the exporting module.  Equivalent to:
      * <pre><code>
-     *     exporting.setOption("filename", true);
+     *     exporting.setOption("filename", "chart");
      * </code></pre>
      * The filename, without extension, to use for the exported chart. Defaults to "chart".
      *
@@ -83,6 +94,52 @@ public class Exporting extends Configurable<Exporting> {
      */
     public Exporting setFilename(String fileName) {
         return this.setOption("fileName", fileName);
+    }
+
+    /**
+     * Convenience method for setting the 'scale' option for exporting module.  Equivalent to:
+     * <pre><code>
+     *       exporting.setOption("scale", 2)
+     * </pre></code>
+     * Defines the scale or zoom factor for the exported image compared to the on-screen display.
+     * While for instance a 600px wide chart may look good on a website, it will look bad in print.
+     * The default scale of 2 makes this chart export to a 1200px PNG or JPG. Defaults to 2.
+     * @param scale The scale to use for the exported chart.
+     * @return A reference to this {@link Exporting} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Exporting setScale(Number scale) {
+        return this.setOption("scale", scale);
+    }
+
+    /**
+     * Convenience method for setting the 'sourceHeight' option for the exporting module.  Equivalent to:
+     * <pre><code>
+     *     exporting.setOption("sourceHeight", 400);
+     * </code></pre>
+     * The height of the original chart when exported, unless an explicit chart.height is set.
+     * The height exported raster image is then multiplied by scale.
+     * @param sourceHeight The height of the original chart to be used for exporting.
+     * @return  A reference to this {@link Exporting} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Exporting setSourceHeight(Number sourceHeight) {
+        return this.setOption("height", sourceHeight);
+    }
+
+    /**
+     * Convenience method for setting the 'sourceWidth' option for the exporting module.  Equivalent to:
+     * <pre><code>
+     *     exporting.setOption("sourceWidth", 600);
+     * </code></pre>
+     * The width of the original chart when exported, unless an explicit chart.width is set.
+     * The width exported raster image is then multiplied by scale.
+     * @param sourceWidth The width of the original chart to be used for exporting.
+     * @return A reference to this {@link Exporting} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public Exporting setSourceWidth(Number sourceWidth) {
+       return this.setOption("sourceWidth", sourceWidth);
     }
 
     /**
@@ -96,6 +153,7 @@ public class Exporting extends Configurable<Exporting> {
      * @param type The default file format that exported charts should be created as.
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
+
     public Exporting setType(Type type) {
         return this.setOption("type", type != null ? type.toString() : null);
     }
@@ -121,6 +179,8 @@ public class Exporting extends Configurable<Exporting> {
      *     exporting.setOption("width", 600);
      * </code></pre>
      * The pixel width of charts exported to PNG or JPG. Defaults to 800.
+     * As of Highcharts 3.0, the default pixel width is a function of the chart.width or exporting.sourceWidth
+     * and the exporting.scale. Defaults to undefined.
      *
      * @param width The pixel width of charts exported to PNG or JPG.
      * @return A reference to this {@link Exporting} instance for convenient method chaining.

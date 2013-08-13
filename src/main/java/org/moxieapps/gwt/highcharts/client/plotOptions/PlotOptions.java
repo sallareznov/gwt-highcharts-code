@@ -89,6 +89,37 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
     }
 
     /**
+     * An enumeration of the supported placement types, which can be passed to the
+     * {@link #setPointPlacement} method.  Possible options are: "on" and "between"
+     * @since 1.6.0
+     *
+     */
+    public enum PointPlacement {
+
+        /**
+         * In a column chart, when pointPlacement is "on", the point will not create any padding of the X axis.
+         * In a polar column chart this means that the first column points directly north
+         */
+        ON("on"),
+
+        /**
+         * In a column chart, the columns will be laid out between ticks.
+         */
+        BETWEEN("between");
+
+        private PointPlacement(String optionValue) {
+            this.optionValue = optionValue;
+        }
+
+        private final String optionValue;
+
+        public String toString() {
+            return optionValue;
+        }
+    }
+
+
+    /**
      * Convenience method for setting the 'allowPointSelect' plot option.  Equivalent to:
      * <pre><code>
      *     plotOptions.setOption("allowPointSelect", true);
@@ -255,10 +286,26 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
     }
 
     /**
+     * Convenience method for setting the "dataGrouping" options for a stock chart.  Sample usage:
+     * <pre><code>
+     *     plotOptions.setDataGrouping(
+     *         new DataGrouping()
+     *             .setEnabled(true);
+     *     );
+     * </code></pre>
+     * @param dataGrouping The dataGrouping options set using {@link DataGrouping}
+     * @return A reference to this {@link PlotOptions} for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setDataGrouping(DataGrouping dataGrouping) {
+        return this.setOption("dataGrouping", dataGrouping);
+    }
+
+    /**
      * Returns a reference to the data labels configuration that was set on this plot options, or null if
      * none were set.  Note that this method returns an {@link org.moxieapps.gwt.highcharts.client.labels.BaseDataLabels} and not simply
      * a {@link DataLabels} in order to handle alternative labels types such as
-     * {@link org.moxieapps.gwt.highcharts.client.labels.PieDataLabels}.
+     * {@link org.moxieapps.gwt.highcharts.client.labels.ProportionalDataLabels}.
      *
      * @return A reference to the data labels configuration that was set on this plot options, or null if
      *         none was set.
@@ -280,6 +327,20 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      */
     public T setEnableMouseTracking(boolean enableMouseTracking) {
         return this.setOption("enableMouseTracking", enableMouseTracking);
+    }
+
+    /**
+     * Convenience method for setting the 'id' option of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("id", "chart");
+     * </code></pre>
+     * This can be used after render time to get a pointer to the series object through chart.get().
+     * @param id An id for the series.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setId(String id) {
+        return this.setOption("id", id);
     }
 
     /**
@@ -313,6 +374,44 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
     }
 
     /**
+     * convenience method for setting the "linkedTo" option.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOption("linkedTo", "seriesId");
+     * </code></pre>
+     * The id of another series to link to. Additionally, the value can be ":previous" to link to the previous series.
+     * When two series are linked, only the first one appears in the legend.
+     * Toggling the visibility of this also toggles the linked series.
+     * <p>
+     * Note: this method will set a link to another series based on its id. To link to the series itself instead of its
+     * id, use {@link #setLinkedTo(Series)}
+     * </p>
+     * @param linkedTo The name of the series to be linked to.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @see #setLinkedTo(Series)
+     * @since 1.6.0
+     */
+    public T setLinkedTo(String linkedTo) {
+        return this.setOption("linkedTo", linkedTo);
+    }
+
+    /**
+     * convenience method for setting the "linkedTo" option.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOption("linkedTo", "seriesId");
+     * </code></pre>
+     * The id of another series to link to. Additionally, the value can be ":previous" to link to the previous series.
+     * When two series are linked, only the first one appears in the legend.
+     * Toggling the visibility of this also toggles the linked series.
+     * @param series The name of the series to be linked to.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @see #setLinkedTo(String)
+     * @since 1.6.0
+     */
+    public T setLinkedTo(Series series) {
+        return this.setOption("linkedTo", series.getId());
+    }
+
+    /**
      * Convenience method for setting the 'marker' plot options.  Equivalent to:
      * <pre><code>
      * plotOptions.setOption("/marker/enabled", true);
@@ -327,6 +426,48 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      */
     public T setMarker(Marker marker) {
         return this.setOption("marker", marker != null ? marker.getOptions() : null);
+    }
+
+    /**
+     * Convenience method for setting the "negativeColor" option for the plot options.  Equivalent to:
+     * <pre><code>
+     *     areaPlotOptions.setOption("negativeColor", new Color()
+     *        .setLinearGradient(0.0, 0.0, 1.0, 1.0)
+     *        .addStop(new Color(255, 255, 255))
+     *        .addStop(new Color(200, 200, 255))
+     *     );
+     * </code></pre>
+     * When a point's Z value is below the zThreshold setting, this color is used. Defaults to null.
+     * <p/>
+     * Note that this method is intended for setting the color to a gradient or color that includes
+     * an alpha channel.  If you instead just want to set the color to a normal RGB hex value
+     * you can use the {@link #setNegativeColor(String)} version instead.
+     *
+     * @param negativeColor The color for the parts of the graph or points that are below the threshold.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public PlotOptions setNegativeColor(Color negativeColor) {
+        return this.setOption("negativeColor", negativeColor);
+    }
+
+    /**
+     * Convenience method for setting the "negativeColor" option for the plot options.  Equivalent to:
+     * <pre><code>
+     *     PlotOptions.setOptions("negativeColor", "#CCCCCC");
+     * </code></pre>
+     * When a point's Z value is below the zThreshold setting, this color is used. Defaults to null.
+     * <p/>
+     * Note that this method is intended for setting the color to a simple RBG hex value.  If you instead
+     * want to set a color to include an alpha channel or a gradient, use the {@link #setNegativeColor(Color)}
+     * version instead.
+     *
+     * @param negativeColor The color for the parts of the graph or points that are below the threshold.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public PlotOptions setNegativeColor(String negativeColor) {
+        return this.setOption("negativeColor", negativeColor);
     }
 
     /**
@@ -359,6 +500,27 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      */
     public T setPointInterval(Number pointInterval) {
         return this.setOption("pointInterval", pointInterval);
+    }
+
+    /**
+     * Convenience method for setting the 'pointPointPlacement' plot option.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOption("pointPointPlacement", Stacking.NULL);
+     * </code></pre>
+     * Possible values: null, "on", "between".
+     * <p/>
+     * In a column chart, when pointPointPlacement is "on", the point will not create any padding of the X axis.
+     * In a polar column chart this means that the first column points directly north.
+     * If the pointPointPlacement is "between", the columns will be laid out between ticks.
+     * This is useful for example for visualising an amount between two points in time or in a certain sector of a polar chart.
+     * <p/>
+     * Defaults to null in cartesian charts, "between" in polar charts.
+     * @param pointPointPlacement Where to place points in relation to ticks on the axis.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setPointPlacement(PointPlacement pointPointPlacement) {
+        return this.setOption("pointPointPlacement", pointPointPlacement != null ? pointPointPlacement.toString() : null);
     }
 
     /**
@@ -500,6 +662,36 @@ public abstract class PlotOptions<T extends PlotOptions> extends Configurable<T>
      */
     public T setStickyTracking(boolean stickyTracking) {
         return this.setOption("stickyTracking", stickyTracking);
+    }
+
+    /**
+     * Convenience method for setting the "threshold" option for the plot options.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOptions("threshold", 0);
+     * </code></pre>
+     * The threshold, also called zero level or base level. For line type series this is only used in conjunction with negativeColor. Defaults to 0
+     * @param threshold A minimum z-value determine whether bubbles will be displayed if 'displayNegative' is false.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setThreshold(Number threshold) {
+        return this.setOption("threshold", threshold);
+    }
+
+    /**
+     * Convenience method for setting the "turboThreshold" optioin for the plot options.  Equivalent to:
+     * <pre><code>
+     *     plotOptions.setOptions("turboThreshold", 1000);
+     * </code></pre>
+     * When a series contains a data array that is longer than this, only one dimensional arrays of numbers,
+     * or two dimensional arrays with x and y values are allowed. Also, only the first point is tested, and
+     * the rest are assumed to be the same format. This saves expensive data checking and indexing in long series. Defaults to 1000
+     * @param turboThreshold The maximum size of an array to be greater than two-dimensional and check the format of each entry.
+     * @return A reference to this {@link PlotOptions} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setTurboThreshold(Number turboThreshold) {
+        return this.setOption("turboThreshold", turboThreshold);
     }
 
     /**

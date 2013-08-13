@@ -16,6 +16,9 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONString;
+
 /**
  * Represents the configuration options available for controlling the way date and time information
  * will be displayed. For a datetime axis, the scale will automatically adjust to the appropriate unit. This configuration
@@ -67,7 +70,7 @@ package org.moxieapps.gwt.highcharts.client;
  * </pre></code>
  *
  * @author squinn@moxiegroup.com (Shawn Quinn)
- * @since 1.0.0
+ * @since 1.6.0
  */
 public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
 
@@ -81,9 +84,37 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
      * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
      * @since 1.5.0
      */
-	public DateTimeLabelFormats setMillisecond(String millisecond){
-		return this.setOption("millisecond", millisecond);
-	}
+    public DateTimeLabelFormats setMillisecond(String millisecond) {
+        return this.setOption("millisecond", millisecond);
+    }
+
+    /**
+     * Convenience method for setting the 'millisecond' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setMillisecond(String singleUnit, String startDate, String endDate) {
+        final JSONArray millisecondArray = new JSONArray();
+
+        millisecondArray.set(0, new JSONString(singleUnit));
+        millisecondArray.set(1, new JSONString(startDate));
+        millisecondArray.set(2, new JSONString(endDate));
+
+        return this.setOption("millisecond", millisecondArray);
+    }
 
     /**
      * Convenience method for setting the 'second' format.  Equivalent to:
@@ -96,6 +127,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
      */
     public DateTimeLabelFormats setSecond(String second) {
         return this.setOption("second", second);
+    }
+
+    /**
+     * Convenience method for setting the 'second' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setSecond(String singleUnit, String startDate, String endDate) {
+        final JSONArray secondArray = new JSONArray();
+
+        secondArray.set(0, new JSONString(singleUnit));
+        secondArray.set(1, new JSONString(startDate));
+        secondArray.set(2, new JSONString(endDate));
+
+        return this.setOption("second", secondArray);
     }
 
     /**
@@ -112,6 +171,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
     }
 
     /**
+     * Convenience method for setting the 'minute' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setMinute(String singleUnit, String startDate, String endDate) {
+        final JSONArray minuteArray = new JSONArray();
+
+        minuteArray.set(0, new JSONString(singleUnit));
+        minuteArray.set(1, new JSONString(startDate));
+        minuteArray.set(2, new JSONString(endDate));
+
+        return this.setOption("minute", minuteArray);
+    }
+
+    /**
      * Convenience method for setting the 'hour' format.  Equivalent to:
      * <pre><code>
      *     dateTimeLabelFormats.setOption("hour", "%H:%M");
@@ -122,6 +209,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
      */
     public DateTimeLabelFormats setHour(String hour) {
         return this.setOption("hour", hour);
+    }
+
+    /**
+     * Convenience method for setting the 'hour' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setHour(String singleUnit, String startDate, String endDate) {
+        final JSONArray hourArray = new JSONArray();
+
+        hourArray.set(0, new JSONString(singleUnit));
+        hourArray.set(1, new JSONString(startDate));
+        hourArray.set(2, new JSONString(endDate));
+
+        return this.setOption("hour", hourArray);
     }
 
     /**
@@ -138,6 +253,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
     }
 
     /**
+     * Convenience method for setting the 'day' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setDay(String singleUnit, String startDate, String endDate) {
+        final JSONArray dayArray = new JSONArray();
+
+        dayArray.set(0, new JSONString(singleUnit));
+        dayArray.set(1, new JSONString(startDate));
+        dayArray.set(2, new JSONString(endDate));
+
+        return this.setOption("day", dayArray);
+    }
+
+    /**
      * Convenience method for setting the 'week' format.  Equivalent to:
      * <pre><code>
      *     dateTimeLabelFormats.setOption("week", "%e. %b");
@@ -148,6 +291,33 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
      */
     public DateTimeLabelFormats setWeek(String week) {
         return this.setOption("week", week);
+    }
+
+    /**
+     * Convenience method for setting the 'week' format.  ENote that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setWeek(String singleUnit, String startDate, String endDate) {
+        final JSONArray weekArray = new JSONArray();
+
+        weekArray.set(0, new JSONString(singleUnit));
+        weekArray.set(1, new JSONString(startDate));
+        weekArray.set(2, new JSONString(endDate));
+        return this.setOption("week", weekArray);
     }
 
     /**
@@ -164,6 +334,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
     }
 
     /**
+     * Convenience method for setting the 'month' format.  Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setMonth(String singleUnit, String startDate, String endDate) {
+        final JSONArray monthArray = new JSONArray();
+
+        monthArray.set(0, new JSONString(singleUnit));
+        monthArray.set(1, new JSONString(startDate));
+        monthArray.set(2, new JSONString(endDate));
+
+        return this.setOption("month", monthArray);
+    }
+
+    /**
      * Convenience method for setting the 'year' format.  Equivalent to:
      * <pre><code>
      *     dateTimeLabelFormats.setOption("year", "%Y");
@@ -174,6 +372,34 @@ public class DateTimeLabelFormats extends Configurable<DateTimeLabelFormats> {
      */
     public DateTimeLabelFormats setYear(String year) {
         return this.setOption("year", year);
+    }
+
+    /**
+     * Convenience method for setting the 'year' format. Note that this option is intended for
+     * use with stock charts that require custom date formats for each data grouping.  See the
+     * {@link org.moxieapps.gwt.highcharts.client.plotOptions.DataGrouping#setDateTimeLabelFormats(DateTimeLabelFormats)}
+     * method for more detail.<br/>
+     * <br/>
+     * For each of these array definitions, the first item is the format used when the active time span is one unit.
+     * For instance, if the current data applies to one week, the first item of the week array is used.
+     * The second and third items are used when the active time span is more than two units. For instance,
+     * if the current data applies to two weeks, the second and third item of the week array are used, and
+     * applied to the start and end date of the time span.
+     *
+     * @param singleUnit The format to use when the active time span is one unit.
+     * @param startDate  The format to use for the start date when the active time span is more than one unit.
+     * @param endDate    The format to use for the end date when the active time span is more than one unit.
+     * @return A reference to this {@link DateTimeLabelFormats} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public DateTimeLabelFormats setYear(String singleUnit, String startDate, String endDate) {
+        final JSONArray yearArray = new JSONArray();
+
+        yearArray.set(0, new JSONString(singleUnit));
+        yearArray.set(1, new JSONString(startDate));
+        yearArray.set(2, new JSONString(endDate));
+
+        return this.setOption("year", yearArray);
     }
 
 }

@@ -17,7 +17,7 @@
 package org.moxieapps.gwt.highcharts.client.labels;
 
 /**
- * A common base class for both {@link DataLabels} and {@link PieDataLabels} to prevent code duplication
+ * A common base class for both {@link DataLabels} and {@link ProportionalDataLabels} to prevent code duplication
  * while still maintaining a cleaner way for the user to utilize the method chaining with the generics
  * in place.  You should not use this class directly, but instead use one of the base classes.
  *
@@ -114,6 +114,20 @@ public abstract class BaseDataLabels<T extends BaseDataLabels> extends Labels<T>
      */
     public T setShadow(boolean shadow) {
         return this.setOption("shadow", shadow);
+    }
+
+    /**
+     * Convenience method for setting the 'format' option for a dataLabel.  Equivalent to:
+     * <pre><code>
+     *     dataLabel.setOption("format", "{y} mm");
+     * </code></pre>
+     * A format string for the data label. Available variables are the same as for formatter. Defaults to {y}.
+     * @param format A format string used to set the format for s series on a chart.
+     * @return A reference to this {@link BaseDataLabels} instance for convenient method chaining.
+     * @since 1.6.0
+     */
+    public T setFormat(String format) {
+        return this.setOption("format", format);
     }
 
     private DataLabelsFormatter dataLabelsFormatter;
