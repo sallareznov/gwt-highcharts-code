@@ -16,22 +16,74 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.moxieapps.gwt.highcharts.client.events.AxisSetExtremesEvent;
+import org.moxieapps.gwt.highcharts.client.events.ChartClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.ChartLoadEvent;
+import org.moxieapps.gwt.highcharts.client.events.ChartLoadEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEvent;
+import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
+import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointDragEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointMouseOutEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointMouseOverEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointRemoveEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointSelectEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointUnselectEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointUpdateEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesCheckboxClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesHideEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesMouseOutEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesMouseOverEvent;
+import org.moxieapps.gwt.highcharts.client.events.SeriesShowEvent;
+import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
+import org.moxieapps.gwt.highcharts.client.labels.DataLabelsData;
+import org.moxieapps.gwt.highcharts.client.labels.LegendLabelsData;
+import org.moxieapps.gwt.highcharts.client.labels.StackLabelsData;
+import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.AreaRangePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.AreaSplinePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.AreaSplineRangePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.BarPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.BoxPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.BubblePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.CandlestickPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.ColumnPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.ColumnRangePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.ErrorBarPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.FunnelPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.GaugePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.LinePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+import org.moxieapps.gwt.highcharts.client.plotOptions.OHLCPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.ScatterPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.WaterfallPlotOptions;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.json.client.*;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONNull;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Widget;
-import org.moxieapps.gwt.highcharts.client.events.*;
-import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
-import org.moxieapps.gwt.highcharts.client.labels.DataLabelsData;
-import org.moxieapps.gwt.highcharts.client.labels.LegendLabelsData;
-import org.moxieapps.gwt.highcharts.client.labels.StackLabelsData;
-import org.moxieapps.gwt.highcharts.client.plotOptions.*;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * The common base class for both {@link Chart} types as well as {@link StockChart} types.
@@ -1093,6 +1145,25 @@ public abstract class BaseChart<T> extends Widget {
             this.setChartSubtitle(chartSubtitle);
         }
         return returnThis();
+    }
+    
+    /**
+     * sets a new title for the chart
+     * @param title the title to set
+     * @see setTitle(ChartTitle)
+     */
+    public void setTitle(String title) {
+	setTitle(title, null);
+    }
+    
+    /**
+     * sets a new title and a new subtitle for the chart
+     * @param title the title to set
+     * @param subtitle the subtitle to set
+     * @see setTitle(ChartTitle, ChartSubtitle)
+     */
+    public void setTitle(String title, String subtitle) {
+	setTitle(new ChartTitle(title), new ChartSubtitle(subtitle));
     }
 
     // We need to maintain a local reference to tooltip to deal with the formatter function
@@ -2288,8 +2359,15 @@ public abstract class BaseChart<T> extends Widget {
             seriesEventHandlers.put("click",
                 JSONBoolean.getInstance(seriesPlotOptions.getSeriesClickEventHandler() != null)
             );
+            seriesEventHandlers.put("dblclick",
+                    JSONBoolean.getInstance(seriesPlotOptions.getSeriesDblClickEventHandler() != null)
+                );
+            
             seriesEventHandlers.put("checkboxClick",
                 JSONBoolean.getInstance(seriesPlotOptions.getSeriesCheckboxClickEventHandler() != null)
+            );
+            seriesEventHandlers.put("drag",
+                    JSONBoolean.getInstance(seriesPlotOptions.getPointDragEventHandler() != null)
             );
             seriesEventHandlers.put("hide",
                 JSONBoolean.getInstance(seriesPlotOptions.getSeriesHideEventHandler() != null)
@@ -2311,6 +2389,12 @@ public abstract class BaseChart<T> extends Widget {
             pointEventHandlers.put("click",
                 JSONBoolean.getInstance(seriesPlotOptions.getPointClickEventHandler() != null)
             );
+            pointEventHandlers.put("drop",
+                    JSONBoolean.getInstance(seriesPlotOptions.getPointDropEventHandler() != null)
+                );
+            pointEventHandlers.put("drag",
+                    JSONBoolean.getInstance(seriesPlotOptions.getPointDragEventHandler() != null)
+                );
             pointEventHandlers.put("mouseOver",
                 JSONBoolean.getInstance(seriesPlotOptions.getPointMouseOverEventHandler() != null)
             );
@@ -2610,7 +2694,7 @@ public abstract class BaseChart<T> extends Widget {
             if (type1.indexOf("gwt") < 0 && chartEventHandlerFlags[type1]) {
                 options.chart.events = options.chart.events || {};
                 options.chart.events[type1] = function(e) {
-                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::chartEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(e, arguments.callee.type);
+                    return self.@org.moxieapps.gwt.highcharts.client.BaseChart::chartEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;)(this, e, arguments.callee.type);
                 };
                 options.chart.events[type1].type = type1;
             }
@@ -2751,13 +2835,13 @@ public abstract class BaseChart<T> extends Widget {
     }-*/;
 
     @SuppressWarnings({"UnusedDeclaration"})
-    private boolean chartEventCallback(JavaScriptObject nativeEvent, String eventType) {
+    private boolean chartEventCallback(JavaScriptObject chart, JavaScriptObject nativeEvent, String eventType) {
         if ("click".equals(eventType) && chartClickEventHandler != null) {
             return chartClickEventHandler.onClick(new ChartClickEvent(nativeEvent));
         } else if ("load".equals(eventType) && chartLoadEventHandler != null) {
-            return chartLoadEventHandler.onLoad(new ChartLoadEvent(nativeEvent));
+            return chartLoadEventHandler.onLoad(new ChartLoadEvent(nativeEvent, chart));
         } else if ("redraw".equals(eventType) && chartRedrawEventHandler != null) {
-            return chartRedrawEventHandler.onRedraw(new ChartRedrawEvent(nativeEvent));
+            return chartRedrawEventHandler.onRedraw(new ChartRedrawEvent(nativeEvent, chart));
         } else if ("selection".equals(eventType) && chartSelectionEventHandler != null) {
             return chartSelectionEventHandler.onSelection(new ChartSelectionEvent(nativeEvent));
         }
@@ -2780,7 +2864,7 @@ public abstract class BaseChart<T> extends Widget {
             return seriesPlotOptions.getSeriesMouseOutEventHandler().onMouseOut(new SeriesMouseOutEvent(nativeEvent, nativeSeries));
         } else if ("show".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getSeriesShowEventHandler() != null) {
             return seriesPlotOptions.getSeriesShowEventHandler().onShow(new SeriesShowEvent(nativeEvent, nativeSeries));
-        }
+        } 
         return true;
     }
 
@@ -2802,6 +2886,8 @@ public abstract class BaseChart<T> extends Widget {
             return seriesPlotOptions.getPointUpdateEventHandler().onUpdate(new PointUpdateEvent(nativeEvent, nativePoint));
         } else if ("legendItemClick".equals(eventType) && piePlotOptions != null && piePlotOptions.getPointLegendItemClickEventHandler() != null) {
             return piePlotOptions.getPointLegendItemClickEventHandler().onClick(new PointLegendItemClickEvent(nativeEvent, nativePoint));
+        } else if ("drag".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointDragEventHandler() != null) {
+            return seriesPlotOptions.getPointDragEventHandler().onDrag(new PointDragEvent(nativeEvent, nativePoint));
         }
         return true;
     }

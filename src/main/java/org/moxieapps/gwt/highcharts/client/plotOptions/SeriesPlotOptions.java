@@ -30,6 +30,18 @@ import org.moxieapps.gwt.highcharts.client.events.*;
  */
 public class SeriesPlotOptions extends PlotOptions<SeriesPlotOptions> {
 
+    private SeriesDblClickEventHandler seriesDblClickEventHandler;
+
+    public SeriesPlotOptions setSeriesDblClickEventHandler(SeriesDblClickEventHandler seriesClickEventHandler) {
+        this.seriesDblClickEventHandler = seriesClickEventHandler;
+        return this;
+    }
+
+
+    public SeriesDblClickEventHandler getSeriesDblClickEventHandler() {
+        return this.seriesDblClickEventHandler;
+    }
+
     private SeriesClickEventHandler seriesClickEventHandler;
 
     /**
@@ -415,6 +427,28 @@ public class SeriesPlotOptions extends PlotOptions<SeriesPlotOptions> {
      */
     public PointUpdateEventHandler getPointUpdateEventHandler() {
         return this.pointUpdateEventHandler;
+    }
+
+    private PointDragEventHandler pointDragEventHandler;
+    
+    public PointDragEventHandler getPointDragEventHandler() {
+	return this.pointDragEventHandler;
     }    
-      
+
+    public SeriesPlotOptions setPointDragEventHandler(PointDragEventHandler pointDragEventHandler) {
+        this.pointDragEventHandler = pointDragEventHandler;
+        return this;
+    }
+
+    private PointDropEventHandler pointDropEventHandler;
+    
+    public PointDropEventHandler getPointDropEventHandler() {
+	return this.pointDropEventHandler;
+    }    
+
+    public SeriesPlotOptions setPointDropEventHandler(PointDropEventHandler pointDropEventHandler) {
+        this.pointDropEventHandler = pointDropEventHandler;
+        return this;
+    }
+
 }

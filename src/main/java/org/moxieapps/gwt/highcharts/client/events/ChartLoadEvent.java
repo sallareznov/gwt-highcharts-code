@@ -31,14 +31,20 @@ public class ChartLoadEvent {
     @SuppressWarnings({"FieldCanBeLocal", "UnusedDeclaration"})
     private JavaScriptObject event;
 
+    private JavaScriptObject chart;
+    
     /**
      * This constructor is intended for internal use only.  You should not create load events
      * directly, but instead should register a {@link ChartLoadEventHandler}.
      *
      * @param event The native javascript object containing the details of the original event that was fired.
      */
-    public ChartLoadEvent(JavaScriptObject event) {
+    public ChartLoadEvent(JavaScriptObject event, JavaScriptObject chart) {
         this.event = event;
+        this.chart = chart;
     }
 
+    public JavaScriptObject getChart() {
+	return chart;
+    }
 }

@@ -31,7 +31,14 @@ package org.moxieapps.gwt.highcharts.client;
  * @author squinn@moxiegroup.com (Shawn Quinn)
  * @since 1.0.0
  */
-public class ChartSubtitle extends Configurable<ChartSubtitle> {    
+public class ChartSubtitle extends Configurable<ChartSubtitle> {
+    
+    /**
+     * 
+     */
+    public ChartSubtitle(String subtitle) {
+	setText(subtitle);
+    }
 
     /**
      * Convenience method for setting the 'align' option of the subtitle.  Equivalent to:

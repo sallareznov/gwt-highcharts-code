@@ -16,15 +16,21 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.json.client.*;
-import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+
+import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONNull;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 
 /**
  * Manages a data series (and its options) that can then be added to a {@link org.moxieapps.gwt.highcharts.client.Chart}.  As an extension
@@ -214,7 +220,7 @@ public class Series extends Configurable<Series> {
      *
      * @param chart The chart instance that this series is being created within.
      */
-    protected Series(BaseChart chart) {
+    public Series(BaseChart chart) {
         this.chart = chart;
         id = Document.get().createUniqueId();
         setOption("id", id);
@@ -273,6 +279,10 @@ public class Series extends Configurable<Series> {
      */
     public String getName() {
         return ((JSONString)this.getOptions().get("name")).stringValue() != null ? ((JSONString)this.getOptions().get("name")).stringValue() : null;
+    }
+
+    public int getIndex() {
+        return (int)(((JSONNumber)this.getOptions().get("index")).doubleValue());
     }
 
     /**
@@ -418,8 +428,8 @@ public class Series extends Configurable<Series> {
         return this;
     }
 
-    // Purposefully package scope
-    PlotOptions getPlotOptions() {
+    // Modified to public for the master-detail chart
+    public PlotOptions getPlotOptions() {
         return this.plotOptions;
     }
 

@@ -32,6 +32,13 @@ package org.moxieapps.gwt.highcharts.client;
  * @since 1.0.0
  */
 public class ChartTitle extends Configurable<ChartTitle> {
+    
+    /**
+     * 
+     */
+    public ChartTitle(String title) {
+	setText(title);
+    }
 
     /**
      * An enumeration of supported chart title horizontal alignment types, which can be passed to methods

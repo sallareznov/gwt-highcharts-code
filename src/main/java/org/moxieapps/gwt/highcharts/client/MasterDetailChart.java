@@ -90,8 +90,8 @@ public class MasterDetailChart extends Widget {
 	System.arraycopy(series, 0, initialSeries, 0, series.length);
 	for (int i = 0; i < series.length; i++) {
 	    final Series currentSeries = series[i];
-	    slaveChart.addSeries(slaveChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
-	    masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
+	    slaveChart.addSeries(slaveChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
+	    masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
 	    final Number[] minMaxSeries = getMinMax(currentSeries);
 	    if (minMaxSeries[0].doubleValue() < minXCharts.doubleValue()) {
 		minXCharts = minMaxSeries[0];
