@@ -19,13 +19,14 @@ import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+import org.moxieapps.gwt.highcharts.client.plotOptions.Marker.Symbol;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
 
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This widget represents a zoomable chart. It allows you to control a display-only chart (slave chart)
- * with a selectable chart (master chart). A selection in the master chart refreshs the slave chart
+ * This widget represents a zoomable chart. It allows you to control a display-only chart (detail chart)
+ * with a selectable chart (master chart). A selection in the master chart refreshs the detail chart
  * Basic usage is as follows:
  * 
  * <pre>
@@ -36,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
  * series2.setPoints(getData2());
  * final ZoomableChart zoomableChart = new ZoomableChart(series1, series2);
  * final Chart masterChart = zoomableChart.getMasterChart();
- * final Chart slaveChart = zoomableChart.getSlaveChart();
+ * final Chart detailChart = zoomableChart.getdetailChart();
  * masterChart.getXAxis().setType(Axis.Type.DATE_TIME).setTickInterval(7 * 24 * 3600 * 1000) // one week
  * 		.setTickWidth(0).setGridLineWidth(1).setMaxZoom(1 * 24 * 3600 * 1000);
  * 
@@ -47,14 +48,14 @@ import com.google.gwt.user.client.ui.Widget;
  * 		    }
  * 		})).setShowFirstLabel(false).setShowFirstLabel(false);
  * 
- * slaveChart.setChartTitleText("The title of my graph");
+ * detailChart.setChartTitleText("The title of my graph");
  * 
- * 	slaveChart.getXAxis().setType(Axis.Type.DATE_TIME)
+ * 	detailChart.getXAxis().setType(Axis.Type.DATE_TIME)
  * 		// .setTickInterval(24 * 3600 * 1000) // one week
  * 		.setTickWidth(0).setGridLineWidth(1).setAxisTitleText("My X axis").setOption("minRange", 3 * 24 * 3600 * 1000)
  * 		.setOption("minTickInterval", 24 * 3600 * 1000);
  * 
- * 	slaveChart.getYAxis().setAxisTitleText("My Y axis")
+ * 	detailChart.getYAxis().setAxisTitleText("My Y axis")
  * 		.setLabels(new YAxisLabels().setAlign(Labels.Align.LEFT).setX(3).setY(16).setFormatter(new AxisLabelsFormatter() {
  * 		    public String format(AxisLabelsData axisLabelsData) {
  * 			return NumberFormat.getFormat("#,###").format(axisLabelsData.getValueAsDouble());
@@ -64,9 +65,9 @@ import com.google.gwt.user.client.ui.Widget;
  * </pre>
  * @author sdiagne
  */
-public class MasterDetailChart extends Widget {
+public class MasterDetailChart extends Widget implements IChart {
 
-    private Chart slaveChart;
+    private Chart detailChart;
     private Chart masterChart;
     private PlotBand beforePlotBand;
     private PlotBand afterPlotBand;
@@ -77,12 +78,12 @@ public class MasterDetailChart extends Widget {
     private final Color PLOT_BAND_COLOR = new Color(0, 0, 0, 0.2);
 
     /**
-     * creates a zoomable chart and inject the series in both the slave and the master chart
+     * creates a zoomable chart and inject the series in both the detail and the master chart
      * 
      * @param series
      */
     public MasterDetailChart(Series... series) {
-	slaveChart = new Chart();
+	detailChart = new Chart();
 	masterChart = new Chart();
 	minXCharts = GREATEST_NUMBER;
 	maxXCharts = NULL_NUMBER;
@@ -90,7 +91,7 @@ public class MasterDetailChart extends Widget {
 	System.arraycopy(series, 0, initialSeries, 0, series.length);
 	for (int i = 0; i < series.length; i++) {
 	    final Series currentSeries = series[i];
-	    slaveChart.addSeries(slaveChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
+	    detailChart.addSeries(detailChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
 	    masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
 	    final Number[] minMaxSeries = getMinMax(currentSeries);
 	    if (minMaxSeries[0].doubleValue() < minXCharts.doubleValue()) {
@@ -112,7 +113,7 @@ public class MasterDetailChart extends Widget {
      *            the series
      * @return an array with the minimum and the maximum abscissa
      */
-    public Number[] getMinMax(Series series) {
+    private Number[] getMinMax(Series series) {
 	final Number[] minMax = new Number[2];
 	final Point[] points = series.getPoints();
 	Number min = points[0].getX();
@@ -134,13 +135,13 @@ public class MasterDetailChart extends Widget {
     private void configureCharts() {
 	masterChart.setZoomType(ZoomType.X);
 	masterChart.setType(Type.LINE);
-	slaveChart.setType(Type.LINE);
+	detailChart.setType(Type.LINE);
 	final Legend masterChartLegend = new Legend();
-	final Legend slaveChartLegend = new Legend();
+	final Legend detailChartLegend = new Legend();
 	masterChartLegend.setEnabled(true);
-	slaveChartLegend.setEnabled(false);
+	detailChartLegend.setEnabled(false);
 	masterChart.setLegend(masterChartLegend);
-	slaveChart.setLegend(slaveChartLegend);
+	detailChart.setLegend(detailChartLegend);
     }
 
     /**
@@ -150,18 +151,18 @@ public class MasterDetailChart extends Widget {
      *            the width to set
      */
     public void setChartsWidth(Number width) {
-	slaveChart.setWidth(width);
+	detailChart.setWidth(width);
 	masterChart.setWidth(width);
     }
 
     /**
-     * sets the height of the slave chart
+     * sets the height of the detail chart
      * 
      * @param height
      *            the height to set
      */
-    public void setSlaveChartHeight(Number height) {
-	slaveChart.setWidth(height);
+    public void setDetailChartHeight(Number height) {
+	detailChart.setWidth(height);
     }
 
     /**
@@ -175,10 +176,10 @@ public class MasterDetailChart extends Widget {
     }
 
     /**
-     * @return the slaveChart
+     * @return the detailChart
      */
-    public Chart getSlaveChart() {
-	return slaveChart;
+    public Chart getDetailChart() {
+	return detailChart;
     }
 
     /**
@@ -189,10 +190,10 @@ public class MasterDetailChart extends Widget {
     }
 
     /**
-     * handle the event of selection by drawing plot band in the master chart and refreshing the slave chart (the slave chart will display the points
+     * handle the event of selection by drawing plot band in the master chart and refreshing the detail chart (the detail chart will display the points
      * belonging to the selection)
      */
-    public void enableSelectionEvent() {
+    private void enableSelectionEvent() {
 	masterChart.setSelectionEventHandler(new ChartSelectionEventHandler() {
 
 	    @Override
@@ -212,9 +213,9 @@ public class MasterDetailChart extends Widget {
     }
 
     /**
-     * a click on a item of the legend will hide/display the corresponding graph in the slave chart
+     * a click on a item of the legend will hide/display the corresponding graph in the detail chart
      */
-    public void enableLegendInteractionEvent() {
+    private void enableLegendInteractionEvent() {
 	final SeriesPlotOptions plotOptions = new SeriesPlotOptions();
 	plotOptions.setMarker(new Marker().setEnabled(false));
 	plotOptions.setHoverStateEnabled(false);
@@ -224,7 +225,7 @@ public class MasterDetailChart extends Widget {
 	    public boolean onClick(SeriesLegendItemClickEvent event) {
 		final int seriesIndex = masterChart.getSeries(event.getSeriesId()).getIndex();
 		final boolean currentVisibility = masterChart.getSeries()[seriesIndex].isVisible();
-		slaveChart.getSeries()[seriesIndex].setVisible(!currentVisibility);
+		detailChart.getSeries()[seriesIndex].setVisible(!currentVisibility);
 		masterChart.getSeries()[seriesIndex].setVisible(!currentVisibility);
 		return false;
 	    }
@@ -244,7 +245,7 @@ public class MasterDetailChart extends Widget {
      * @param maxX
      *            the maximum abscissa of the selection
      */
-    public void drawPointsInSeries(int index, double minX, double maxX) {
+    private void drawPointsInSeries(int index, double minX, double maxX) {
 	final Series series = initialSeries[index];
 	final Point[] seriesPoints = series.getPoints();
 	final List<Point> pointsToDraw = new ArrayList<Point>();
@@ -299,7 +300,7 @@ public class MasterDetailChart extends Widget {
 		pointsToDraw.add(seriesPoints[lastIndex + stepRight]);
 	    }
 	}
-	slaveChart.getSeries()[index].setPoints(pointsToDraw.toArray(new Point[pointsToDraw.size()]));
+	detailChart.getSeries()[index].setPoints(pointsToDraw.toArray(new Point[pointsToDraw.size()]));
     }
 
     /**
@@ -310,7 +311,7 @@ public class MasterDetailChart extends Widget {
      * @param maxX
      *            the maximum abscissa of the selection
      */
-    public void drawPlotBands(double minX, double maxX) {
+    private void drawPlotBands(double minX, double maxX) {
 	final Axis<?> xAxis = masterChart.getXAxis();
 
 	// the band before the selection in the master chart
@@ -383,5 +384,219 @@ public class MasterDetailChart extends Widget {
 	    return Double.MAX_VALUE;
 	}
     };
+
+    @Override
+    public IChart setColors(String... colors) {
+	detailChart.setColors(colors);
+	masterChart.setColors(colors);
+	return this;
+    }
+
+    @Override
+    public IChart setExporting(Exporting exporting) {
+	detailChart.setExporting(exporting);
+	masterChart.setExporting(exporting);
+	return this;
+    }
+
+    @Override
+    public IChart setHeight(Number height) {
+	detailChart.setHeight((height.intValue() * 3) / 4);
+	masterChart.setHeight(height.intValue() / 4);
+	return this;
+    }
+
+    @Override
+    public IChart setLoading(Loading loading) {
+	detailChart.setLoading(loading);
+	masterChart.setLoading(loading);
+	return this;
+    }
+
+    @Override
+    public IChart setMargin(Number marginTop, Number marginRight, Number marginBottom, Number marginLeft) {
+	detailChart.setMargin(marginTop, marginRight, marginBottom, marginLeft);
+	masterChart.setMargin(marginTop, marginRight, marginBottom, marginLeft);
+	return this;
+    }
+
+    @Override
+    public IChart setShadow(boolean shadow) {
+	detailChart.setShadow(shadow);
+	masterChart.setShadow(shadow);
+	return this;
+    }
+
+    @Override
+    public IChart setShowAxes(boolean showAxes) {
+	detailChart.setShowAxes(showAxes);
+	masterChart.setShowAxes(showAxes);
+	return this;
+    }
+
+    @Override
+    public IChart setSpacingTop(Number spacingTop) {
+	detailChart.setSpacingTop(spacingTop);
+	masterChart.setSpacingTop(spacingTop);
+	return this;
+    }
+
+    @Override
+    public IChart setSpacingRight(Number spacingRight) {
+	detailChart.setSpacingRight(spacingRight);
+	masterChart.setSpacingRight(spacingRight);
+	return this;
+    }
+
+    @Override
+    public IChart setSpacingBottom(Number spacingBottom) {
+	detailChart.setSpacingBottom(spacingBottom);
+	masterChart.setSpacingBottom(spacingBottom);
+	return this;
+    }
+
+    @Override
+    public IChart setSpacingLeft(Number spacingLeft) {
+	detailChart.setSpacingLeft(spacingLeft);
+	masterChart.setSpacingLeft(spacingLeft);
+	return this;
+    }
+
+    @Override
+    public IChart setStyle(Style style) {
+	detailChart.setStyle(style);
+	masterChart.setStyle(style);
+	return this;
+    }
+
+    @Override
+    public IChart setSymbols(Symbol... symbols) {
+	detailChart.setSymbols(symbols);
+	masterChart.setSymbols(symbols);
+	return this;
+    }
+    
+    @Override
+    public void setTitle(String title) {
+	detailChart.setTitle(title);
+	masterChart.setTitle(title);
+    }
+
+    @Override
+    public void setTitle(String title, String subtitle) {
+	detailChart.setTitle(title, subtitle);
+	masterChart.setTitle(title, subtitle);
+    }
+
+    @Override
+    public IChart setToolTip(ToolTip toolTip) {
+	detailChart.setToolTip(toolTip);
+	masterChart.setToolTip(toolTip);
+	return this;
+    }
+
+    @Override
+    public IChart setType(Type type) {
+	detailChart.setType(type);
+	masterChart.setType(type);
+	return this;
+    }
+
+    @Override
+    public IChart setWidth(Number width) {
+	detailChart.setWidth(width);
+	masterChart.setWidth(width);
+	return this;
+    }
+
+    @Override
+    public IChart setSize(int width, int height) {
+	setWidth(width);
+	setHeight(height);
+	return this;
+    }
+    
+    @Override
+    public void setSize(String width, String height) {
+        super.setSize(width, height);
+    }
+    
+    @Override
+    public IChart showLoading(String message) {
+	detailChart.showLoading(message);
+	masterChart.showLoading(message);
+	return this;
+    }
+
+    @Override
+    public IChart redraw() {
+	detailChart.redraw();
+	masterChart.redraw();
+	return this;
+    }
+
+    @Override
+    public IChart setOption(String path, Object value) {
+	detailChart.setOption(path, value);
+	masterChart.setOption(path, value);
+	return this;
+    }
+
+    @Override
+    public IChart setAnimation(boolean animation) {
+	detailChart.setAnimation(animation);
+	masterChart.setAnimation(animation);
+	return this;
+    }
+    
+    @Override
+    public XAxis getXAxis() {
+        return detailChart.getXAxis();
+    }
+
+    @Override
+    public YAxis getYAxis() {
+        return detailChart.getYAxis();
+    }
+
+    @Override
+    public IChart setLegend(Legend legend) {
+	return this;
+    }
+
+    @Override
+    public IChart addSeries(Series series) {
+	detailChart.addSeries(series);
+	masterChart.addSeries(series);
+	return this;
+    }
+
+    @Override
+    public IChart setSeriesPlotOptions(SeriesPlotOptions seriesPlotOptions) {
+	detailChart.setSeriesPlotOptions(seriesPlotOptions);
+	masterChart.setSeriesPlotOptions(seriesPlotOptions);
+	return this;
+    }
+
+    @Override
+    public IChart setBackgroundColor(String backgroundColor) {
+	detailChart.setBackgroundColor(backgroundColor);
+	masterChart.setBackgroundColor(backgroundColor);
+	return this;
+    }
+
+    @Override
+    public IChart setBackgroundColor(Color backgroundColor) {
+	detailChart.setBackgroundColor(backgroundColor);
+	masterChart.setBackgroundColor(backgroundColor);
+	return this;
+    }
+
+    @Override
+    public IChart setBorderWidth(Number borderWidth) {
+	detailChart.setBorderWidth(borderWidth);
+	masterChart.setBorderWidth(borderWidth);
+	return this;
+    }
 
 }

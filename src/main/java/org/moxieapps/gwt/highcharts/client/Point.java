@@ -16,11 +16,14 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import java.util.Comparator;
+
+import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 
 /**
  * Represents a single data point that can be added to a {@link Series}.  As an extension
@@ -100,10 +103,12 @@ public class Point extends Configurable<Point> {
 
     private Number y;
     private Number x;
+    private Number z;
     private Number open;
     private Number high;
     private Number low;
     private Number close;
+    private String drilldown;
 
     /**
      * Create a new point, setting only the Y axis value that the point should be
@@ -241,6 +246,14 @@ public class Point extends Configurable<Point> {
             return nativeGetNumber(this.nativePoint, "y");
         } else {
             return y;
+        }
+    }
+
+    public Number getZ() {
+        if (this.nativePoint != null && nativeContainsKey(this.nativePoint, "z")) {
+            return nativeGetNumber(this.nativePoint, "z");
+        } else {
+            return z;
         }
     }
 
@@ -766,6 +779,11 @@ public class Point extends Configurable<Point> {
         } else {
             return this.title;
         }
+    }
+    
+    public Point setDrillDown(String drilldown) {
+	this.drilldown = drilldown;
+	return this.setOption("drilldown", drilldown);
     }
 
 

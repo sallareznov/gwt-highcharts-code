@@ -55,7 +55,7 @@ package org.moxieapps.gwt.highcharts.client;
  * @author squinn@moxiegroup.com (Shawn Quinn)
  * @since 1.0.0
  */
-public class Chart extends BaseChart<Chart> {
+public class Chart extends BaseChart<Chart> implements IChart {
 
     /**
      * An enumeration of supported chart zoom types, which can be passed to the
