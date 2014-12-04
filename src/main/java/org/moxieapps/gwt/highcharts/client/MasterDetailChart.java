@@ -241,8 +241,8 @@ public class MasterDetailChart extends Composite implements IChart {
      * a click on a item of the legend will hide/display the corresponding graph in the detail chart
      */
     public void enableLegendInteractionEvent(SeriesPlotOptions plotOptions) {
-//	plotOptions.setMarker(new Marker().setEnabled(false));
-//	plotOptions.setHoverStateEnabled(false);
+	// plotOptions.setMarker(new Marker().setEnabled(false));
+	// plotOptions.setHoverStateEnabled(false);
 	final SeriesLegendItemClickEventHandler legendItemClickEventHandler = new SeriesLegendItemClickEventHandler() {
 
 	    @Override
@@ -508,7 +508,7 @@ public class MasterDetailChart extends Composite implements IChart {
     @Override
     public void setTitle(String title, String subtitle) {
 	detailChart.setTitle(title, subtitle);
-	masterChart.setTitle((String)null, (String)null);
+	masterChart.setTitle((String) null, (String) null);
     }
 
     @Override
@@ -534,8 +534,8 @@ public class MasterDetailChart extends Composite implements IChart {
 
     @Override
     public IChart setSize(int width, int height) {
-	setWidth(width);
-	setHeight(height);
+	masterChart.setSize(width, height * 35 / 100);
+	detailChart.setSize(width, height * 65 / 100);
 	return this;
     }
 
@@ -644,6 +644,13 @@ public class MasterDetailChart extends Composite implements IChart {
     @Override
     public Series createSeries() {
 	return null;
+    }
+
+    @Override
+    public IChart setReflow(boolean reflow) {
+	detailChart.setReflow(true);
+	masterChart.setReflow(true);
+	return this;
     }
 
 }

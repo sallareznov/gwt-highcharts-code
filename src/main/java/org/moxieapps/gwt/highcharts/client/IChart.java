@@ -543,5 +543,19 @@ public interface IChart extends IsWidget {
      *         via {@link #addSeries(Series)}.
      */
     Series createSeries();
+    
+    /**
+     * Convenience method for setting the 'reflow' option of the chart.  Equivalent to:
+     * <pre><code>
+     *     chart.setOption("/chart/reflow", false);
+     * </code></pre>
+     * Whether to reflow the chart to fit the width of the container div on resizing
+     * the window. Defaults to true.
+     *
+     * @param reflow If true, reflow the chart to fit the width of the container div on resizing
+     *               the window.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     */
+    IChart setReflow(boolean reflow);
 
 }
