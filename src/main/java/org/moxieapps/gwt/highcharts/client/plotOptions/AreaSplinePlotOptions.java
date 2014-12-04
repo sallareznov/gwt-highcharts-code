@@ -17,7 +17,6 @@
 package org.moxieapps.gwt.highcharts.client.plotOptions;
 
 import org.moxieapps.gwt.highcharts.client.Chart;
-import org.moxieapps.gwt.highcharts.client.Color;
 import org.moxieapps.gwt.highcharts.client.Series;
 
 /**

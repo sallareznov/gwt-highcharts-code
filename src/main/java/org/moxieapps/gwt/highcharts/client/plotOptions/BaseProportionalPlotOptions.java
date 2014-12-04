@@ -16,11 +16,12 @@
 
 package org.moxieapps.gwt.highcharts.client.plotOptions;
 
+import org.moxieapps.gwt.highcharts.client.Color;
+import org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEventHandler;
+
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONString;
-import org.moxieapps.gwt.highcharts.client.Color;
-import org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEventHandler;
 
 /**
  * A common base class for both {@link FunnelPlotOptions} and {@link PiePlotOptions} to prevent code duplication

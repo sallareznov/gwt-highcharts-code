@@ -18,11 +18,13 @@ import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEventHandler;
-import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker.Symbol;
+import org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
 
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * This widget represents a zoomable chart. It allows you to control a display-only chart (detail chart)
@@ -63,9 +65,10 @@ import com.google.gwt.user.client.ui.Widget;
  * 		})).setShowFirstLabel(false).setMaxZoom(0.1);
  * </code>
  * </pre>
+ * 
  * @author sdiagne
  */
-public class MasterDetailChart extends Widget implements IChart {
+public class MasterDetailChart extends Composite implements IChart {
 
     private Chart detailChart;
     private Chart masterChart;
@@ -76,6 +79,8 @@ public class MasterDetailChart extends Widget implements IChart {
     private Series[] initialSeries;
 
     private final Color PLOT_BAND_COLOR = new Color(0, 0, 0, 0.2);
+
+    private FlowPanel zePanel;
 
     /**
      * creates a zoomable chart and inject the series in both the detail and the master chart
@@ -91,8 +96,12 @@ public class MasterDetailChart extends Widget implements IChart {
 	System.arraycopy(series, 0, initialSeries, 0, series.length);
 	for (int i = 0; i < series.length; i++) {
 	    final Series currentSeries = series[i];
-	    detailChart.addSeries(detailChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
-	    masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()).setPlotOptions(currentSeries.getPlotOptions()));
+	    detailChart.addSeries(detailChart.createSeries().setName(currentSeries.getName()).setIndex(i).setPoints(currentSeries.getPoints())
+		    .setPlotOptions(currentSeries.getPlotOptions()));
+	    masterChart.addSeries(masterChart.createSeries().setName(currentSeries.getName()).setIndex(i).setPoints(currentSeries.getPoints())
+		    .setPlotOptions(currentSeries.getPlotOptions()));
+	    // detailChart.addSeries(detailChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
+	    // masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
 	    final Number[] minMaxSeries = getMinMax(currentSeries);
 	    if (minMaxSeries[0].doubleValue() < minXCharts.doubleValue()) {
 		minXCharts = minMaxSeries[0];
@@ -103,7 +112,15 @@ public class MasterDetailChart extends Widget implements IChart {
 	}
 	configureCharts();
 	enableSelectionEvent();
-	enableLegendInteractionEvent();
+	SeriesPlotOptions plotOptions = new SeriesPlotOptions();
+	enableLegendInteractionEvent(plotOptions);
+	masterChart.setSeriesPlotOptions(plotOptions);
+
+	zePanel = new FlowPanel();
+	zePanel.add(detailChart);
+	zePanel.add(masterChart);
+	zePanel.setHeight("100%");
+	initWidget(zePanel);
     }
 
     /**
@@ -142,6 +159,13 @@ public class MasterDetailChart extends Widget implements IChart {
 	detailChartLegend.setEnabled(false);
 	masterChart.setLegend(masterChartLegend);
 	detailChart.setLegend(detailChartLegend);
+	detailChart.setReflow(true);
+	masterChart.setReflow(true);
+	detailChart.setCredits(new Credits().setEnabled(false));
+	masterChart.setCredits(new Credits().setEnabled(false));
+	masterChart.getElement().setAttribute("style", "width:100%;height:35%");
+	detailChart.getElement().setAttribute("style", "width:100%;height:65%");
+
     }
 
     /**
@@ -190,7 +214,8 @@ public class MasterDetailChart extends Widget implements IChart {
     }
 
     /**
-     * handle the event of selection by drawing plot band in the master chart and refreshing the detail chart (the detail chart will display the points
+     * handle the event of selection by drawing plot band in the master chart and refreshing the detail chart (the detail chart will display the
+     * points
      * belonging to the selection)
      */
     private void enableSelectionEvent() {
@@ -215,10 +240,9 @@ public class MasterDetailChart extends Widget implements IChart {
     /**
      * a click on a item of the legend will hide/display the corresponding graph in the detail chart
      */
-    private void enableLegendInteractionEvent() {
-	final SeriesPlotOptions plotOptions = new SeriesPlotOptions();
-	plotOptions.setMarker(new Marker().setEnabled(false));
-	plotOptions.setHoverStateEnabled(false);
+    public void enableLegendInteractionEvent(SeriesPlotOptions plotOptions) {
+//	plotOptions.setMarker(new Marker().setEnabled(false));
+//	plotOptions.setHoverStateEnabled(false);
 	final SeriesLegendItemClickEventHandler legendItemClickEventHandler = new SeriesLegendItemClickEventHandler() {
 
 	    @Override
@@ -232,7 +256,6 @@ public class MasterDetailChart extends Widget implements IChart {
 	};
 	plotOptions.setSeriesLegendItemClickEventHandler(legendItemClickEventHandler);
 
-	masterChart.setSeriesPlotOptions(plotOptions);
     }
 
     /**
@@ -475,17 +498,17 @@ public class MasterDetailChart extends Widget implements IChart {
 	masterChart.setSymbols(symbols);
 	return this;
     }
-    
+
     @Override
     public void setTitle(String title) {
 	detailChart.setTitle(title);
-	masterChart.setTitle(title);
+	masterChart.setTitle(null);
     }
 
     @Override
     public void setTitle(String title, String subtitle) {
 	detailChart.setTitle(title, subtitle);
-	masterChart.setTitle(title, subtitle);
+	masterChart.setTitle((String)null, (String)null);
     }
 
     @Override
@@ -515,12 +538,12 @@ public class MasterDetailChart extends Widget implements IChart {
 	setHeight(height);
 	return this;
     }
-    
+
     @Override
     public void setSize(String width, String height) {
-        super.setSize(width, height);
+	super.setSize(width, height);
     }
-    
+
     @Override
     public IChart showLoading(String message) {
 	detailChart.showLoading(message);
@@ -548,15 +571,15 @@ public class MasterDetailChart extends Widget implements IChart {
 	masterChart.setAnimation(animation);
 	return this;
     }
-    
+
     @Override
     public XAxis getXAxis() {
-        return detailChart.getXAxis();
+	return detailChart.getXAxis();
     }
 
     @Override
     public YAxis getYAxis() {
-        return detailChart.getYAxis();
+	return detailChart.getYAxis();
     }
 
     @Override
@@ -597,6 +620,30 @@ public class MasterDetailChart extends Widget implements IChart {
 	detailChart.setBorderWidth(borderWidth);
 	masterChart.setBorderWidth(borderWidth);
 	return this;
+    }
+
+    @Override
+    public IChart setPiePlotOptions(PiePlotOptions piePlotOptions) {
+	return this;
+    }
+
+    @Override
+    public IChart setCredits(Credits credits) {
+	detailChart.setCredits(credits);
+	masterChart.setCredits(credits);
+	return this;
+    }
+
+    @Override
+    public IChart setAreaPlotOptions(AreaPlotOptions areaPlotOptions) {
+	detailChart.setAreaPlotOptions(areaPlotOptions);
+	masterChart.setAreaPlotOptions(areaPlotOptions);
+	return this;
+    }
+
+    @Override
+    public Series createSeries() {
+	return null;
     }
 
 }

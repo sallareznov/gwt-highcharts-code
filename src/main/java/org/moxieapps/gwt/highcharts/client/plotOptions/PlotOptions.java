@@ -16,7 +16,11 @@
 
 package org.moxieapps.gwt.highcharts.client.plotOptions;
 
-import org.moxieapps.gwt.highcharts.client.*;
+import org.moxieapps.gwt.highcharts.client.Animation;
+import org.moxieapps.gwt.highcharts.client.Color;
+import org.moxieapps.gwt.highcharts.client.Configurable;
+import org.moxieapps.gwt.highcharts.client.PlotLine;
+import org.moxieapps.gwt.highcharts.client.Series;
 import org.moxieapps.gwt.highcharts.client.labels.BaseDataLabels;
 import org.moxieapps.gwt.highcharts.client.labels.DataLabels;
 

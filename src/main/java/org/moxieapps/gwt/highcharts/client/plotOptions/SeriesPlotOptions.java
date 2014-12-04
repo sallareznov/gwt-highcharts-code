@@ -18,7 +18,23 @@ package org.moxieapps.gwt.highcharts.client.plotOptions;
 
 import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Series;
-import org.moxieapps.gwt.highcharts.client.events.*;
+import org.moxieapps.gwt.highcharts.client.events.PointClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointDragEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointDropEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointMouseOutEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointMouseOverEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointRemoveEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointSelectEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointUnselectEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PointUpdateEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesCheckboxClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesDblClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesHideEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesMouseOutEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesMouseOverEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.SeriesShowEventHandler;
 
 /**
  * Represents the general plot options available for all series types, which can be set either generically

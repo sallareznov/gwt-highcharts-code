@@ -16,8 +16,6 @@
 
 package org.moxieapps.gwt.highcharts.client.plotOptions;
 
-import org.moxieapps.gwt.highcharts.client.Color;
-import org.moxieapps.gwt.highcharts.client.PlotLine;
 
 /**
  * Represents the general plot options available for all box type series, which can be set either generically

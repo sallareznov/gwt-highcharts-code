@@ -16,11 +16,12 @@
 
 package org.moxieapps.gwt.highcharts.client.plotOptions;
 
+import org.moxieapps.gwt.highcharts.client.Configurable;
+import org.moxieapps.gwt.highcharts.client.DateTimeLabelFormats;
+
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONString;
-import org.moxieapps.gwt.highcharts.client.Configurable;
-import org.moxieapps.gwt.highcharts.client.DateTimeLabelFormats;
 
 
 /**
