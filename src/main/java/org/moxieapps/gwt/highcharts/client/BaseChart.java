@@ -627,6 +627,13 @@ public abstract class BaseChart<T> extends Widget {
         this.legend = legend;
         return this.setOption("/legend", legend != null ? legend.getOptions() : null);
     }
+    
+    /**
+     * @return the legend
+     */
+    public Legend getLegend() {
+	return legend;
+    }
 
     /**
      * Convenience method for setting the 'loading' options of the chart.  Equivalent to:

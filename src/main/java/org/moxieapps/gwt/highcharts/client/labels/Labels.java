@@ -173,4 +173,16 @@ public abstract class Labels<T extends Labels> extends Configurable<T> {
         return this.setOption("y", y);
     }
 
+    /**
+     * Convenience method for setting the format of the label. Equivalent to :
+     * <pre><code>
+     * 		labels.setOption("format", value);
+     * </code></pre> 
+     * @param format the format
+     * @return A reference to this {@link org.moxieapps.gwt.highcharts.client.labels.Labels} instance for convenient method chaining.
+     */
+    public T setFormat(String format) {
+        return this.setOption("format", format);
+    }
+
 }

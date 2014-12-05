@@ -653,4 +653,9 @@ public class MasterDetailChart extends Composite implements IChart {
 	return this;
     }
 
+    @Override
+    public Legend getLegend() {
+	return masterChart.getLegend();
+    }
+
 }

@@ -557,5 +557,7 @@ public interface IChart extends IsWidget {
      * @return A reference to this {@link BaseChart} instance for convenient method chaining.
      */
     IChart setReflow(boolean reflow);
+    
+    Legend getLegend();
 
 }
