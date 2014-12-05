@@ -30,6 +30,7 @@ import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.PointClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PointDragEvent;
+import org.moxieapps.gwt.highcharts.client.events.PointDropEvent;
 import org.moxieapps.gwt.highcharts.client.events.PointLegendItemClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PointMouseOutEvent;
 import org.moxieapps.gwt.highcharts.client.events.PointMouseOverEvent;
@@ -2373,9 +2374,6 @@ public abstract class BaseChart<T> extends Widget {
             seriesEventHandlers.put("checkboxClick",
                 JSONBoolean.getInstance(seriesPlotOptions.getSeriesCheckboxClickEventHandler() != null)
             );
-            seriesEventHandlers.put("drag",
-                    JSONBoolean.getInstance(seriesPlotOptions.getPointDragEventHandler() != null)
-            );
             seriesEventHandlers.put("hide",
                 JSONBoolean.getInstance(seriesPlotOptions.getSeriesHideEventHandler() != null)
             );
@@ -2895,6 +2893,8 @@ public abstract class BaseChart<T> extends Widget {
             return piePlotOptions.getPointLegendItemClickEventHandler().onClick(new PointLegendItemClickEvent(nativeEvent, nativePoint));
         } else if ("drag".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointDragEventHandler() != null) {
             return seriesPlotOptions.getPointDragEventHandler().onDrag(new PointDragEvent(nativeEvent, nativePoint));
+        }else if ("drop".equals(eventType) && seriesPlotOptions != null && seriesPlotOptions.getPointDropEventHandler() != null) {
+            return seriesPlotOptions.getPointDropEventHandler().onDrop(new PointDropEvent(nativeEvent, nativePoint));
         }
         return true;
     }
