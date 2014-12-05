@@ -1169,6 +1169,22 @@ public class Series extends Configurable<Series> {
     public String getId() {
         return id;
     }
+    
+    /**
+     * sets the drag options on the x-axis
+     * @param draggable
+     */
+    public Series setDraggableX(boolean draggable) {
+	return this.setOption("draggableX", draggable);
+    }
+    
+    /**
+     * sets the drag options on the y-axis
+     * @param draggable
+     */
+    public Series setDraggableY(boolean draggable) {
+	return this.setOption("draggableY", draggable);
+    }
 
     // Purposefully not using the generic "List" interface here in order optimize GWT performance.
     private ArrayList<Point> points = new ArrayList<Point>();
