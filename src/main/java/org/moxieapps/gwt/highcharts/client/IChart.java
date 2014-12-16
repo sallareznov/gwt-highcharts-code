@@ -9,12 +9,14 @@
  */
 package org.moxieapps.gwt.highcharts.client;
 
+import org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -559,5 +561,40 @@ public interface IChart extends IsWidget {
     IChart setReflow(boolean reflow);
     
     Legend getLegend();
+    
+    /**
+     * Returns a pointer to the native Highcharts or Highstock chart instance that this GWT BaseChart
+     * instance is associated with.  Note that this method will only return a non-null value if it
+     * is called after the chart has been rendered.  For advanced use-cases only.
+     *
+     * @return The native Highcharts or Highstock JS chart instance that this BaseChart is associated with, or
+     *         null if the chart has not yet been rendered.
+     * @since 1.4.0
+     */
+    JavaScriptObject getNativeChart();
+    
+    /**
+     * Set a callback handler that will be invoked whenever the user clicks on the plot background.
+     * Information where the user clicked can then be found through the {@link org.moxieapps.gwt.highcharts.client.events.ChartClickEvent} instance
+     * that is passed to the handler's {@link org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler#onClick(org.moxieapps.gwt.highcharts.client.events.ChartClickEvent)} method.
+     *
+     * @param chartClickEventHandler The handler that should be invoked whenever a click event occurs.
+     * @return A reference to this {@link BaseChart} instance for convenient method chaining.
+     * @since 1.1.0
+     */
+    IChart setClickEventHandler(ChartClickEventHandler chartClickEventHandler);
+    
+    /**
+     * Return an array of all the {@link Series} instances that have been added to this chart (either before or
+     * after the chart was rendered), or an empty array if none have been added yet. Note that we're returning
+     * an array instead of a java.util.List as the generic interface types require a bit of a performance hit
+     * in GWT to use.
+     *
+     * @return An array of the Series instances currently within the chart, or an empty array if none have yet
+     *         been added.
+     */
+    Series[] getSeries();
+    
+    SeriesPlotOptions getSeriesPlotOptions();
 
 }

@@ -16,8 +16,12 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
-import com.google.gwt.dom.client.Document;
+import org.moxieapps.gwt.highcharts.client.events.PlotBandClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PlotBandDblClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.PlotBandRightClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.labels.PlotBandLabel;
+
+import com.google.gwt.dom.client.Document;
 
 /**
  * A configurable class that can be used to represent plot bands across an area of the chart, which can
@@ -45,6 +49,9 @@ public class PlotBand extends Configurable<PlotBand> {
 
     private Axis axis;
     private String id;
+    private PlotBandClickEventHandler clickEventHandler;
+    private PlotBandDblClickEventHandler dblClickEventHandler;
+    private PlotBandRightClickEventHandler rightClickEventHandler;
 
     /**
      * Use the {@link Axis#createPlotBand()} method to create new plot bands
@@ -163,8 +170,51 @@ public class PlotBand extends Configurable<PlotBand> {
      * @return The unique id of this plot band
      * @since 1.1.3
      */
-    String getId() {
+    public String getId() {
         return id;
+    }
+    
+    /**
+     * @return the clickEventHandler
+     */
+    public PlotBandClickEventHandler getClickEventHandler() {
+	return clickEventHandler;
+    }
+    
+    /**
+     * @return the dblClickEventHandler
+     */
+    public PlotBandDblClickEventHandler getDblClickEventHandler() {
+	return dblClickEventHandler;
+    }
+    
+    /**
+     * @return the rightClickEventHandler
+     */
+    public PlotBandRightClickEventHandler getRightClickEventHandler() {
+	return rightClickEventHandler;
+    }
+    
+    /**
+     * @param clickEventHandler the clickEventHandler to set
+     */
+    public PlotBand setClickEventHandler(PlotBandClickEventHandler clickEventHandler) {
+	this.clickEventHandler = clickEventHandler;
+	return this;
+    }
+    
+    /**
+     * @param dblClickEventHandler the dblClickEventHandler to set
+     */
+    public void setDblClickEventHandler(PlotBandDblClickEventHandler dblClickEventHandler) {
+	this.dblClickEventHandler = dblClickEventHandler;
+    }
+    
+    /**
+     * @param rightClickEventHandler the rightClickEventHandler to set
+     */
+    public void setRightClickEventHandler(PlotBandRightClickEventHandler rightClickEventHandler) {
+	this.rightClickEventHandler = rightClickEventHandler;
     }
 
 }

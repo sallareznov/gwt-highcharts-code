@@ -17,6 +17,8 @@
 package org.moxieapps.gwt.highcharts.client;
 
 import com.google.gwt.dom.client.Document;
+
+import org.moxieapps.gwt.highcharts.client.events.PlotLineClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.labels.PlotLineLabel;
 
 /**
@@ -118,6 +120,21 @@ public class PlotLine extends Configurable<PlotLine> {
 
     private Axis axis;
     private String id;
+    private PlotLineClickEventHandler clickEventHandler;
+    
+    /**
+     * @return the clickEventHandler
+     */
+    public PlotLineClickEventHandler getClickEventHandler() {
+	return clickEventHandler;
+    }
+    
+    /**
+     * @param clickEventHandler the clickEventHandler to set
+     */
+    public void setClickEventHandler(PlotLineClickEventHandler clickEventHandler) {
+	this.clickEventHandler = clickEventHandler;
+    }
 
     /**
      * Use the {@link Axis#createPlotLine()} method to create new plot lines

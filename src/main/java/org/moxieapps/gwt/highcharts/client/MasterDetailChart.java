@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.moxieapps.gwt.highcharts.client.BaseChart.ZoomType;
 import org.moxieapps.gwt.highcharts.client.Series.Type;
+import org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEvent;
@@ -23,6 +24,7 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.Marker.Symbol;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -656,6 +658,26 @@ public class MasterDetailChart extends Composite implements IChart {
     @Override
     public Legend getLegend() {
 	return masterChart.getLegend();
+    }
+
+    @Override
+    public JavaScriptObject getNativeChart() {
+	return detailChart.getNativeChart();
+    }
+
+    @Override
+    public IChart setClickEventHandler(ChartClickEventHandler chartClickEventHandler) {
+	return this;
+    }
+    
+    @Override
+    public Series[] getSeries() {
+	return detailChart.getSeries();
+    }
+    
+    @Override
+    public SeriesPlotOptions getSeriesPlotOptions() {
+        return detailChart.getSeriesPlotOptions();
     }
 
 }

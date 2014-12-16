@@ -16,11 +16,16 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import org.moxieapps.gwt.highcharts.client.events.AxisTitleClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.AxisTitleDblClickEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.AxisTitleRightClickEventHandler;
+
+import com.google.gwt.user.client.Window;
+
 /**
  * A configurable class that can be used to represent custom title options for an
  * axis, which can then be set on a specific axis (via the {@link Axis#setAxisTitle(AxisTitle)} method.)
- * Example usage:
- * <code><pre>
+ * Example usage: <code><pre>
  *   chart.getXAxis().setAxisTitle(
  *     new AxisTitle()
  *       .setText("Sales by Month")
@@ -32,6 +37,28 @@ package org.moxieapps.gwt.highcharts.client;
  * @since 1.0.0
  */
 public class AxisTitle extends Configurable<AxisTitle> {
+    
+    private AxisTitleClickEventHandler clickEventHandler;
+    private AxisTitleDblClickEventHandler dblClickEventHandler;
+    private AxisTitleRightClickEventHandler rightClickEventHandler;
+
+    public AxisTitleClickEventHandler getAxisTitleClickEventHandler() {
+	return clickEventHandler;
+    }
+    
+    /**
+     * @return the dblClickEventHandler
+     */
+    public AxisTitleDblClickEventHandler getAxisTitleDblClickEventHandler() {
+	return dblClickEventHandler;
+    }
+    
+    /**
+     * @return the rightClickEventhHandler
+     */
+    public AxisTitleRightClickEventHandler getAxisTitleRightClickEventHandler() {
+	return rightClickEventHandler;
+    }
 
     /**
      * An enumeration of supported axis title alignment types, which can be passed to methods
@@ -39,87 +66,104 @@ public class AxisTitle extends Configurable<AxisTitle> {
      */
     public enum Align {
 
-        /**
-         * Align the title to the bottom (for a y-axis) or to the left (for an x-axis)
-         */
-        LOW("low"),
+	/**
+	 * Align the title to the bottom (for a y-axis) or to the left (for an x-axis)
+	 */
+	LOW("low"),
 
-        /**
-         * Align the title to the middle (for a y-axis) or to the center (for an x-axis)
-         */
-        MIDDLE("middle"),
+	/**
+	 * Align the title to the middle (for a y-axis) or to the center (for an x-axis)
+	 */
+	MIDDLE("middle"),
 
-        /**
-         * Align the title to the top (for a y-axis) or to the right (for an x-axis)
-         */
-        HIGH("high");
+	/**
+	 * Align the title to the top (for a y-axis) or to the right (for an x-axis)
+	 */
+	HIGH("high");
 
-        private Align(String optionValue) {
-            this.optionValue = optionValue;
-        }
+	private Align(String optionValue) {
+	    this.optionValue = optionValue;
+	}
 
-        private final String optionValue;
+	private final String optionValue;
 
-        public String toString() {
-            return optionValue;
-        }
+	public String toString() {
+	    return optionValue;
+	}
 
     }
 
     /**
-     * Convenience method for setting the 'align' option of the title.  Equivalent to:
-     * <pre><code>
+     * Convenience method for setting the 'align' option of the title. Equivalent to:
+     * 
+     * <pre>
+     * <code>
      *     axisTitle.setOption("align", AxisTitle.Align.LOW);
-     * </code></pre>
+     * </code>
+     * </pre>
+     * 
      * Alignment of the title relative to the axis values. Possible values are "low", "middle" or "high".
      * Defaults to {@link AxisTitle.Align#MIDDLE}.
      *
-     * @param align The alignment of the title relative to the axis values.
+     * @param align
+     *            The alignment of the title relative to the axis values.
      * @return A reference to this {@link AxisTitle} instance for convenient method chaining.
      */
     public AxisTitle setAlign(Align align) {
-        return this.setOption("align", align != null ? align.toString() : null);
+	return this.setOption("align", align != null ? align.toString() : null);
     }
 
-
-
     /**
-     * Convenience method for setting the 'margin' option of the title.  Equivalent to:
-     * <pre><code>
+     * Convenience method for setting the 'margin' option of the title. Equivalent to:
+     * 
+     * <pre>
+     * <code>
      *     axisTitle.setOption("margin", 60);
-     * </code></pre>
+     * </code>
+     * </pre>
+     * 
      * The pixel distance between the axis labels or line and the title. Defaults
      * to 0 for horizontal axis, 10 for vertical axis.
      *
-     * @param margin The pixel distance between the axis labels or line and the title.
+     * @param margin
+     *            The pixel distance between the axis labels or line and the title.
      * @return A reference to this {@link AxisTitle} instance for convenient method chaining.
      */
     public AxisTitle setMargin(Number margin) {
-        return this.setOption("margin", margin);
+	return this.setOption("margin", margin);
     }
 
     /**
-     * Convenience method for setting the 'margin' option of the title.  Equivalent to:
-     * <pre><code>
+     * Convenience method for setting the 'margin' option of the title. Equivalent to:
+     * 
+     * <pre>
+     * <code>
      *     axisTitle.setOption("margin", 60);
-     * </code></pre>
+     * </code>
+     * </pre>
+     * 
      * The rotation of the text in degrees. 0 is horizontal, 270 is vertical reading
      * from bottom to top. Defaults to 0.
      *
-     * @param rotation The rotation of the text in degrees.
+     * @param rotation
+     *            The rotation of the text in degrees.
      * @return A reference to this {@link AxisTitle} instance for convenient method chaining.
      */
     public AxisTitle setRotation(Number rotation) {
-        return this.setOption("rotation", rotation);
+	return this.setOption("rotation", rotation);
     }
 
     /**
-     * Convenience method for setting the 'style' options of the axis title.  Equivalent to:
-     * <pre><code>
+     * Convenience method for setting the 'style' options of the axis title. Equivalent to:
+     * 
+     * <pre>
+     * <code>
      *     axisTitle.setOption("/style/fontWeight", "bold");
      *     axisTitle.setOption("/style/fontFamily", "serif");
      *     etc.
-     * </code></pre>
+     * </code>
+     * </pre>
+     * 
      * CSS styles for the title. When titles are rotated they are rendered using vector graphic techniques
      * and not all styles are applicable. Most noteworthy, a bug in IE8 renders all rotated strings bold
      * and italic. Defaults to:
@@ -128,30 +172,53 @@ public class AxisTitle extends Configurable<AxisTitle> {
      * <li>fontWeight: 'bold'</li>
      * </ul>
      *
-     * @param style CSS styles for the axis title.
+     * @param style
+     *            CSS styles for the axis title.
      * @return A reference to this {@link AxisTitle} instance for convenient method chaining.
      */
     public AxisTitle setStyle(Style style) {
-        return this.setOption("style", style != null ? style.getOptions() : null);
+	return this.setOption("style", style != null ? style.getOptions() : null);
     }
 
     /**
-     * Convenience method for setting the 'text' option of the title.  Equivalent to:
-     * <pre><code>
+     * Convenience method for setting the 'text' option of the title. Equivalent to:
+     * 
+     * <pre>
+     * <code>
      *     axisTitle.setOption("text", "Sales by Month");
-     * </code></pre>
+     * </code>
+     * </pre>
+     * 
      * The actual text of the axis title. It can contain basic HTML text markup
      * like &lt;b&gt;, &lt;i&gt; and spans with style. Defaults to null.
      * <p/>
-     * Note to disable an axis title from being displayed completely, simply set the text
-     * to "null".  (This can also be accomplished more simply by just setting the title
-     * text to null directly on the axis via the {@link Axis#setAxisTitleText(String)} method.)
+     * Note to disable an axis title from being displayed completely, simply set the text to "null". (This can also be accomplished more simply by
+     * just setting the title text to null directly on the axis via the {@link Axis#setAxisTitleText(String)} method.)
      *
-     * @param text The actual text of the axis title.
+     * @param text
+     *            The actual text of the axis title.
      * @return A reference to this {@link AxisTitle} instance for convenient method chaining.
      */
     public AxisTitle setText(String text) {
-        return this.setOption("text", text);
+	return this.setOption("text", text);
+    }
+    
+    public AxisTitle setClickEventHandler(AxisTitleClickEventHandler axisClickEventHandler) {
+	this.clickEventHandler = axisClickEventHandler;
+	return this;
+    }
+    
+    public AxisTitle setDblClickEventHandler(AxisTitleDblClickEventHandler axisDblClickEventHandler) {
+	this.dblClickEventHandler = axisDblClickEventHandler;
+	return this;
+    }
+    
+    /**
+     * @param rightClickEventhHandler the rightClickEventhHandler to set
+     */
+    public AxisTitle setRightClickEventHandler(AxisTitleRightClickEventHandler rightClickEventhHandler) {
+	this.rightClickEventHandler = rightClickEventhHandler;
+	return this;
     }
 
 }

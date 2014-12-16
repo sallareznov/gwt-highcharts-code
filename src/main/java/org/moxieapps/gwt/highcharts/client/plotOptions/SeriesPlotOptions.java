@@ -18,6 +18,7 @@ package org.moxieapps.gwt.highcharts.client.plotOptions;
 
 import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Series;
+import org.moxieapps.gwt.highcharts.client.events.AxisTitleClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.PointClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.PointDragEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.PointDropEventHandler;
@@ -45,6 +46,15 @@ import org.moxieapps.gwt.highcharts.client.events.SeriesShowEventHandler;
  * @since 1.0.0
  */
 public class SeriesPlotOptions extends PlotOptions<SeriesPlotOptions> {
+    
+    private AxisTitleClickEventHandler axisTitleClickEventHandler;
+    
+    /**
+     * @return the axisClickEventHandler
+     */
+    public AxisTitleClickEventHandler getAxisTitleClickEventHandler() {
+	return axisTitleClickEventHandler;
+    }
 
     private SeriesDblClickEventHandler seriesDblClickEventHandler;
 

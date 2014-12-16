@@ -16,12 +16,18 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import org.moxieapps.gwt.highcharts.client.events.AxisSetExtremesEventHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 
 /**
  * The base class for both the X and Y axis types, which allows for general options to be set via
@@ -139,6 +145,12 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     private String id;
     
     private AxisSetExtremesEventHandler axisSetExtremesEventHandler;
+    
+    private AxisTitle axisTitle;
+    
+    private List<PlotBand> plotBands;
+    
+    private List<PlotLine> plotLines;
 
     /**
      * Use the {@link Chart#getXAxis()} or {@link Chart#getYAxis()} methods to get access
@@ -150,6 +162,8 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         this.chart = chart;
         id = Document.get().createUniqueId();
         setOption("id", id);
+        plotBands = new ArrayList<PlotBand>();
+        plotLines = new ArrayList<PlotLine>();
     }
     
     /**
@@ -181,7 +195,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public AxisSetExtremesEventHandler getAxisSetExtremesEventHandler() {
         return this.axisSetExtremesEventHandler;
     }
-
+    
     /**
      * Create a new plot line that can be configured, and then added to this axis instance via the
      * {@link #setPlotLines(PlotLine...)} method.
@@ -190,7 +204,9 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      *         via {@link #setPlotLines(PlotLine...)}.
      */
     public PlotLine createPlotLine() {
-        return new PlotLine(this);
+	final PlotLine createdPlotLine = new PlotLine(this);
+	plotLines.add(createdPlotLine);
+        return createdPlotLine;
     }
 
     /**
@@ -201,7 +217,9 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      *         via {@link #setPlotBands(PlotBand...)}.
      */
     public PlotBand createPlotBand() {
-        return new PlotBand(this);
+	final PlotBand createdPlotBand = new PlotBand(this);
+	plotBands.add(createdPlotBand);
+        return createdPlotBand;
     }
 
     /**
@@ -411,6 +429,36 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         return null;
     }
     
+    public PlotBand getPlotBand(String plotBandId) {
+	final Iterator<PlotBand> iterPlotBands = plotBands.iterator();
+	
+	while (iterPlotBands.hasNext()) {
+	    final PlotBand currentPlotBand = iterPlotBands.next();
+	    if (currentPlotBand.getId().equals(plotBandId))
+		return currentPlotBand;
+	}
+	return null;
+    }
+    
+    public PlotLine getPlotLine(String plotLineId) {
+	final Iterator<PlotLine> iterPlotLines = plotLines.iterator();
+	
+	while (iterPlotLines.hasNext()) {
+	    final PlotLine currrentPlotLine = iterPlotLines.next();
+	    if (currrentPlotLine.getId().equals(plotLineId))
+		return currrentPlotLine;
+	}
+	return null;
+    }
+    
+    /**
+     * @return the axisTitle
+     */
+    public AxisTitle getAxisTitle() {
+	return axisTitle;
+    }
+   
+    
     /* package */ String getId() {
         return this.id;
     }
@@ -572,6 +620,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     }
 
     private Number min;
+
 
     /**
      * Convenience method for setting the 'min' option for the axis.  Equivalent to:
@@ -796,6 +845,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      * @return A reference to this {@link Axis} instance for convenient method chaining.
      */
     public T setPlotLines(PlotLine... plotLines) {
+	this.plotLines = Arrays.asList(plotLines);
         return this.setOption("plotLines", plotLines);
     }
 
@@ -821,6 +871,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      * @return A reference to this {@link Axis} instance for convenient method chaining.
      */
     public T setPlotBands(PlotBand... plotBands) {
+	this.plotBands = Arrays.asList(plotBands);
         return this.setOption("plotBands", plotBands);
     }
 
@@ -1041,6 +1092,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      */
     public T setAxisTitleText(String title, boolean redraw) {
         if(getNativeAxis() != null) {
+            Window.alert("Here ?");
             this.setAxisTitle(new AxisTitle().setText(title), redraw);
         } else {
             this.setOption("/title/text", title);
@@ -1106,6 +1158,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
         if(getNativeAxis() != null) {
             nativeSetTitle(getNativeAxis(), title != null ? title.getOptions().getJavaScriptObject() : null, redraw);
         }
+        this.axisTitle = title;
         return this.setOption("/title", title != null ? title.getOptions() : null);
     }
 
@@ -1124,6 +1177,20 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public T setType(Type type) {
         return this.setOption("type", type != null ? type.toString() : null);
     }
+    
+    /**
+     * @return the plotBands
+     */
+    public List<PlotBand> getPlotBands() {
+	return plotBands;
+    }
+    
+    /**
+     * @return the plotLines
+     */
+    public List<PlotLine> getPlotLines() {
+	return plotLines;
+    }
 
     /**
      * Allows plot lines to be added to an axis after the chart is rendered.  If you want to add
@@ -1137,6 +1204,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public T addPlotLines(PlotLine... plotLines) {
         if (getNativeAxis() != null) {
             for (PlotLine plotLine : plotLines) {
+        	this.plotLines.add(plotLine);
                 nativeAddPlotLine(getNativeAxis(), plotLine.getOptions().getJavaScriptObject());
             }
         } else {
@@ -1157,6 +1225,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
     public T addPlotBands(PlotBand... plotBands) {
         if (getNativeAxis() != null) {
             for (PlotBand plotBand : plotBands) {
+        	this.plotBands.add(plotBand);
                 nativeAddPlotBand(getNativeAxis(), plotBand.getOptions().getJavaScriptObject());
             }
         } else {
