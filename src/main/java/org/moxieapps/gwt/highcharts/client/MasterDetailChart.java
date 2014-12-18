@@ -9,9 +9,6 @@
  */
 package org.moxieapps.gwt.highcharts.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.moxieapps.gwt.highcharts.client.BaseChart.ZoomType;
 import org.moxieapps.gwt.highcharts.client.Series.Type;
 import org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler;
@@ -229,10 +226,9 @@ public class MasterDetailChart extends Composite implements IChart {
 		final double maxX = event.getXAxisMax();
 
 		drawPlotBands(minX, maxX);
-
-		for (int i = 0; i < initialSeries.length; i++) {
-		    drawPointsInSeries(i, minX, maxX);
-		}
+		detailChart.getXAxis().setEndOnTick(false);
+		detailChart.getXAxis().setStartOnTick(false);
+		detailChart.getXAxis().setExtremes(minX, maxX);
 
 		return false;
 	    }
@@ -258,74 +254,6 @@ public class MasterDetailChart extends Composite implements IChart {
 	};
 	plotOptions.setSeriesLegendItemClickEventHandler(legendItemClickEventHandler);
 
-    }
-
-    /**
-     * draw the points of the serie <code>index</code> in the interval <code>[minX; maxX]</code>
-     * 
-     * @param index
-     *            the index
-     * @param minX
-     *            the minimum abscissa of the selection
-     * @param maxX
-     *            the maximum abscissa of the selection
-     */
-    private void drawPointsInSeries(int index, double minX, double maxX) {
-	final Series series = initialSeries[index];
-	final Point[] seriesPoints = series.getPoints();
-	final List<Point> pointsToDraw = new ArrayList<Point>();
-	int lastIndex = 0;
-	// nearestIndex and diff serve to spot the nearest point if your selection doesn't have any
-	int nearestIndex = 0;
-	double diff = GREATEST_NUMBER.doubleValue();
-	for (int i = 0; i < seriesPoints.length; i++) {
-	    final Point point = seriesPoints[i];
-	    if ((point.getX().doubleValue() >= minX) && (point.getX().doubleValue() <= maxX)) {
-		pointsToDraw.add(point);
-		lastIndex = i;
-	    } else {
-		final double currentDifference = point.getX().doubleValue() - maxX;
-		if (currentDifference > 0 && currentDifference < diff) {
-		    diff = currentDifference;
-		    nearestIndex = i;
-		}
-	    }
-	}
-
-	if (pointsToDraw.size() <= 3) {
-	    if (pointsToDraw.size() == 0) {
-		lastIndex = nearestIndex;
-	    }
-	    pointsToDraw.clear();
-	    int stepRight = 1;
-	    int stepLeft = -1;
-
-	    if (lastIndex + stepLeft < 0) {
-		pointsToDraw.add(seriesPoints[lastIndex + stepRight]);
-		stepRight++;
-	    } else {
-		pointsToDraw.add(0, seriesPoints[lastIndex + stepLeft]);
-		stepLeft--;
-	    }
-
-	    if (lastIndex - 2 < 0) {
-		pointsToDraw.add(seriesPoints[lastIndex + stepRight]);
-		stepRight++;
-	    } else {
-		pointsToDraw.add(0, seriesPoints[lastIndex - 2]);
-		stepLeft--;
-	    }
-
-	    pointsToDraw.add(seriesPoints[lastIndex]);
-
-	    if (lastIndex + stepRight >= seriesPoints.length) {
-		pointsToDraw.add(0, seriesPoints[lastIndex + stepLeft]);
-		stepLeft--;
-	    } else {
-		pointsToDraw.add(seriesPoints[lastIndex + stepRight]);
-	    }
-	}
-	detailChart.getSeries()[index].setPoints(pointsToDraw.toArray(new Point[pointsToDraw.size()]));
     }
 
     /**
@@ -669,15 +597,15 @@ public class MasterDetailChart extends Composite implements IChart {
     public IChart setClickEventHandler(ChartClickEventHandler chartClickEventHandler) {
 	return this;
     }
-    
+
     @Override
     public Series[] getSeries() {
 	return detailChart.getSeries();
     }
-    
+
     @Override
     public SeriesPlotOptions getSeriesPlotOptions() {
-        return detailChart.getSeriesPlotOptions();
+	return detailChart.getSeriesPlotOptions();
     }
 
 }
