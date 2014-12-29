@@ -39,7 +39,8 @@ www-test/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -74,3 +75,9 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 /target/
+
+.classpath
+.project
+.settings/
+src/main/dita/
+src/main/java/org/moxieapps/gwt/highcharts/client/Drilldown.java

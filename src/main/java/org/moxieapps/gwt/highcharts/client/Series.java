@@ -267,6 +267,10 @@ public class Series extends Configurable<Series> {
        // ((JSONString)this.getOptions().get("name")).stringValue(); //check for null
         return this.setOption("name", name);
     }
+    
+    public Series setId(String id) {
+	return this.setOption("id", id);
+    }
 
     /**
      * /**
