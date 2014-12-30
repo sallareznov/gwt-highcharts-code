@@ -91,7 +91,6 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -1445,6 +1444,12 @@ public abstract class BaseChart<T> extends Widget {
     public T setType(Series.Type type) {
 	return this.setOption("/chart/type", type != null ? type.toString() : null);
     }
+    
+    public T setDrilldown(Drilldown drilldown) {
+	final JSONObject root = new JSONObject();
+	root.put("series", drilldown.getSeries());
+	return this.setOption("drilldown", root != null ? root.getJavaScriptObject() : null);
+    }
 
     /**
      * Convenience method for setting the 'width' option of the chart. Equivalent to:
@@ -2046,13 +2051,6 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     private ChartSelectionEventHandler chartSelectionEventHandler;
-    
-    private Drilldown drilldown;
-    
-    public T setDrilldown(Drilldown drilldown) {
-	this.drilldown = drilldown;
-	return this.setOption("/drilldown", drilldown != null ? drilldown.getSeries() : null);
-    }
 
     /**
      * Set a callback handler that will be invoked whenever the chart's selection event is fired.
@@ -2579,6 +2577,8 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     private JavaScriptObject chart;
+    
+    private Drilldown drilldown;
 
     @Override
     protected void onLoad() {
