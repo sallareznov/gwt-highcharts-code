@@ -1092,7 +1092,6 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      */
     public T setAxisTitleText(String title, boolean redraw) {
         if(getNativeAxis() != null) {
-            Window.alert("Here ?");
             this.setAxisTitle(new AxisTitle().setText(title), redraw);
         } else {
             this.setOption("/title/text", title);

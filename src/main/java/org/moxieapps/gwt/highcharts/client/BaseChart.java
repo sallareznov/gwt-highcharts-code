@@ -2046,6 +2046,13 @@ public abstract class BaseChart<T> extends Widget {
     }
 
     private ChartSelectionEventHandler chartSelectionEventHandler;
+    
+    private Drilldown drilldown;
+    
+    public T setDrilldown(Drilldown drilldown) {
+	this.drilldown = drilldown;
+	return this.setOption("/drilldown", drilldown != null ? drilldown.getSeries() : null);
+    }
 
     /**
      * Set a callback handler that will be invoked whenever the chart's selection event is fired.
@@ -2666,7 +2673,6 @@ public abstract class BaseChart<T> extends Widget {
 		    JSONObject plotLineEventHandler = new JSONObject();
 		    plotLineEventHandler.put("click", JSONBoolean.getInstance(plotLine.getClickEventHandler() != null));
 		    plotLineEventHandlers.set(j++, plotLineEventHandler);
-		    Window.alert(plotLineEventHandlers.size() + "");
 		}
 	    }
 	    yAxisPlotLineEventHandlers.set(i, plotLineEventHandlers);

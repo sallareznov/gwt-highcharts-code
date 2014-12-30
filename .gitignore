@@ -81,3 +81,5 @@ $RECYCLE.BIN/
 .settings/
 src/main/dita/
 src/main/java/org/moxieapps/gwt/highcharts/client/Drilldown.java
+pom.xml
+.gitignore.swp

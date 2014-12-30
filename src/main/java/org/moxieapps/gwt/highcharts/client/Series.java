@@ -387,7 +387,7 @@ public class Series extends Configurable<Series> {
         return this.setOption("yAxis", yAxis);
     }
 
-    // Need to maintain a refernce to the plot options set on us in order to deal with potential custom data label formatters
+    // Need to maintain a reference to the plot options set on us in order to deal with potential custom data label formatters
     private PlotOptions plotOptions;
 
     /**
@@ -417,7 +417,7 @@ public class Series extends Configurable<Series> {
             return this;
         }
 
-        // Applying plot options directly to a series is a little different as the optoins
+        // Applying plot options directly to a series is a little different as the options
         // get applied directly to the root configuration object, instead of off within their
         // own sub object like almost everything else works.  So, we need to merge the given
         // options with our root options
