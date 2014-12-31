@@ -27,7 +27,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 
 /**
  * The base class for both the X and Y axis types, which allows for general options to be set via

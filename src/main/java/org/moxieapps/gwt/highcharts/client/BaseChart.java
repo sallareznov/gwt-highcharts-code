@@ -31,6 +31,7 @@ import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.DrilldownEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandDblClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandRightClickEvent;
@@ -1450,6 +1451,10 @@ public abstract class BaseChart<T> extends Widget {
 	root.put("series", drilldown.getSeries());
 	return this.setOption("drilldown", root != null ? root.getJavaScriptObject() : null);
     }
+    
+   /* public T addDrilldownAsSeries(JavaScriptObject nativeEvent, Drilldown drilldown) {
+	//this.
+    }*/
 
     /**
      * Convenience method for setting the 'width' option of the chart. Equivalent to:
@@ -2755,7 +2760,7 @@ public abstract class BaseChart<T> extends Widget {
 		xAxisLabelFormatters.getJavaScriptObject(), yAxisLabelFormatters.getJavaScriptObject(), yAxisStackLabelFormatters.getJavaScriptObject(),
 		xAxisTitleEventHandlers.getJavaScriptObject(), yAxisTitleEventHandlers.getJavaScriptObject(), xAxisPlotBandEventHandlers.getJavaScriptObject(),
 		yAxisPlotBandEventHandlers.getJavaScriptObject(), xAxisPlotLineEventHandlers.getJavaScriptObject(), yAxisPlotLineEventHandlers.getJavaScriptObject(),
-		plotOptionsLabelFormatters.getJavaScriptObject(), seriesLabelFormatters.getJavaScriptObject());
+		plotOptionsLabelFormatters.getJavaScriptObject(), seriesLabelFormatters.getJavaScriptObject(), null);
 
 	// Now that we're rendered we're going to switch to maintaining everything within the DOM, so we can dump
 	// any series data that we were managing internally
@@ -2990,7 +2995,7 @@ public abstract class BaseChart<T> extends Widget {
 	    JavaScriptObject xAxisLabelFormatterFlags, JavaScriptObject yAxisLabelFormatterFlags, JavaScriptObject yAxisStackLabelFormatterFlags,
 	    JavaScriptObject xAxisTitleEventHandlerFlags, JavaScriptObject yAxisTitleEventHandlerFlags, JavaScriptObject xAxisPlotBandEventHandlerFlags,
 	    JavaScriptObject yAxisPlotBandEventHandlerFlags, JavaScriptObject xAxisPlotLineEventHandlerFlags, JavaScriptObject yAxisPlotLineEventHandlerFlags, JavaScriptObject plotOptionsLabelsFormatterFlags,
-	    JavaScriptObject seriesLabelsFormatterFlags) /*-{
+	    JavaScriptObject seriesLabelsFormatterFlags, JavaScriptObject drilldownEventHandlerFlags) /*-{
 
 							 var self = this;
 
@@ -3149,6 +3154,13 @@ public abstract class BaseChart<T> extends Widget {
 							 plotLines.events[type5].type = type5;
 							 }
 							 }}
+							 
+							 // Drilldown
+							 //for (i = 0 ; i < drilldownEventHandlerFlags.length ; i++) {
+							 //	if (!drilldownEventHandlerFlags[i]) continue;
+							 //	var series = drilldowns;
+							 //	return self.@org.moxieapps.gwt.highcharts.client.BashChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, e.point);
+							 //}
 
 							 // Add in GWT interceptor callback functions for the various formatters so that we can move from
 							 // the native JS world back to the Java world...
@@ -3226,7 +3238,7 @@ public abstract class BaseChart<T> extends Widget {
 							 };
 							 series.dataLabels.formatter.index = i;
 							 }
-
+					
 							 // Draw the chart!
 							 return new $wnd.Highcharts[chartTypeName](options);
 							 }-*/;
@@ -3342,6 +3354,14 @@ public abstract class BaseChart<T> extends Widget {
 
 	if ("click".equals(eventType) && axis != null && plotLine.getClickEventHandler() != null) {
 	    return plotLine.getClickEventHandler().onClick(new PlotLineClickEvent(nativeEvent));
+	}
+	return true;
+    }
+    
+    @SuppressWarnings({"UnusedDeclaration"})
+    private boolean drilldownEventCallback(JavaScriptObject nativeEvent, String eventType, String clickedSerieKey) {
+	if ("drilldown".equals(eventType) && drilldown != null && drilldown.getDrilldownEventHandler() != null) {
+	    return drilldown.getDrilldownEventHandler().onDrilldown(new DrilldownEvent(nativeEvent, drilldown));
 	}
 	return true;
     }
