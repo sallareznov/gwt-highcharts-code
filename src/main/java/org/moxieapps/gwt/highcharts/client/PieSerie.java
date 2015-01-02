@@ -27,6 +27,7 @@ public class PieSerie {
     private String name;
     private JSONArray data;
     private int currentIndex;
+    private boolean drilldown;
     
     /**
      * 
@@ -36,6 +37,14 @@ public class PieSerie {
 	this.name = name;
 	this.data = new JSONArray();
 	this.currentIndex = 0;
+    }
+    
+    public JSONObject getJSONObject() {
+	final JSONObject jsonPieData = new JSONObject();
+	jsonPieData.put("id", new JSONString(id));
+	jsonPieData.put("name", new JSONString(name));
+	jsonPieData.put("data", data);
+	return jsonPieData;
     }
     
     /**
@@ -57,6 +66,10 @@ public class PieSerie {
      */
     public JSONArray getData() {
 	return data;
+    }
+    
+    public boolean getDrilldown() {
+	return drilldown;
     }
     
     public void setId(String id) {
@@ -96,12 +109,11 @@ public class PieSerie {
 	addData(data);
     }
     
-    public JSONObject getJSONObject() {
-	final JSONObject jsonPieData = new JSONObject();
-	jsonPieData.put("id", new JSONString(id));
-	jsonPieData.put("name", new JSONString(name));
-	jsonPieData.put("data", data);
-	return jsonPieData;
+    /**
+     * @param drilldown the drilldown to set
+     */
+    public void setDrilldown(boolean drilldown) {
+	this.drilldown = drilldown;
     }
     
     /*-

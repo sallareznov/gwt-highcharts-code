@@ -43,5 +43,5 @@ public class DrilldownEvent {
     public JavaScriptObject getNativeEvent() {
 	return event;
     }
-
+    
 }

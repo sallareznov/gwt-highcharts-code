@@ -18,6 +18,7 @@ package org.moxieapps.gwt.highcharts.client;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.moxieapps.gwt.highcharts.client.events.AxisSetExtremesEvent;
 import org.moxieapps.gwt.highcharts.client.events.AxisTitleClickEvent;
@@ -92,6 +93,7 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -1682,6 +1684,7 @@ public abstract class BaseChart<T> extends Widget {
     private ScatterPlotOptions scatterPlotOptions;
     private SplinePlotOptions splinePlotOptions;
     private WaterfallPlotOptions waterfallPlotOptions;
+    private List<PieSerie> seriesPervasives;
 
     // The candlestick OHLC and plot options are managed by the StockChart sub class, but the reference is managed here for rendering
     protected CandlestickPlotOptions candlestickPlotOptions;
@@ -2189,6 +2192,11 @@ public abstract class BaseChart<T> extends Widget {
      */
     public T addSeries(Series series, boolean redraw, boolean animation) {
 	return addSeries(series, redraw, animation ? new Animation() : null);
+    }
+    
+    public T addSeriesAsDrilldown(List<PieSerie> series) {
+	drilldown.setSeries(series);
+	return returnThis();
     }
 
     /**
@@ -2753,6 +2761,16 @@ public abstract class BaseChart<T> extends Widget {
 	if (piePlotOptions != null) {
 	    pointEventHandlers.put("legendItemClick", JSONBoolean.getInstance(piePlotOptions.getPointLegendItemClickEventHandler() != null));
 	}
+	
+	JSONArray drilldownEventHandlers = new JSONArray();
+	int i = 0;
+	for (Series series : seriesList) {
+	    if (series.getDrilldown().isEnabled()) {
+		JSONObject drilldownEventHandler = new JSONObject();
+		drilldownEventHandler.put("click", JSONBoolean.getInstance(drilldown.getDrilldownEventHandler() != null));
+		drilldownEventHandlers.set(i++, drilldownEventHandler);
+	    }
+	}
 
 	chart = nativeRenderChart(getChartTypeName(), createNativeOptions(), toolTip != null && toolTip.getToolTipFormatter() != null,
 		legend != null && legend.getLabelsFormatter() != null, chartEventHandlers.getJavaScriptObject(), seriesEventHandlers.getJavaScriptObject(),
@@ -2760,7 +2778,9 @@ public abstract class BaseChart<T> extends Widget {
 		xAxisLabelFormatters.getJavaScriptObject(), yAxisLabelFormatters.getJavaScriptObject(), yAxisStackLabelFormatters.getJavaScriptObject(),
 		xAxisTitleEventHandlers.getJavaScriptObject(), yAxisTitleEventHandlers.getJavaScriptObject(), xAxisPlotBandEventHandlers.getJavaScriptObject(),
 		yAxisPlotBandEventHandlers.getJavaScriptObject(), xAxisPlotLineEventHandlers.getJavaScriptObject(), yAxisPlotLineEventHandlers.getJavaScriptObject(),
-		plotOptionsLabelFormatters.getJavaScriptObject(), seriesLabelFormatters.getJavaScriptObject(), null);
+		plotOptionsLabelFormatters.getJavaScriptObject(), seriesLabelFormatters.getJavaScriptObject(), drilldownEventHandlers.getJavaScriptObject());
+	
+	
 
 	// Now that we're rendered we're going to switch to maintaining everything within the DOM, so we can dump
 	// any series data that we were managing internally
@@ -3156,11 +3176,11 @@ public abstract class BaseChart<T> extends Widget {
 							 }}
 							 
 							 // Drilldown
-							 //for (i = 0 ; i < drilldownEventHandlerFlags.length ; i++) {
-							 //	if (!drilldownEventHandlerFlags[i]) continue;
-							 //	var series = drilldowns;
-							 //	return self.@org.moxieapps.gwt.highcharts.client.BashChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, e.point);
-							 //}
+							 for (i = 0 ; i < drilldownEventHandlerFlags.length ; i++) {
+							 	if (!drilldownEventHandlerFlags[i]) continue;
+							 	var series = drilldowns;
+							 	return self.@org.moxieapps.gwt.highcharts.client.BashChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, e.point.name);
+							 }
 
 							 // Add in GWT interceptor callback functions for the various formatters so that we can move from
 							 // the native JS world back to the Java world...
@@ -3353,6 +3373,9 @@ public abstract class BaseChart<T> extends Widget {
 	final PlotLine plotLine = axis.getPlotLine(plotLineId);
 
 	if ("click".equals(eventType) && axis != null && plotLine.getClickEventHandler() != null) {
+	    Window.alert("before local variable");
+	    final PlotLineClickEvent toto = new PlotLineClickEvent(nativeEvent);
+	    Window.alert("after local variable");
 	    return plotLine.getClickEventHandler().onClick(new PlotLineClickEvent(nativeEvent));
 	}
 	return true;

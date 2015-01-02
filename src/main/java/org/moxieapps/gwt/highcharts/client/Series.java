@@ -224,6 +224,7 @@ public class Series extends Configurable<Series> {
         this.chart = chart;
         id = Document.get().createUniqueId();
         setOption("id", id);
+        drilldown = new Drilldown().setEnabled(false);
     }
 
     /**
@@ -369,6 +370,17 @@ public class Series extends Configurable<Series> {
      */
     public Series setXAxis(Number xAxis) {
         return this.setOption("xAxis", xAxis);
+    }
+    
+    private Drilldown drilldown;
+    
+    public Series setDrilldown(Drilldown drilldown) {
+	this.drilldown = drilldown;
+	return this.setOption("drilldown", drilldown);
+    }
+    
+    public Drilldown getDrilldown() {
+	return drilldown;
     }
 
     /**
