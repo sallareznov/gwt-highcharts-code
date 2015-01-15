@@ -16,8 +16,6 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
-import java.util.Comparator;
-
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 
 import com.google.gwt.core.client.JavaScriptObject;

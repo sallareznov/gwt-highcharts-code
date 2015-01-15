@@ -9,8 +9,6 @@
  */
 package org.moxieapps.gwt.highcharts.client.events;
 
-import org.moxieapps.gwt.highcharts.client.Drilldown;
-
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -20,12 +18,12 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class DrilldownEvent {
     
     private JavaScriptObject event;
-    private Drilldown drilldown;
+    private boolean drilldown;
     
     /**
      * 
      */
-    public DrilldownEvent(JavaScriptObject event, Drilldown drilldown) {
+    public DrilldownEvent(JavaScriptObject event, boolean drilldown) {
 	this.event = event;
 	this.drilldown = drilldown;
     }
@@ -33,7 +31,7 @@ public class DrilldownEvent {
     /**
      * @return the drilldown
      */
-    public Drilldown getDrilldown() {
+    public boolean getDrilldown() {
 	return drilldown;
     }
     

@@ -2765,9 +2765,9 @@ public abstract class BaseChart<T> extends Widget {
 	JSONArray drilldownEventHandlers = new JSONArray();
 	int i = 0;
 	for (Series series : seriesList) {
-	    if (series.getDrilldown().isEnabled()) {
+	    if (series.getDrilldown()) {
 		JSONObject drilldownEventHandler = new JSONObject();
-		drilldownEventHandler.put("click", JSONBoolean.getInstance(drilldown.getDrilldownEventHandler() != null));
+		drilldownEventHandler.put("click", JSONBoolean.getInstance(true));
 		drilldownEventHandlers.set(i++, drilldownEventHandler);
 	    }
 	}
@@ -3178,8 +3178,15 @@ public abstract class BaseChart<T> extends Widget {
 							 // Drilldown
 							 for (i = 0 ; i < drilldownEventHandlerFlags.length ; i++) {
 							 	if (!drilldownEventHandlerFlags[i]) continue;
-							 	var series = drilldowns;
-							 	return self.@org.moxieapps.gwt.highcharts.client.BashChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, e.point.name);
+							 	alert(options.series[0].data);
+							 	var drilldown = drilldownEventHandlerFlags.length == 1 ? options.series.data.drilldown : options.series.data.drilldown[i];
+							 	drilldown.events = drilldown.events || {};
+							 	for (var type5 in drilldownEventHandlerFlags[i]) {
+							 	drilldown.events[type5] = function(e) {
+							 	return self.@org.moxieapps.gwt.highcharts.client.BaseChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, this.options.series.id);
+							 	};
+							 drilldown.events[type5].type = type5;
+							 }
 							 }
 
 							 // Add in GWT interceptor callback functions for the various formatters so that we can move from
@@ -3383,8 +3390,10 @@ public abstract class BaseChart<T> extends Widget {
     
     @SuppressWarnings({"UnusedDeclaration"})
     private boolean drilldownEventCallback(JavaScriptObject nativeEvent, String eventType, String clickedSerieKey) {
-	if ("drilldown".equals(eventType) && drilldown != null && drilldown.getDrilldownEventHandler() != null) {
-	    return drilldown.getDrilldownEventHandler().onDrilldown(new DrilldownEvent(nativeEvent, drilldown));
+	final Series clickedSerie = getSeries(clickedSerieKey);
+	final boolean drilldown = clickedSerie.getDrilldown();
+	if ("drilldown".equals(eventType) && drilldown && clickedSerie.getDrilldownEventHandler() != null) {
+	    return clickedSerie.getDrilldownEventHandler().onDrilldown(new DrilldownEvent(nativeEvent, drilldown));
 	}
 	return true;
     }
