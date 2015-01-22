@@ -17,7 +17,6 @@
 package org.moxieapps.gwt.highcharts.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -217,7 +216,7 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      */
     public PlotBand createPlotBand() {
 	final PlotBand createdPlotBand = new PlotBand(this);
-	plotBands.add(createdPlotBand);
+	this.plotBands.add(createdPlotBand);
         return createdPlotBand;
     }
 
@@ -844,7 +843,10 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      * @return A reference to this {@link Axis} instance for convenient method chaining.
      */
     public T setPlotLines(PlotLine... plotLines) {
-	this.plotLines = Arrays.asList(plotLines);
+	this.plotLines.clear();
+	for (final PlotLine plotLine : plotLines) {
+	    this.plotLines.add(plotLine);
+	}
         return this.setOption("plotLines", plotLines);
     }
 
@@ -870,7 +872,10 @@ public abstract class Axis<T extends Axis> extends Configurable<T> {
      * @return A reference to this {@link Axis} instance for convenient method chaining.
      */
     public T setPlotBands(PlotBand... plotBands) {
-	this.plotBands = Arrays.asList(plotBands);
+	this.plotBands.clear();
+	for (final PlotBand plotBand : plotBands) {
+	    this.plotBands.add(plotBand);
+	}
         return this.setOption("plotBands", plotBands);
     }
 

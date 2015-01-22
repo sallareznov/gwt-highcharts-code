@@ -1,5 +1,9 @@
 package org.moxieapps.gwt.highcharts.client;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * A configurable class that will allow you to control the options for exporting module.  An instance of
  * this class can be constructed and then  set on the chart via the
@@ -14,7 +18,19 @@ package org.moxieapps.gwt.highcharts.client;
  * @since 1.1.0
  */
 public class Exporting extends Configurable<Exporting> {
-
+    
+    
+    private ContextButton contextButton;
+    private boolean enabled;
+    private String fileName;
+    private Number scale;
+    private Number sourceHeight;
+    private Number sourceWidth;
+    private Type type;
+    private String url;
+    private Number width;
+    private Map<String, ContextButton> customButtons;
+    
     /**
      * An enumeration of supported exporting file types, which can be passed to the
      * {@link Exporting#setType(Exporting.Type)} method.
@@ -52,6 +68,13 @@ public class Exporting extends Configurable<Exporting> {
         }
 
     }
+    
+    /**
+     * 
+     */
+    public Exporting() {
+	customButtons = new HashMap<String, ContextButton>();
+    }
 
     /**
      * Convenience method for directly setting the options for the context button. Equivalent to:
@@ -63,7 +86,13 @@ public class Exporting extends Configurable<Exporting> {
      * @since 1.6.0
      */
     public Exporting setContextButton(ContextButton contextButton) {
+	this.contextButton = contextButton;
         return this.setOption("/buttons/contextButton", contextButton);
+    }
+    
+    public Exporting addCustomButton(String buttonId, Button customButton) {
+	customButtons.put(buttonId, contextButton);
+	return this.setOption("/buttons/"+buttonId, customButton);
     }
 
     /**
@@ -79,6 +108,7 @@ public class Exporting extends Configurable<Exporting> {
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
     public Exporting setEnabled(boolean enabled) {
+	this.enabled = enabled;
         return this.setOption("enabled", enabled);
     }
 
@@ -93,6 +123,7 @@ public class Exporting extends Configurable<Exporting> {
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
     public Exporting setFilename(String fileName) {
+	this.fileName = fileName;
         return this.setOption("fileName", fileName);
     }
 
@@ -109,6 +140,7 @@ public class Exporting extends Configurable<Exporting> {
      * @since 1.6.0
      */
     public Exporting setScale(Number scale) {
+	this.scale = scale;
         return this.setOption("scale", scale);
     }
 
@@ -124,6 +156,7 @@ public class Exporting extends Configurable<Exporting> {
      * @since 1.6.0
      */
     public Exporting setSourceHeight(Number sourceHeight) {
+	this.sourceHeight = sourceHeight;
         return this.setOption("height", sourceHeight);
     }
 
@@ -139,6 +172,7 @@ public class Exporting extends Configurable<Exporting> {
      * @since 1.6.0
      */
     public Exporting setSourceWidth(Number sourceWidth) {
+	this.sourceWidth = sourceWidth;
        return this.setOption("sourceWidth", sourceWidth);
     }
 
@@ -155,6 +189,7 @@ public class Exporting extends Configurable<Exporting> {
      */
 
     public Exporting setType(Type type) {
+	this.type = type;
         return this.setOption("type", type != null ? type.toString() : null);
     }
 
@@ -170,6 +205,7 @@ public class Exporting extends Configurable<Exporting> {
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
     public Exporting setUrl(String url) {
+	this.url = url;
         return this.setOption("url", url);
     }
 
@@ -186,7 +222,25 @@ public class Exporting extends Configurable<Exporting> {
      * @return A reference to this {@link Exporting} instance for convenient method chaining.
      */
     public Exporting setWidth(Number width) {
+	this.width = width;
         return this.setOption("width", width);
     }
-
+    
+    public Exporting clone() {
+	final Exporting clone = new Exporting();
+	for (final Entry<String, ContextButton> entry : customButtons.entrySet()) {
+	    clone.addCustomButton(entry.getKey(), entry.getValue());
+	}
+	clone.setContextButton(contextButton);
+	clone.setEnabled(enabled);
+	clone.setFilename(fileName);
+	clone.setScale(scale);
+	clone.setSourceHeight(sourceHeight);
+	clone.setSourceWidth(sourceWidth);
+	clone.setType(type);
+	clone.setUrl(url);
+	clone.setWidth(width);
+	return clone;
+    }
+    
 }

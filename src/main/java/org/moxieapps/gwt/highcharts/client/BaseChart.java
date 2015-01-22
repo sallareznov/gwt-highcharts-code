@@ -93,7 +93,6 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -107,6 +106,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @since 1.0.0
  */
 public abstract class BaseChart<T> extends Widget {
+    
+    private Exporting exporting;
 
     /**
      * An enumeration of supported chart zoom types, which can be passed to the {@link Chart#setZoomType(ZoomType)} method. The zoom type controls in
@@ -177,18 +178,24 @@ public abstract class BaseChart<T> extends Widget {
 	}
 
     }
-
+    
+    private DivElement element;
+    
     /**
      * This class can not be created directly, but instead create an instance of one of the
      * sub types such as {@link Chart} or {@link StockChart}.
      */
     protected BaseChart() {
-	final DivElement divElement = Document.get().createDivElement();
-	divElement.getStyle().setOverflow(com.google.gwt.dom.client.Style.Overflow.HIDDEN);
-	divElement.setId(Document.get().createUniqueId());
-	this.setElement(divElement);
+	element = Document.get().createDivElement();
+	element.getStyle().setOverflow(com.google.gwt.dom.client.Style.Overflow.HIDDEN);
+	element.setId(Document.get().createUniqueId());
+	this.setElement(element);
     }
-
+    
+    public DivElement getDivElement() {
+	return element;
+    }
+    
     /**
      * Convenience method for setting the 'alignTicks' option of the chart. Equivalent to:
      * 
@@ -598,6 +605,7 @@ public abstract class BaseChart<T> extends Widget {
      * @since 1.1.0
      */
     public T setExporting(Exporting exporting) {
+	this.exporting = exporting;
 	return this.setOption("/exporting", exporting != null ? exporting.getOptions() : null);
     }
 
@@ -2471,6 +2479,13 @@ public abstract class BaseChart<T> extends Widget {
     public XAxis getXAxis() {
 	return getXAxis(0);
     }
+    
+    /**
+     * @return the exporting
+     */
+    public Exporting getExporting() {
+	return exporting;
+    }
 
     /**
      * Retrieve a reference to a specific XAxis for this chart (guaranteed non-null), so that it can then be
@@ -3380,9 +3395,6 @@ public abstract class BaseChart<T> extends Widget {
 	final PlotLine plotLine = axis.getPlotLine(plotLineId);
 
 	if ("click".equals(eventType) && axis != null && plotLine.getClickEventHandler() != null) {
-	    Window.alert("before local variable");
-	    final PlotLineClickEvent toto = new PlotLineClickEvent(nativeEvent);
-	    Window.alert("after local variable");
 	    return plotLine.getClickEventHandler().onClick(new PlotLineClickEvent(nativeEvent));
 	}
 	return true;

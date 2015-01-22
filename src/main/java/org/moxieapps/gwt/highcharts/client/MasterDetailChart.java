@@ -9,11 +9,15 @@
  */
 package org.moxieapps.gwt.highcharts.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.moxieapps.gwt.highcharts.client.BaseChart.ZoomType;
 import org.moxieapps.gwt.highcharts.client.Series.Type;
 import org.moxieapps.gwt.highcharts.client.events.ChartClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
+import org.moxieapps.gwt.highcharts.client.events.ContextButtonClickHandler;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.SeriesLegendItemClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
@@ -22,6 +26,9 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.PiePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SeriesPlotOptions;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -79,7 +86,7 @@ public class MasterDetailChart extends Composite implements IChart {
 
     private final Color PLOT_BAND_COLOR = new Color(0, 0, 0, 0.2);
 
-    private FlowPanel zePanel;
+    private FlowPanel container;
 
     /**
      * creates a zoomable chart and inject the series in both the detail and the master chart
@@ -89,8 +96,8 @@ public class MasterDetailChart extends Composite implements IChart {
     public MasterDetailChart(Series... series) {
 	detailChart = new Chart();
 	masterChart = new Chart();
-	minXCharts = GREATEST_NUMBER;
-	maxXCharts = NULL_NUMBER;
+	minXCharts = BIGGEST_NUMBER;
+	maxXCharts = SMALLEST_NUMBER;
 	initialSeries = new Series[series.length];
 	System.arraycopy(series, 0, initialSeries, 0, series.length);
 	for (int i = 0; i < series.length; i++) {
@@ -99,8 +106,6 @@ public class MasterDetailChart extends Composite implements IChart {
 		    .setPlotOptions(currentSeries.getPlotOptions()));
 	    masterChart.addSeries(masterChart.createSeries().setName(currentSeries.getName()).setIndex(i).setPoints(currentSeries.getPoints())
 		    .setPlotOptions(currentSeries.getPlotOptions()));
-	    // detailChart.addSeries(detailChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
-	    // masterChart.addSeries(masterChart.createSeries().setName("data" + i).setIndex(i).setPoints(currentSeries.getPoints()));
 	    final Number[] minMaxSeries = getMinMax(currentSeries);
 	    if (minMaxSeries[0].doubleValue() < minXCharts.doubleValue()) {
 		minXCharts = minMaxSeries[0];
@@ -109,17 +114,20 @@ public class MasterDetailChart extends Composite implements IChart {
 		maxXCharts = minMaxSeries[1];
 	    }
 	}
+
 	configureCharts();
 	enableSelectionEvent();
 	SeriesPlotOptions plotOptions = new SeriesPlotOptions();
 	enableLegendInteractionEvent(plotOptions);
 	masterChart.setSeriesPlotOptions(plotOptions);
 
-	zePanel = new FlowPanel();
-	zePanel.add(detailChart);
-	zePanel.add(masterChart);
-	zePanel.setHeight("100%");
-	initWidget(zePanel);
+	container = new FlowPanel();
+	container.add(detailChart);
+	container.add(masterChart);
+	container.setHeight("100%");
+	initWidget(container);
+	// bug : obliged to call the setZoom() method, otherwise the graph doesn't render correctly on selection
+	setZoom(minXCharts.doubleValue(), maxXCharts.doubleValue());
     }
 
     /**
@@ -164,7 +172,6 @@ public class MasterDetailChart extends Composite implements IChart {
 	masterChart.setCredits(new Credits().setEnabled(false));
 	masterChart.getElement().setAttribute("style", "width:100%;height:35%");
 	detailChart.getElement().setAttribute("style", "width:100%;height:65%");
-
     }
 
     /**
@@ -224,23 +231,38 @@ public class MasterDetailChart extends Composite implements IChart {
 	    public boolean onSelection(ChartSelectionEvent event) {
 		final double minX = event.getXAxisMin();
 		final double maxX = event.getXAxisMax();
-
 		drawPlotBands(minX, maxX);
 		detailChart.getXAxis().setEndOnTick(false);
 		detailChart.getXAxis().setStartOnTick(false);
 		detailChart.getXAxis().setExtremes(minX, maxX);
 
+		reorderButtons();
 		return false;
 	    }
 	});
+    }
+
+    private void reorderButtons() {
+	final DivElement masterChartElement = masterChart.getDivElement();
+	final NodeList<Element> gElements = masterChartElement.getElementsByTagName("g");
+	List<Element> buttonElements = new ArrayList<Element>();
+	for (int i = 0; i < gElements.getLength(); i++) {
+	    final Element gElement = gElements.getItem(i);
+	    if (gElement.getAttribute("class").equals("highcharts-button")) {
+		buttonElements.add(gElement);
+	    }
+	}
+	for (Element button : buttonElements) {
+	    Element parent = button.getParentElement();
+	    parent.removeChild(button);
+	    parent.appendChild(button);
+	}
     }
 
     /**
      * a click on a item of the legend will hide/display the corresponding graph in the detail chart
      */
     public void enableLegendInteractionEvent(SeriesPlotOptions plotOptions) {
-	// plotOptions.setMarker(new Marker().setEnabled(false));
-	// plotOptions.setHoverStateEnabled(false);
 	final SeriesLegendItemClickEventHandler legendItemClickEventHandler = new SeriesLegendItemClickEventHandler() {
 
 	    @Override
@@ -271,6 +293,7 @@ public class MasterDetailChart extends Composite implements IChart {
 	if (beforePlotBand != null) {
 	    xAxis.removePlotBand(beforePlotBand);
 	}
+
 	beforePlotBand = xAxis.createPlotBand();
 	beforePlotBand.setFrom(minXCharts);
 	beforePlotBand.setTo(minX);
@@ -288,32 +311,43 @@ public class MasterDetailChart extends Composite implements IChart {
 	xAxis.addPlotBands(beforePlotBand, afterPlotBand);
     }
 
-    final Number NULL_NUMBER = new Number() {
+    public void removePlotBands() {
+	final Axis<?> xAxis = masterChart.getXAxis();
+	xAxis.removePlotBand(beforePlotBand);
+	xAxis.removePlotBand(afterPlotBand);
+    }
+
+    public void handleClick() {
+	detailChart.getXAxis().setExtremes(minXCharts, maxXCharts);
+	removePlotBands();
+    }
+
+    private static final Number SMALLEST_NUMBER = new Number() {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public long longValue() {
-	    return 0;
+	    return Long.MIN_VALUE;
 	}
 
 	@Override
 	public int intValue() {
-	    return 0;
+	    return Integer.MIN_VALUE;
 	}
 
 	@Override
 	public float floatValue() {
-	    return 0;
+	    return Float.MIN_VALUE;
 	}
 
 	@Override
 	public double doubleValue() {
-	    return 0;
+	    return Double.MIN_VALUE;
 	}
     };
 
-    final Number GREATEST_NUMBER = new Number() {
+    private static final Number BIGGEST_NUMBER = new Number() {
 
 	private static final long serialVersionUID = 1L;
 
@@ -347,8 +381,20 @@ public class MasterDetailChart extends Composite implements IChart {
 
     @Override
     public IChart setExporting(Exporting exporting) {
-	detailChart.setExporting(exporting);
-	masterChart.setExporting(exporting);
+	final Exporting detailExporting = exporting.clone();
+	final Exporting masterExporting = exporting.clone();
+
+	masterExporting.addCustomButton("customButton",
+		new ContextButton().setX(-30).setSymbol(ContextButton.Symbol.CIRCLE).setClickHandler(new ContextButtonClickHandler() {
+
+		    @Override
+		    public void onClick() {
+			handleClick();
+		    }
+		}).setTitleKey("resetZoom"));
+
+	detailChart.setExporting(detailExporting);
+	masterChart.setExporting(masterExporting);
 	return this;
     }
 
@@ -481,6 +527,13 @@ public class MasterDetailChart extends Composite implements IChart {
 	return this;
     }
 
+    public void setZoom(double minX, double maxX) {
+	drawPlotBands(minX, maxX);
+	detailChart.getXAxis().setEndOnTick(false);
+	detailChart.getXAxis().setStartOnTick(false);
+	detailChart.getXAxis().setExtremes(minX, maxX);
+    }
+
     @Override
     public IChart redraw() {
 	detailChart.redraw();
@@ -606,6 +659,14 @@ public class MasterDetailChart extends Composite implements IChart {
     @Override
     public SeriesPlotOptions getSeriesPlotOptions() {
 	return detailChart.getSeriesPlotOptions();
+    }
+
+    /**
+     * @return the exporting of the master chart
+     */
+    @Override
+    public Exporting getExporting() {
+	return masterChart.getExporting();
     }
 
 }

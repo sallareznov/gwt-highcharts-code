@@ -16,6 +16,10 @@
 
 package org.moxieapps.gwt.highcharts.client;
 
+import org.moxieapps.gwt.highcharts.client.events.ContextButtonClickHandler;
+
+import com.google.gwt.core.client.JavaScriptObject;
+
 /**
  * A configurable class that will allow you to control the export button options of the chart.
  * This configuration object holds general options for the menu items. An instance of this class can be
@@ -85,8 +89,12 @@ public class ContextButton extends Button<ContextButton> {
         }
 
     }
-
-    // TODO: Implement setMenuItems()
+    
+    public ContextButtonClickHandler handler;
+    
+    public ContextButton setMenuItems(JavaScriptObject menuItems) {
+	return this.setOption("menuItems", menuItems);
+    }
 
     /**
      * Convenience method for setting the "symbol" option for the export button.  Equivalent to:
@@ -113,6 +121,24 @@ public class ContextButton extends Button<ContextButton> {
      */
     public ContextButton setX(Number x) {
         return this.setOption("x", x);
+    }
+    
+    public ContextButton setClickHandler(ContextButtonClickHandler handler) {
+	this.handler = handler;
+	return this.setOption("onclick", handlerTest());
+    }
+    
+    public native JavaScriptObject handlerTest() /*-{
+    	var self = this;
+    	var func = function() {
+	   	return self.@org.moxieapps.gwt.highcharts.client.ContextButton::onClickCallback()();
+	};
+	return func;
+    }-*/;
+    
+    public boolean onClickCallback() {
+	handler.onClick();
+	return true;
     }
 
 }

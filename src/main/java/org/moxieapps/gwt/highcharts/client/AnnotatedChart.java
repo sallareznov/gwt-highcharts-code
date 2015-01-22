@@ -131,7 +131,7 @@ fill: '#FCFFC5',
     }
     
     private static native JavaScriptObject nativeAddTextGen(JavaScriptObject chart, String text, float x, float y, JavaScriptObject attr, JavaScriptObject css) /*-{
-    	var baseText = chart.renderer.label(text, x, y);
+    	var baseText = chart.renderer.text(text, x, y);
     	if (attr != null) {
     		baseText.attr(attr);
     	}

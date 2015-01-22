@@ -20,8 +20,6 @@ import org.moxieapps.gwt.highcharts.client.events.AxisTitleClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.AxisTitleDblClickEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.AxisTitleRightClickEventHandler;
 
-import com.google.gwt.user.client.Window;
-
 /**
  * A configurable class that can be used to represent custom title options for an
  * axis, which can then be set on a specific axis (via the {@link Axis#setAxisTitle(AxisTitle)} method.)

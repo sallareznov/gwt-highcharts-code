@@ -597,6 +597,8 @@ public interface IChart extends IsWidget {
     
     SeriesPlotOptions getSeriesPlotOptions();
     
+    Exporting getExporting();
+    
 //    IChart setDrilldown(Drilldown drilldown);
 
 }

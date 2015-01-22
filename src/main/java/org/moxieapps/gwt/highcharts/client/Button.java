@@ -268,5 +268,9 @@ public class Button<T extends Button> extends Configurable<T> {
     public Button setY(Number y) {
         return this.setOption("y", y);
     }
+    
+    public Button setTitleKey(String titleKey) {
+	return this.setOption("_titleKey", titleKey);
+    }
 }
 
