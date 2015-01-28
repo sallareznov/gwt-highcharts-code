@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.moxieapps.gwt.highcharts.client.events.DrilldownEventHandler;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -216,8 +215,6 @@ public class Series extends Configurable<Series> {
     // come into the series after it is rendered
     private String id;
     
-    private DrilldownEventHandler drilldownEventHandler;
-
     /**
      * Use the {@link org.moxieapps.gwt.highcharts.client.Chart#createSeries()} method to create new series instances.
      *
@@ -255,20 +252,6 @@ public class Series extends Configurable<Series> {
      */
     public Series setLegendIndex(Number legendIndex) {
         return this.setOption("legendIndex", legendIndex);
-    }
-    
-    /**
-     * @param drilldownEventHandler the drilldownEventHandler to set
-     */
-    public void setDrilldownEventHandler(DrilldownEventHandler drilldownEventHandler) {
-	this.drilldownEventHandler = drilldownEventHandler;
-    }
-    
-    /**
-     * @return the drilldownEventHandler
-     */
-    public DrilldownEventHandler getDrilldownEventHandler() {
-	return drilldownEventHandler;
     }
 
     /**

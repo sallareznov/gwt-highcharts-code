@@ -32,7 +32,6 @@ import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartRedrawEventHandler;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEvent;
 import org.moxieapps.gwt.highcharts.client.events.ChartSelectionEventHandler;
-import org.moxieapps.gwt.highcharts.client.events.DrilldownEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandDblClickEvent;
 import org.moxieapps.gwt.highcharts.client.events.PlotBandRightClickEvent;
@@ -2786,6 +2785,7 @@ public abstract class BaseChart<T> extends Widget {
 		drilldownEventHandlers.set(i++, drilldownEventHandler);
 	    }
 	}
+	System.out.println(drilldownEventHandlers.size());
 
 	chart = nativeRenderChart(getChartTypeName(), createNativeOptions(), toolTip != null && toolTip.getToolTipFormatter() != null,
 		legend != null && legend.getLabelsFormatter() != null, chartEventHandlers.getJavaScriptObject(), seriesEventHandlers.getJavaScriptObject(),
@@ -3189,20 +3189,6 @@ public abstract class BaseChart<T> extends Widget {
 							 plotLines.events[type5].type = type5;
 							 }
 							 }}
-							 
-							 // Drilldown
-							 for (i = 0 ; i < drilldownEventHandlerFlags.length ; i++) {
-							 	if (!drilldownEventHandlerFlags[i]) continue;
-							 	alert(options.series[0].data);
-							 	var drilldown = drilldownEventHandlerFlags.length == 1 ? options.series.data.drilldown : options.series.data.drilldown[i];
-							 	drilldown.events = drilldown.events || {};
-							 	for (var type5 in drilldownEventHandlerFlags[i]) {
-							 	drilldown.events[type5] = function(e) {
-							 	return self.@org.moxieapps.gwt.highcharts.client.BaseChart::drilldownEventCallback(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;)(e, arguments.callee.type, this.options.series.id);
-							 	};
-							 drilldown.events[type5].type = type5;
-							 }
-							 }
 
 							 // Add in GWT interceptor callback functions for the various formatters so that we can move from
 							 // the native JS world back to the Java world...
@@ -3396,16 +3382,6 @@ public abstract class BaseChart<T> extends Widget {
 
 	if ("click".equals(eventType) && axis != null && plotLine.getClickEventHandler() != null) {
 	    return plotLine.getClickEventHandler().onClick(new PlotLineClickEvent(nativeEvent));
-	}
-	return true;
-    }
-    
-    @SuppressWarnings({"UnusedDeclaration"})
-    private boolean drilldownEventCallback(JavaScriptObject nativeEvent, String eventType, String clickedSerieKey) {
-	final Series clickedSerie = getSeries(clickedSerieKey);
-	final boolean drilldown = clickedSerie.getDrilldown();
-	if ("drilldown".equals(eventType) && drilldown && clickedSerie.getDrilldownEventHandler() != null) {
-	    return clickedSerie.getDrilldownEventHandler().onDrilldown(new DrilldownEvent(nativeEvent, drilldown));
 	}
 	return true;
     }

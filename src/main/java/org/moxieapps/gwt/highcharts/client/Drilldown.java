@@ -12,8 +12,6 @@ package org.moxieapps.gwt.highcharts.client;
 import java.util.Iterator;
 import java.util.List;
 
-import org.moxieapps.gwt.highcharts.client.events.DrilldownEventHandler;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONArray;
 
@@ -24,7 +22,6 @@ import com.google.gwt.json.client.JSONArray;
 public class Drilldown {
     
     private JSONArray series;
-    private DrilldownEventHandler drilldownEventHandler;
     private boolean enabled;
     
     /**
@@ -50,20 +47,6 @@ public class Drilldown {
      */
     public JSONArray getSeries() {
 	return series;
-    }
-    
-    /**
-     * @return the drilldownEventHandler
-     */
-    public DrilldownEventHandler getDrilldownEventHandler() {
-	return drilldownEventHandler;
-    }
-    
-    /**
-     * @param drilldownEventHandler the drilldownEventHandler to set
-     */
-    public void setDrilldownEventHandler(DrilldownEventHandler drilldownEventHandler) {
-	this.drilldownEventHandler = drilldownEventHandler;
     }
     
     public boolean isEnabled() {
